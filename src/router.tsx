@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ROUTES } from '@/config/routes'
 
 import RootLayout from '@/components/layout/RootLayout'
+import AuthLayout from '@/components/layout/AuthLayout'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
 import GuestRoute from '@/components/shared/GuestRoute'
 import PageLoader from '@/components/shared/PageLoader'
@@ -79,17 +80,23 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       // ── Public ──────────────────────────────────────────────────────────────
-      { index: true, element: S(HomePage) },
+      { index: true, element: <Navigate to={ROUTES.SIGN_IN} replace /> },
+      { path: '/home', element: S(HomePage) },
 
       // ── Auth (guests only) ──────────────────────────────────────────────────
       {
         element: <GuestRoute />,
         children: [
-          { path: ROUTES.SIGN_IN, element: S(SignInPage) },
-          { path: ROUTES.SIGN_UP, element: S(SignUpPage) },
-          { path: ROUTES.SIGN_UP_PATIENT, element: S(PatientRegisterPage) },
-          { path: ROUTES.SIGN_UP_INTERN, element: S(InternRegisterPage) },
-          { path: ROUTES.FORGOT_PASSWORD, element: S(ForgotPasswordPage) },
+          {
+            element: <AuthLayout />,
+            children: [
+              { path: ROUTES.SIGN_IN, element: S(SignInPage) },
+              { path: ROUTES.SIGN_UP, element: S(SignUpPage) },
+              { path: ROUTES.SIGN_UP_PATIENT, element: S(PatientRegisterPage) },
+              { path: ROUTES.SIGN_UP_INTERN, element: S(InternRegisterPage) },
+              { path: ROUTES.FORGOT_PASSWORD, element: S(ForgotPasswordPage) },
+            ],
+          },
         ],
       },
 
