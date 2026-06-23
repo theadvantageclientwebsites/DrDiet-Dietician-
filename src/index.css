@@ -1,39 +1,30 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 210 17% 95%;
-    --foreground: 215 30% 16%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 30% 16%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 30% 16%;
-    --primary: 174 68% 36%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 174 60% 94%;
-    --secondary: 210 17% 92%;
-    --secondary-foreground: 215 30% 30%;
-    --muted: 210 14% 93%;
-    --muted-foreground: 215 13% 52%;
-    --accent: 174 60% 94%;
-    --accent-foreground: 174 68% 28%;
-    --destructive: 0 80% 58%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 214 18% 88%;
-    --input: 214 18% 88%;
-    --ring: 174 68% 36%;
-    --radius: 0.5rem;
+    /* Brand teal — matches the dark teal in screenshot */
+    --brand: 188 72% 26%;          /* #1a5c6e  — dark teal for buttons/text */
+    --brand-mid: 185 55% 38%;      /* #2d8a96  — mid teal for accents */
+    --brand-light: 188 60% 91%;    /* #d0eef3  — very light for icon circles */
+    --brand-border: 188 40% 86%;   /* #c2e4ec  — card borders */
+
+    --background: 195 20% 96%;     /* page bg */
+    --foreground: 200 40% 14%;     /* #1a3c4d dark navy text */
+    --muted-text: 200 20% 45%;     /* #5a7a86 muted */
+    --card-bg: 0 0% 100%;
+    --input-bg: 200 14% 97%;       /* #f4f8f9 input background */
+    --input-border: 200 20% 88%;   /* #ccd9dd */
+    --divider: 200 15% 92%;
   }
 }
 
 @layer base {
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 }

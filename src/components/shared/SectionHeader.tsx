@@ -1,17 +1,13 @@
 import type { ReactNode } from 'react'
+import { C } from '@/config/colors'
 
-interface SectionHeaderProps {
-  icon: ReactNode
-  title: string
-}
-
-export default function SectionHeader({ icon, title }: SectionHeaderProps) {
+export default function SectionHeader({ icon, title }: { icon: ReactNode; title: string }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      <div className="w-7 h-7 rounded-full bg-[hsl(174,60%,94%)] flex items-center justify-center text-[hsl(174,68%,36%)] shrink-0">
-        {icon}
+    <div className="flex items-center gap-2 mb-4">
+      <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: C.brandLight }}>
+        <span style={{ color: C.brand }}>{icon}</span>
       </div>
-      <span className="text-[13px] font-semibold text-[#111827]">{title}</span>
+      <span className="text-[13px] font-semibold" style={{ color: C.navy }}>{title}</span>
     </div>
   )
 }

@@ -7,11 +7,11 @@ import SelectField from '@/components/shared/SelectField'
 import SectionHeader from '@/components/shared/SectionHeader'
 import FormPageShell from '@/components/shared/FormPageShell'
 import { ROUTES } from '@/config/routes'
+import { C } from '@/config/colors'
 
-const T = 'hsl(174,68%,36%)'
-const UIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
-const GIcon = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-const ChkIco = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+const UIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+const GIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+const ChkIco = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.brand} strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
 
 const COURSES = ['B.Sc Nutrition', 'M.Sc Dietetics', 'PG Diploma in Dietetics', 'B.Sc Food Science', 'Other'].map(c => ({ value: c, label: c }))
 const ELG = [
@@ -28,41 +28,49 @@ const schema = z.object({
 })
 type FD = z.infer<typeof schema>
 
-// ── Sidebar: shown right on desktop, below form on mobile ──
-function InternSidebar() {
+function Sidebar() {
   return (
     <>
-      {/* Eligibility Check */}
-      <div className="rounded-xl border border-[#e8ecf0] bg-white p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'hsl(174,60%,94%)' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T} strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      {/* Eligibility */}
+      <div className="rounded-2xl bg-white p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: C.brandLight }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.brand} strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
-          <p className="text-[13px] font-semibold text-[#111827]">Eligibility Check</p>
+          <p className="text-[15px] font-bold" style={{ color: C.navy }}>Eligibility Check</p>
         </div>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3">
           {ELG.map(pt => (
-            <div key={pt} className="flex items-start gap-2 text-[12px] text-[#6b7280] leading-relaxed">
-              <span className="shrink-0 mt-0.5"><ChkIco /></span>{pt}
+            <div key={pt} className="flex items-start gap-3">
+              <div className="mt-0.5 shrink-0"><ChkIco /></div>
+              <p className="text-[13px] leading-relaxed" style={{ color: C.navyMid }}>{pt}</p>
             </div>
           ))}
-          <p className="text-[11px] text-[#9ca3af] mt-1 italic">Eligibility is confirmed by reviewing your academic profile.</p>
+          <p className="text-[12px] italic mt-1" style={{ color: C.mutedLight }}>
+            Eligibility is confirmed by reviewing your academic profile.
+          </p>
         </div>
       </div>
 
-      {/* Professional Learning Banner */}
-      <div className="rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg, hsl(174,68%,28%) 0%, hsl(190,58%,40%) 100%)' }}>
-        <div className="p-5 text-white">
-          <p className="text-[14px] font-semibold mb-1.5">Professional Learning Environment</p>
-          <p className="text-[12px] opacity-80 leading-relaxed">Access courses, live classes and receive certificates on completion.</p>
+      {/* Learning Banner */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: `linear-gradient(135deg, ${C.brand} 0%, ${C.brandMid} 100%)` }}>
+        <div className="p-6">
+          <p className="text-[15px] font-bold text-white mb-2">Professional Learning Environment</p>
+          <p className="text-[13px] text-white/80 leading-relaxed">
+            Access courses, live classes and receive certificates on completion.
+          </p>
         </div>
       </div>
 
       {/* Need Assistance */}
-      <div className="rounded-xl border border-[#e8ecf0] bg-white p-5">
-        <p className="text-[13px] font-semibold text-[#111827] mb-1.5">Need Assistance?</p>
-        <p className="text-[12px] text-[#6b7280] leading-relaxed mb-3">Our support team is available to help you complete your application.</p>
-        <button className="text-[13px] font-semibold hover:underline" style={{ color: T }}>Contact Support →</button>
+      <div className="rounded-2xl bg-white p-6">
+        <p className="text-[15px] font-bold mb-1.5" style={{ color: C.navy }}>Need Assistance?</p>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: C.muted }}>
+          Our support team is available to help you complete your application.
+        </p>
+        <button className="text-[13px] font-bold hover:underline" style={{ color: C.brand }}>
+          Contact Support →
+        </button>
       </div>
     </>
   )
@@ -77,22 +85,22 @@ export default function InternRegisterPage() {
     <FormPageShell
       heading="Internship Registration"
       subheading="Start your clinical journey with us. Fill in your academic details to apply for our dietetics training programme."
-      sidebar={<InternSidebar />}
+      sidebar={<Sidebar />}
       footer={
         <div className="flex items-center gap-3">
           <button type="button" onClick={() => nav(-1)}
-            className="h-11 px-6 border border-[#e5e7eb] text-[13px] text-[#6b7280] rounded-xl hover:bg-[#f9fafb] transition-colors whitespace-nowrap">
+            className="h-10 px-5 rounded-lg border text-[13px] font-medium transition-colors hover:bg-[#f7fafb]"
+            style={{ borderColor: C.divider, color: C.muted }}>
             Save Draft
           </button>
           <button form="int-form" type="submit" disabled={isSubmitting}
-            className="flex-1 h-11 text-white text-[14px] font-semibold rounded-xl transition-colors disabled:opacity-60"
-            style={{ background: T }}>
+            className="h-10 px-8 rounded-lg text-white text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
+            style={{ background: C.brand }}>
             {isSubmitting ? 'Submitting…' : 'Complete Registration'}
           </button>
         </div>
-      }
-    >
-      <form id="int-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+      }>
+      <form id="int-form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
         {/* Personal Details */}
         <div>
           <SectionHeader icon={<UIcon />} title="Personal Details" />
@@ -121,10 +129,6 @@ export default function InternRegisterPage() {
           </div>
         </div>
 
-        {/* On mobile/tablet only — show eligibility inline (hidden on desktop since it's in sidebar) */}
-        <div className="lg:hidden">
-          <InternSidebar />
-        </div>
       </form>
     </FormPageShell>
   )

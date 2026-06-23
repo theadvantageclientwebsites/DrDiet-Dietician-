@@ -1,67 +1,68 @@
 import type { ReactNode } from 'react'
+import { C } from '@/config/colors'
 
-interface FormPageShellProps {
-  children: ReactNode         // left col: the form
-  sidebar?: ReactNode         // right col: info panels (desktop only)
+interface Props {
+  children: ReactNode
+  sidebar?: ReactNode
   footer: ReactNode
   stepBar?: ReactNode
   heading: string
   subheading: string
 }
 
-/**
- * Responsive layout:
- * Mobile / Tablet (<1024px) : single column, full-width, sticky footer
- * Desktop (>=1024px)        : two-column — form left, info sidebar right, NO scroll card
- */
-export default function FormPageShell({
-  children, sidebar, footer, stepBar, heading, subheading,
-}: FormPageShellProps) {
+export default function FormPageShell({ children, sidebar, footer, stepBar, heading, subheading }: Props) {
   return (
-    <div className="min-h-screen bg-[#eef1f4]">
+    <div className="min-h-screen" style={{ background: C.pageBg }}>
 
-      {/* ── Desktop layout (lg+): two-column, no card, full page ── */}
+      {/* ── DESKTOP (lg+): two-column full-height layout ── */}
       <div className="hidden lg:flex min-h-screen">
-        {/* LEFT — form column */}
-        <div className="flex-1 flex flex-col bg-white border-r border-[#e8ecf0]">
+        {/* Left — form */}
+        <div className="flex-1 flex flex-col bg-white" style={{ borderRight: `1px solid ${C.divider}` }}>
           {stepBar && (
-            <div className="px-10 py-4 border-b border-[#f0f2f4]">{stepBar}</div>
+            <div className="px-12 py-4" style={{ borderBottom: `1px solid ${C.divider}` }}>
+              {stepBar}
+            </div>
           )}
-          <div className="flex-1 overflow-y-auto px-10 py-8">
-            <h2 className="text-[22px] font-bold text-[#111827] mb-1">{heading}</h2>
-            <p className="text-[13px] text-[#6b7280] mb-8 leading-relaxed">{subheading}</p>
+          <div className="flex-1 overflow-y-auto px-12 py-8">
+            <h2 className="text-[20px] font-bold mb-1" style={{ color: C.navy }}>{heading}</h2>
+            <p className="text-[13px] mb-7" style={{ color: C.muted }}>{subheading}</p>
             {children}
           </div>
-          {/* Footer pinned to bottom of left col */}
-          <div className="px-10 py-5 border-t border-[#f0f2f4] bg-white">{footer}</div>
+          <div className="px-12 py-4 bg-white" style={{ borderTop: `1px solid ${C.divider}` }}>
+            {footer}
+          </div>
         </div>
 
-        {/* RIGHT — sidebar info column */}
+        {/* Right — sidebar */}
         {sidebar && (
-          <div className="w-[380px] xl:w-[420px] bg-[#f7f9fa] flex flex-col overflow-y-auto px-8 py-10 gap-6">
+          <div className="w-[340px] xl:w-[380px] flex flex-col overflow-y-auto px-7 py-8 gap-4"
+            style={{ background: C.pageBg }}>
             {sidebar}
           </div>
         )}
       </div>
 
-      {/* ── Mobile / Tablet layout (<lg): single column card ── */}
-      <div className="lg:hidden flex flex-col min-h-screen">
-        <div className="flex-1 bg-white">
-          {stepBar && (
-            <div className="px-5 py-3.5 border-b border-[#f0f2f4]">{stepBar}</div>
-          )}
-          <div className="px-5 pt-5 pb-4">
-            <h2 className="text-[18px] font-bold text-[#111827] mb-0.5">{heading}</h2>
-            <p className="text-[12px] text-[#6b7280] leading-relaxed">{subheading}</p>
+      {/* ── MOBILE / TABLET (<lg) ── */}
+      <div className="lg:hidden flex flex-col min-h-screen bg-white">
+        {stepBar && (
+          <div className="px-5 py-3" style={{ borderBottom: `1px solid ${C.divider}` }}>
+            {stepBar}
           </div>
-          <div className="px-5 pb-6">{children}</div>
-          {/* Sidebar content shown below form on mobile */}
-          {sidebar && <div className="px-5 pb-6 flex flex-col gap-4">{sidebar}</div>}
+        )}
+        <div className="px-5 pt-6 pb-2">
+          <h2 className="text-[18px] font-bold mb-0.5" style={{ color: C.navy }}>{heading}</h2>
+          <p className="text-[12px]" style={{ color: C.muted }}>{subheading}</p>
         </div>
-        {/* Sticky bottom footer */}
-        <div className="sticky bottom-0 bg-white border-t border-[#f0f2f4] px-5 py-4">{footer}</div>
+        <div className="flex-1 px-5 pt-5 pb-4">{children}</div>
+        {sidebar && (
+          <div className="px-5 pb-5 flex flex-col gap-3" style={{ background: C.pageBg }}>
+            {sidebar}
+          </div>
+        )}
+        <div className="sticky bottom-0 bg-white px-5 py-3" style={{ borderTop: `1px solid ${C.divider}` }}>
+          {footer}
+        </div>
       </div>
-
     </div>
   )
 }
