@@ -6,7 +6,6 @@ import FormField from '@/components/shared/FormField'
 import SelectField from '@/components/shared/SelectField'
 import SectionHeader from '@/components/shared/SectionHeader'
 import FormPageShell from '@/components/shared/FormPageShell'
-import { ROUTES } from '@/config/routes'
 import { BLOOD_GROUPS, GENDERS } from '@/config/constants'
 import { C } from '@/config/colors'
 
@@ -87,7 +86,7 @@ function Sidebar() {
 export default function PatientRegisterPage() {
   const nav = useNavigate()
   const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<FD>({
-    resolver: zodResolver(schema), defaultValues: { defencePersonnel: false },
+    resolver: zodResolver(schema) as never, defaultValues: { defencePersonnel: false },
   })
   const onSubmit = async (_d: FD) => { await new Promise(r => setTimeout(r, 600)) }
 

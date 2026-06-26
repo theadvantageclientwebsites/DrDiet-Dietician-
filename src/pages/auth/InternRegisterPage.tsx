@@ -6,7 +6,6 @@ import FormField from '@/components/shared/FormField'
 import SelectField from '@/components/shared/SelectField'
 import SectionHeader from '@/components/shared/SectionHeader'
 import FormPageShell from '@/components/shared/FormPageShell'
-import { ROUTES } from '@/config/routes'
 import { C } from '@/config/colors'
 
 const UIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
@@ -78,7 +77,7 @@ function Sidebar() {
 
 export default function InternRegisterPage() {
   const nav = useNavigate()
-  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<FD>({ resolver: zodResolver(schema) })
+  const { register, handleSubmit, control, formState: { errors, isSubmitting } } = useForm<FD>({ resolver: zodResolver(schema) as never })
   const onSubmit = async (_d: FD) => { await new Promise(r => setTimeout(r, 600)) }
 
   return (

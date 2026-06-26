@@ -6,7 +6,6 @@ import { ROUTES } from '@/config/routes'
 import type { UserRole } from '@/types'
 
 const BRAND = 'Clinical Vitality'
-const TAGLINE = 'Care & Longevity'
 
 /** Map role → notifications route */
 const NOTIF_ROUTES: Record<UserRole, string> = {

@@ -13,7 +13,7 @@ import Sidebar        from './sidebar/Sidebar'
 import BottomTabBar   from './bottomtab/BottomTabBar'
 import DashboardHeader from './header/DashboardHeader'
 import {
-  COLORS, SIDEBAR_WIDTH, BOTTOM_TAB_HEIGHT, HEADER_HEIGHT,
+  COLORS, BOTTOM_TAB_HEIGHT,
 } from '@/config/theme'
 
 interface DashboardLayoutProps {
@@ -22,7 +22,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({
-  role,                    // eslint-disable-line @typescript-eslint/no-unused-vars
+  role: _role,
   notificationCount = 0,
 }: DashboardLayoutProps) {
   return (
