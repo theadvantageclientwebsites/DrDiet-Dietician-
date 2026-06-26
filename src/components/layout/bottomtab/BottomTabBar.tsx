@@ -37,10 +37,10 @@ function TabItem({ item }: TabItemProps) {
           {isActive && (
             <span style={{
               position:     'absolute',
-              top:          '6px',
-              width:        '44px',
-              height:       '36px',
-              borderRadius: '12px',
+              top:          '4px',
+              width:        '58px',
+              height:       '32px',
+              borderRadius: '14px',
               background:   COLORS.brandLight,
               zIndex:       0,
             }} />
@@ -75,6 +75,7 @@ function TabItem({ item }: TabItemProps) {
             fontSize:   FONT_SIZE.xs,
             fontWeight: isActive ? FONT_WEIGHT.semibold : FONT_WEIGHT.normal,
             lineHeight: 1,
+            marginTop: "8px"
           }}>
             {item.label}
           </span>
