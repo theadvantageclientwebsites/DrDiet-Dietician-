@@ -1,34 +1,114 @@
+/**
+ * DashboardLayout
+ * ─────────────────────────────────────────────────────────────────
+ * Desktop (≥1024 px) : sticky Sidebar + scrollable main content
+ * Mobile / Tablet    : full-width content + fixed BottomTabBar
+ *
+ * Uses CSS custom properties + a single <style> block so there are
+ * zero Tailwind utilities needed — fully portable.
+ */
 import { Outlet } from 'react-router-dom'
 import type { UserRole } from '@/types'
+import Sidebar        from './sidebar/Sidebar'
+import BottomTabBar   from './bottomtab/BottomTabBar'
+import DashboardHeader from './header/DashboardHeader'
+import {
+  COLORS, SIDEBAR_WIDTH, BOTTOM_TAB_HEIGHT, HEADER_HEIGHT,
+} from '@/config/theme'
 
 interface DashboardLayoutProps {
   role: UserRole
+  notificationCount?: number
 }
 
-// Placeholder — real sidebar/header will be built per role
-export default function DashboardLayout({ role }: DashboardLayoutProps) {
+export default function DashboardLayout({
+  role,                    // eslint-disable-line @typescript-eslint/no-unused-vars
+  notificationCount = 0,
+}: DashboardLayoutProps) {
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar placeholder */}
-      <aside className="hidden lg:flex lg:flex-col w-64 bg-card border-r border-border">
-        <div className="p-6 border-b border-border">
-          <h1 className="text-lg font-semibold text-primary">DrDietTherapy</h1>
-          <p className="text-xs text-muted-foreground capitalize">{role} Portal</p>
+    <>
+      {/* ── Responsive CSS ─────────────────────────────────────────────── */}
+      <style>{`
+        .dl-root {
+          display: flex;
+          min-height: 100dvh;
+          background: ${COLORS.pageBg};
+        }
+
+        /* Sidebar: show on desktop, hide on mobile/tablet */
+        .dl-sidebar {
+          display: none;
+        }
+
+        /* Bottom tab: show on mobile/tablet, hide on desktop */
+        .dl-bottom-tab {
+          display: flex;
+        }
+
+        /* Content area */
+        .dl-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          /* push content above fixed bottom tab on mobile */
+          padding-bottom: ${BOTTOM_TAB_HEIGHT}px;
+        }
+
+        /* Scrollable page body */
+        .dl-page {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        /* Header: always visible, full width */
+        .dl-header {
+          display: flex;
+          width: 100%;
+        }
+
+        /* ── Desktop breakpoint ─────────────────────────────────────── */
+        @media (min-width: 1024px) {
+          .dl-sidebar     { display: flex; }
+          .dl-bottom-tab  { display: none !important; }
+          .dl-content     { padding-bottom: 0; }
+
+          /* On desktop the brand block in header is redundant (sidebar has it) */
+          .header-brand   { display: none; }
+        }
+
+        /* ── Sidebar nav item hover ─────────────────────────────────── */
+        .sidebar-nav-item:hover {
+          background: rgba(255,255,255,0.09) !important;
+          color: ${COLORS.white} !important;
+        }
+      `}</style>
+
+      <div className="dl-root">
+        {/* Desktop sidebar */}
+        <div className="dl-sidebar">
+          <Sidebar />
         </div>
-        {/* Nav items will be rendered by role-specific sidebar components */}
-      </aside>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Topbar placeholder */}
-        <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between">
-          <div />
-        </header>
+        {/* Main area */}
+        <div className="dl-content">
+          {/* Sticky header */}
+          <div className="dl-header">
+            <DashboardHeader notificationCount={notificationCount} />
+          </div>
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
-        </main>
+          {/* Page content */}
+          <main className="dl-page">
+            <Outlet />
+          </main>
+        </div>
+
+        {/* Mobile bottom tab */}
+        <div className="dl-bottom-tab">
+          <BottomTabBar />
+        </div>
       </div>
-    </div>
+    </>
   )
 }

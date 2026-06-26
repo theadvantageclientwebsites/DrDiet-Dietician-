@@ -4,13 +4,13 @@ import { ROUTES } from '@/config/routes'
 
 import RootLayout from '@/components/layout/RootLayout'
 import AuthLayout from '@/components/layout/AuthLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
 import GuestRoute from '@/components/shared/GuestRoute'
 import PageLoader from '@/components/shared/PageLoader'
 import NotFound from '@/components/shared/NotFound'
 
-// ─── Lazy-loaded pages ────────────────────────────────────────────────────────
-// Public
+// Lazy-loaded pages
 const HomePage = lazy(() => import('@/pages/public/HomePage'))
 
 // Auth
@@ -66,111 +66,130 @@ const CourseManagementPage = lazy(() => import('@/pages/admin/CourseManagementPa
 const ServicesManagementPage = lazy(() => import('@/pages/admin/ServicesManagementPage'))
 const BlogPage = lazy(() => import('@/pages/admin/BlogPage'))
 
-// ─── Lazy wrapper ─────────────────────────────────────────────────────────────
+// Lazy suspense wrapper
 const S = (Component: React.ComponentType) => (
   <Suspense fallback={<PageLoader />}>
     <Component />
   </Suspense>
 )
 
-// ─── Router ───────────────────────────────────────────────────────────────────
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
     children: [
-      // ── Public ──────────────────────────────────────────────────────────────
+      // Public
       { index: true, element: <Navigate to={ROUTES.SIGN_IN} replace /> },
       { path: '/home', element: S(HomePage) },
 
-      // ── Auth (guests only) ──────────────────────────────────────────────────
+      // Auth (guests only)
       {
         element: <GuestRoute />,
         children: [
           {
             element: <AuthLayout />,
             children: [
-              { path: ROUTES.SIGN_IN, element: S(SignInPage) },
-              { path: ROUTES.SIGN_UP, element: S(SignUpPage) },
-              { path: ROUTES.SIGN_UP_PATIENT, element: S(PatientRegisterPage) },
-              { path: ROUTES.SIGN_UP_INTERN, element: S(InternRegisterPage) },
-              { path: ROUTES.FORGOT_PASSWORD, element: S(ForgotPasswordPage) },
+              { path: ROUTES.SIGN_IN,           element: S(SignInPage) },
+              { path: ROUTES.SIGN_UP,           element: S(SignUpPage) },
+              { path: ROUTES.SIGN_UP_PATIENT,   element: S(PatientRegisterPage) },
+              { path: ROUTES.SIGN_UP_INTERN,    element: S(InternRegisterPage) },
+              { path: ROUTES.FORGOT_PASSWORD,   element: S(ForgotPasswordPage) },
             ],
           },
         ],
       },
 
-      // ── Doctor (protected) ──────────────────────────────────────────────────
+      // Doctor (protected)
       {
         element: <ProtectedRoute allowedRoles={['doctor']} />,
         children: [
-          { path: ROUTES.DOCTOR.ROOT, element: <Navigate to={ROUTES.DOCTOR.DASHBOARD} replace /> },
-          { path: ROUTES.DOCTOR.DASHBOARD, element: S(DoctorDashboard) },
-          { path: ROUTES.DOCTOR.APPOINTMENTS, element: S(DoctorAppointmentsPage) },
-          { path: ROUTES.DOCTOR.PATIENTS, element: S(DoctorPatientsPage) },
-          { path: ROUTES.DOCTOR.PATIENT_DETAIL, element: S(PatientDetailPage) },
-          { path: ROUTES.DOCTOR.CHAT, element: S(DoctorChatPage) },
-          { path: ROUTES.DOCTOR.VIDEO_CALL, element: S(DoctorVideoCallPage) },
-          { path: ROUTES.DOCTOR.BLOOD_REPORTS, element: S(DoctorBloodReportsPage) },
-          { path: ROUTES.DOCTOR.SERVICES, element: S(DoctorServicesPage) },
-          { path: ROUTES.DOCTOR.NOTIFICATIONS, element: S(DoctorNotificationsPage) },
+          {
+            element: <DashboardLayout role="doctor" />,
+            children: [
+              { path: ROUTES.DOCTOR.ROOT,          element: <Navigate to={ROUTES.DOCTOR.DASHBOARD} replace /> },
+              { path: ROUTES.DOCTOR.DASHBOARD,     element: S(DoctorDashboard) },
+              { path: ROUTES.DOCTOR.APPOINTMENTS,  element: S(DoctorAppointmentsPage) },
+              { path: ROUTES.DOCTOR.PATIENTS,      element: S(DoctorPatientsPage) },
+              { path: ROUTES.DOCTOR.PATIENT_DETAIL,element: S(PatientDetailPage) },
+              { path: ROUTES.DOCTOR.CHAT,          element: S(DoctorChatPage) },
+              { path: ROUTES.DOCTOR.VIDEO_CALL,    element: S(DoctorVideoCallPage) },
+              { path: ROUTES.DOCTOR.BLOOD_REPORTS, element: S(DoctorBloodReportsPage) },
+              { path: ROUTES.DOCTOR.SERVICES,      element: S(DoctorServicesPage) },
+              { path: ROUTES.DOCTOR.NOTIFICATIONS, element: S(DoctorNotificationsPage) },
+            ],
+          },
         ],
       },
 
-      // ── Patient (protected) ─────────────────────────────────────────────────
+      // Patient (protected)
       {
         element: <ProtectedRoute allowedRoles={['patient']} />,
         children: [
-          { path: ROUTES.PATIENT.ROOT, element: <Navigate to={ROUTES.PATIENT.DASHBOARD} replace /> },
-          { path: ROUTES.PATIENT.DASHBOARD, element: S(PatientDashboard) },
-          { path: ROUTES.PATIENT.BOOK_APPOINTMENT, element: S(BookAppointmentPage) },
-          { path: ROUTES.PATIENT.APPOINTMENTS, element: S(PatientAppointmentsPage) },
-          { path: ROUTES.PATIENT.PACKAGES, element: S(PackagesPage) },
-          { path: ROUTES.PATIENT.SERVICES, element: S(PatientServicesPage) },
-          { path: ROUTES.PATIENT.DIET_PLANS, element: S(DietPlansPage) },
-          { path: ROUTES.PATIENT.BLOOD_REPORTS, element: S(PatientBloodReportsPage) },
-          { path: ROUTES.PATIENT.DIGITAL_PRODUCTS, element: S(DigitalProductsPage) },
-          { path: ROUTES.PATIENT.CHAT, element: S(PatientChatPage) },
-          { path: ROUTES.PATIENT.VIDEO_CALL, element: S(PatientVideoCallPage) },
-          { path: ROUTES.PATIENT.NOTIFICATIONS, element: S(PatientNotificationsPage) },
-          { path: ROUTES.PATIENT.PROFILE, element: S(PatientProfilePage) },
+          {
+            element: <DashboardLayout role="patient" />,
+            children: [
+              { path: ROUTES.PATIENT.ROOT,             element: <Navigate to={ROUTES.PATIENT.DASHBOARD} replace /> },
+              { path: ROUTES.PATIENT.DASHBOARD,        element: S(PatientDashboard) },
+              { path: ROUTES.PATIENT.BOOK_APPOINTMENT, element: S(BookAppointmentPage) },
+              { path: ROUTES.PATIENT.APPOINTMENTS,     element: S(PatientAppointmentsPage) },
+              { path: ROUTES.PATIENT.PACKAGES,         element: S(PackagesPage) },
+              { path: ROUTES.PATIENT.SERVICES,         element: S(PatientServicesPage) },
+              { path: ROUTES.PATIENT.DIET_PLANS,       element: S(DietPlansPage) },
+              { path: ROUTES.PATIENT.BLOOD_REPORTS,    element: S(PatientBloodReportsPage) },
+              { path: ROUTES.PATIENT.DIGITAL_PRODUCTS, element: S(DigitalProductsPage) },
+              { path: ROUTES.PATIENT.CHAT,             element: S(PatientChatPage) },
+              { path: ROUTES.PATIENT.VIDEO_CALL,       element: S(PatientVideoCallPage) },
+              { path: ROUTES.PATIENT.NOTIFICATIONS,    element: S(PatientNotificationsPage) },
+              { path: ROUTES.PATIENT.PROFILE,          element: S(PatientProfilePage) },
+            ],
+          },
         ],
       },
 
-      // ── Intern (protected) ──────────────────────────────────────────────────
+      // Intern (protected)
       {
         element: <ProtectedRoute allowedRoles={['intern']} />,
         children: [
-          { path: ROUTES.INTERN.ROOT, element: <Navigate to={ROUTES.INTERN.DASHBOARD} replace /> },
-          { path: ROUTES.INTERN.DASHBOARD, element: S(InternDashboard) },
-          { path: ROUTES.INTERN.COURSES, element: S(CoursesPage) },
-          { path: ROUTES.INTERN.COURSE_DETAIL, element: S(CourseDetailPage) },
-          { path: ROUTES.INTERN.CLASSES, element: S(ClassesPage) },
-          { path: ROUTES.INTERN.CERTIFICATIONS, element: S(CertificationsPage) },
-          { path: ROUTES.INTERN.EBOOKS, element: S(EbooksPage) },
-          { path: ROUTES.INTERN.PROFILE, element: S(InternProfilePage) },
+          {
+            element: <DashboardLayout role="intern" />,
+            children: [
+              { path: ROUTES.INTERN.ROOT,          element: <Navigate to={ROUTES.INTERN.DASHBOARD} replace /> },
+              { path: ROUTES.INTERN.DASHBOARD,     element: S(InternDashboard) },
+              { path: ROUTES.INTERN.COURSES,       element: S(CoursesPage) },
+              { path: ROUTES.INTERN.COURSE_DETAIL, element: S(CourseDetailPage) },
+              { path: ROUTES.INTERN.CLASSES,       element: S(ClassesPage) },
+              { path: ROUTES.INTERN.CERTIFICATIONS,element: S(CertificationsPage) },
+              { path: ROUTES.INTERN.EBOOKS,        element: S(EbooksPage) },
+              { path: ROUTES.INTERN.PROFILE,       element: S(InternProfilePage) },
+            ],
+          },
         ],
       },
 
-      // ── Admin (protected) ───────────────────────────────────────────────────
+      // Admin (protected)
       {
         element: <ProtectedRoute allowedRoles={['admin']} />,
         children: [
-          { path: ROUTES.ADMIN.ROOT, element: <Navigate to={ROUTES.ADMIN.DASHBOARD} replace /> },
-          { path: ROUTES.ADMIN.DASHBOARD, element: S(AdminDashboard) },
-          { path: ROUTES.ADMIN.REVENUE, element: S(RevenuePage) },
-          { path: ROUTES.ADMIN.PATIENTS, element: S(AdminPatientsPage) },
-          { path: ROUTES.ADMIN.INTERNS, element: S(AdminInternsPage) },
-          { path: ROUTES.ADMIN.APPOINTMENTS, element: S(AdminAppointmentsPage) },
-          { path: ROUTES.ADMIN.PACKAGES, element: S(PackagesManagementPage) },
-          { path: ROUTES.ADMIN.DIGITAL_PRODUCTS, element: S(AdminDigitalProductsPage) },
-          { path: ROUTES.ADMIN.COURSES, element: S(CourseManagementPage) },
-          { path: ROUTES.ADMIN.SERVICES, element: S(ServicesManagementPage) },
-          { path: ROUTES.ADMIN.BLOG, element: S(BlogPage) },
+          {
+            element: <DashboardLayout role="admin" />,
+            children: [
+              { path: ROUTES.ADMIN.ROOT,             element: <Navigate to={ROUTES.ADMIN.DASHBOARD} replace /> },
+              { path: ROUTES.ADMIN.DASHBOARD,        element: S(AdminDashboard) },
+              { path: ROUTES.ADMIN.REVENUE,          element: S(RevenuePage) },
+              { path: ROUTES.ADMIN.PATIENTS,         element: S(AdminPatientsPage) },
+              { path: ROUTES.ADMIN.INTERNS,          element: S(AdminInternsPage) },
+              { path: ROUTES.ADMIN.APPOINTMENTS,     element: S(AdminAppointmentsPage) },
+              { path: ROUTES.ADMIN.PACKAGES,         element: S(PackagesManagementPage) },
+              { path: ROUTES.ADMIN.DIGITAL_PRODUCTS, element: S(AdminDigitalProductsPage) },
+              { path: ROUTES.ADMIN.COURSES,          element: S(CourseManagementPage) },
+              { path: ROUTES.ADMIN.SERVICES,         element: S(ServicesManagementPage) },
+              { path: ROUTES.ADMIN.BLOG,             element: S(BlogPage) },
+            ],
+          },
         ],
       },
 
-      // ── 404 ──────────────────────────────────────────────────────────────────
+      // 404
       { path: '*', element: <NotFound /> },
     ],
   },
