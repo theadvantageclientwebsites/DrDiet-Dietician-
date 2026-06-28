@@ -1,18 +1,22 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { AuthUser, UserRole } from '@/types'
-import { TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY } from '@/config/constants'
 
+// ─── Single localStorage key for all auth state ───────────────────────────────
+export const AUTH_STORE_KEY = 'drdiet-auth'
+
+// ─── One-time cleanup of legacy keys left by older versions ──────────────────
+const LEGACY_KEYS = ['drdiet_token', 'drdiet_user', 'drdiet_refresh_token']
+LEGACY_KEYS.forEach((k) => localStorage.removeItem(k))
+
+// ─── State shape ─────────────────────────────────────────────────────────────
 interface AuthState {
   user: AuthUser | null
   token: string | null
-  refreshToken: string | null
   isAuthenticated: boolean
-  isLoading: boolean
 
-  setAuth: (user: AuthUser, token: string, refreshToken: string) => void
+  setAuth: (user: AuthUser, token: string) => void
   clearAuth: () => void
-  setLoading: (loading: boolean) => void
   hasRole: (role: UserRole) => boolean
 }
 
@@ -21,34 +25,21 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       token: null,
-      refreshToken: null,
       isAuthenticated: false,
-      isLoading: false,
 
-      setAuth: (user, token, refreshToken) => {
-        localStorage.setItem(TOKEN_KEY, token)
-        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken)
-        localStorage.setItem(USER_KEY, JSON.stringify(user))
-        set({ user, token, refreshToken, isAuthenticated: true })
-      },
+      // Only zustand persist writes to localStorage — no manual setItem calls
+      setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
 
-      clearAuth: () => {
-        localStorage.removeItem(TOKEN_KEY)
-        localStorage.removeItem(REFRESH_TOKEN_KEY)
-        localStorage.removeItem(USER_KEY)
-        set({ user: null, token: null, refreshToken: null, isAuthenticated: false })
-      },
-
-      setLoading: (loading) => set({ isLoading: loading }),
+      clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
 
       hasRole: (role) => get().user?.role === role,
     }),
     {
-      name: 'drdiet-auth',
+      name: AUTH_STORE_KEY,
+      version: 3, // bumped — wipes any persisted state from older versions
       partialize: (state) => ({
         user: state.user,
         token: state.token,
-        refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
     },

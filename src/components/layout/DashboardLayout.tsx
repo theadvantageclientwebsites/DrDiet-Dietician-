@@ -8,7 +8,6 @@
  * zero Tailwind utilities needed — fully portable.
  */
 import { Outlet } from 'react-router-dom'
-import type { UserRole } from '@/types'
 import Sidebar        from './sidebar/Sidebar'
 import BottomTabBar   from './bottomtab/BottomTabBar'
 import DashboardHeader from './header/DashboardHeader'
@@ -16,8 +15,11 @@ import {
   COLORS, BOTTOM_TAB_HEIGHT,
 } from '@/config/theme'
 
+// Separate from UserRole — this is just the layout variant passed by the router
+export type DashboardRole = 'doctor' | 'patient' | 'intern' | 'admin'
+
 interface DashboardLayoutProps {
-  role: UserRole
+  role: DashboardRole
   notificationCount?: number
 }
 

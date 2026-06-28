@@ -1,4 +1,5 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type {
   Appointment,
   BookAppointmentPayload,
@@ -8,68 +9,48 @@ import type {
 } from '@/types'
 
 export const appointmentService = {
-  // Patient — book appointment
-  book: async (payload: BookAppointmentPayload): Promise<ApiResponse<Appointment>> => {
-    const { data } = await axiosInstance.post<ApiResponse<Appointment>>('/appointments', payload)
-    return data
-  },
+  /** Patient — book a new appointment */
+  book: (payload: BookAppointmentPayload) =>
+    APICall<ApiResponse<Appointment>>('post', payload, ENDPOINTS.APPOINTMENTS.LIST)
+      .then((res) => res.data),
 
-  // Get appointments (doctor sees all, patient sees own)
-  getAll: async (params?: {
+  /** Get appointments list (doctor sees all, patient sees own) */
+  getAll: (params?: {
     page?: number
     limit?: number
     status?: AppointmentStatus
     date?: string
-  }): Promise<PaginatedResponse<Appointment>> => {
-    const { data } = await axiosInstance.get<PaginatedResponse<Appointment>>('/appointments', {
-      params,
-    })
-    return data
-  },
+  }) =>
+    APICall<PaginatedResponse<Appointment>>('get', params ?? null, ENDPOINTS.APPOINTMENTS.LIST)
+      .then((res) => res.data),
 
-  getById: async (id: string): Promise<ApiResponse<Appointment>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Appointment>>(`/appointments/${id}`)
-    return data
-  },
+  getById: (id: string) =>
+    APICall<ApiResponse<Appointment>>('get', null, ENDPOINTS.APPOINTMENTS.BY_ID(id))
+      .then((res) => res.data),
 
-  // Doctor — update status
-  updateStatus: async (
-    id: string,
-    status: AppointmentStatus,
-    notes?: string,
-  ): Promise<ApiResponse<Appointment>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Appointment>>(
-      `/appointments/${id}/status`,
+  /** Doctor — update appointment status */
+  updateStatus: (id: string, status: AppointmentStatus, notes?: string) =>
+    APICall<ApiResponse<Appointment>>(
+      'patch',
       { status, notes },
-    )
-    return data
-  },
+      ENDPOINTS.APPOINTMENTS.UPDATE_STATUS(id),
+    ).then((res) => res.data),
 
-  // Patient — reschedule
-  reschedule: async (
-    id: string,
-    payload: { date: string; slot: string },
-  ): Promise<ApiResponse<Appointment>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Appointment>>(
-      `/appointments/${id}/reschedule`,
+  /** Patient — reschedule appointment */
+  reschedule: (id: string, payload: { date: string; slot: string }) =>
+    APICall<ApiResponse<Appointment>>(
+      'patch',
       payload,
-    )
-    return data
-  },
+      ENDPOINTS.APPOINTMENTS.RESCHEDULE(id),
+    ).then((res) => res.data),
 
-  // Cancel
-  cancel: async (id: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<null>>(
-      `/appointments/${id}/cancel`,
-    )
-    return data
-  },
+  /** Cancel appointment */
+  cancel: (id: string) =>
+    APICall<ApiResponse<null>>('patch', null, ENDPOINTS.APPOINTMENTS.CANCEL(id))
+      .then((res) => res.data),
 
-  // Get available slots for a date
-  getAvailableSlots: async (date: string): Promise<ApiResponse<string[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<string[]>>('/appointments/slots', {
-      params: { date },
-    })
-    return data
-  },
+  /** Get available booking slots for a given date */
+  getAvailableSlots: (date: string) =>
+    APICall<ApiResponse<string[]>>('get', { date }, ENDPOINTS.APPOINTMENTS.SLOTS)
+      .then((res) => res.data),
 }

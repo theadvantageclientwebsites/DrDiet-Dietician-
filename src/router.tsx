@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
 
       // Doctor (protected)
       {
-        element: <ProtectedRoute allowedRoles={['doctor']} />,
+        element: <ProtectedRoute allowedRoles={['DOCTOR']} />,
         children: [
           {
             element: <DashboardLayout role="doctor" />,
@@ -123,7 +123,7 @@ export const router = createBrowserRouter([
 
       // Patient (protected)
       {
-        element: <ProtectedRoute allowedRoles={['patient']} />,
+        element: <ProtectedRoute allowedRoles={['PATIENT']} />,
         children: [
           {
             element: <DashboardLayout role="patient" />,
@@ -148,7 +148,7 @@ export const router = createBrowserRouter([
 
       // Intern (protected)
       {
-        element: <ProtectedRoute allowedRoles={['intern']} />,
+        element: <ProtectedRoute allowedRoles={['INTERN']} />,
         children: [
           {
             element: <DashboardLayout role="intern" />,
@@ -168,7 +168,7 @@ export const router = createBrowserRouter([
 
       // Admin (protected)
       {
-        element: <ProtectedRoute allowedRoles={['admin']} />,
+        element: <ProtectedRoute allowedRoles={['ADMIN']} />,
         children: [
           {
             element: <DashboardLayout role="admin" />,

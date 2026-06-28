@@ -9,10 +9,10 @@ const BRAND = 'Clinical Vitality'
 
 /** Map role → notifications route */
 const NOTIF_ROUTES: Record<UserRole, string> = {
-  patient: ROUTES.PATIENT.NOTIFICATIONS,
-  doctor:  ROUTES.DOCTOR.NOTIFICATIONS,
-  intern:  ROUTES.INTERN.PROFILE,   // interns have no dedicated notif page yet
-  admin:   ROUTES.ADMIN.NOTIFICATIONS,
+  PATIENT: ROUTES.PATIENT.NOTIFICATIONS,
+  DOCTOR:  ROUTES.DOCTOR.NOTIFICATIONS,
+  INTERN:  ROUTES.INTERN.PROFILE,   // interns have no dedicated notif page yet
+  ADMIN:   ROUTES.ADMIN.NOTIFICATIONS,
 }
 
 interface Props {
@@ -65,7 +65,7 @@ export default function DashboardHeader({ notificationCount = 0 }: Props) {
         <div>
           <p style={{ fontWeight: FONT_WEIGHT.semibold, fontSize: FONT_SIZE.md, color: COLORS.navy, lineHeight: 1.1 }}>{BRAND}</p>
           <p style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted, lineHeight: 1.3 }}>
-            Welcome back, {user.name}
+            Welcome back, {user.fullName}
           </p>
         </div>
       </div>
@@ -133,8 +133,8 @@ export default function DashboardHeader({ notificationCount = 0 }: Props) {
           onMouseLeave={e => (e.currentTarget.style.borderColor = COLORS.brandLight)}
         >
           {user.avatar
-            ? <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : user.name.charAt(0).toUpperCase()}
+            ? <img src={user.avatar} alt={user.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : user.fullName.charAt(0).toUpperCase()}
         </button>
       </div>
     </header>

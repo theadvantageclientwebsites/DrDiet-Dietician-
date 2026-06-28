@@ -7,7 +7,7 @@ import AuthCard from '@/components/shared/AuthCard'
 import FormField from '@/components/shared/FormField'
 import { ROUTES } from '@/config/routes'
 import { C } from '@/config/colors'
-import { useAuthStore } from '@/store/authStore'
+import { useLogin } from '@/hooks/useAuth'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -23,19 +23,12 @@ const GIco   = () => <svg width="16" height="16" viewBox="0 0 24 24"><path fill=
 
 export default function SignInPage() {
   const nav = useNavigate()
-  const { setAuth } = useAuthStore()
   const [showPw, setShowPw] = useState(false)
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<F>({ resolver: zodResolver(schema) })
+  const login = useLogin()
+  const { register, handleSubmit, formState: { errors } } = useForm<F>({ resolver: zodResolver(schema) })
 
-  const onSubmit = async (_d: F) => {
-    await new Promise(r => setTimeout(r, 600))
-    // TODO: replace with real API call — dummy patient login for now
-    setAuth(
-      { id: 'dummy-1', name: 'Sarah Jenkins', email: _d.email, role: 'patient', token: 'dummy-token' },
-      'dummy-token',
-      'dummy-refresh-token',
-    )
-    nav(ROUTES.PATIENT.DASHBOARD)
+  const onSubmit = (d: F) => {
+    login.mutate(d)
   }
 
   return (
@@ -78,10 +71,10 @@ export default function SignInPage() {
           }
           error={errors.password?.message} {...register('password')} />
 
-        <button type="submit" disabled={isSubmitting}
+        <button type="submit" disabled={login.isPending}
           className="w-full h-10 rounded-lg text-white text-[13px] font-semibold mt-1 transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-1"
           style={{ background: C.brand }}>
-          {isSubmitting ? 'Signing in…' : 'Sign In'}
+          {login.isPending ? 'Signing in…' : 'Sign In'}
         </button>
 
         <div className="flex items-center gap-3">

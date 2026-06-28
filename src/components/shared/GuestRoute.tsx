@@ -5,16 +5,25 @@ import { ROUTES } from '@/config/routes'
 
 // Redirects authenticated users away from auth pages (login, register, etc.)
 export default function GuestRoute() {
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user, clearAuth } = useAuthStore()
 
   if (isAuthenticated && user) {
     const roleRedirects: Record<UserRole, string> = {
-      doctor: ROUTES.DOCTOR.DASHBOARD,
-      patient: ROUTES.PATIENT.DASHBOARD,
-      intern: ROUTES.INTERN.DASHBOARD,
-      admin: ROUTES.ADMIN.DASHBOARD,
+      DOCTOR:  ROUTES.DOCTOR.DASHBOARD,
+      PATIENT: ROUTES.PATIENT.DASHBOARD,
+      INTERN:  ROUTES.INTERN.DASHBOARD,
+      ADMIN:   ROUTES.ADMIN.DASHBOARD,
     }
-    return <Navigate to={roleRedirects[user.role]} replace />
+
+    const destination = roleRedirects[user.role]
+
+    // Guard against stale persisted state with old lowercase roles
+    if (!destination) {
+      clearAuth()
+      return <Outlet />
+    }
+
+    return <Navigate to={destination} replace />
   }
 
   return <Outlet />

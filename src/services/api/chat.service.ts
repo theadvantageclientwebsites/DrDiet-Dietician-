@@ -1,38 +1,27 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type { ChatMessage, ChatThread, ApiResponse, PaginatedResponse } from '@/types'
 
 export const chatService = {
-  getThreads: async (): Promise<ApiResponse<ChatThread[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<ChatThread[]>>('/chat/threads')
-    return data
-  },
+  getThreads: () =>
+    APICall<ApiResponse<ChatThread[]>>('get', null, ENDPOINTS.CHAT.THREADS)
+      .then((res) => res.data),
 
-  getMessages: async (
-    threadId: string,
-    params?: { page?: number; limit?: number },
-  ): Promise<PaginatedResponse<ChatMessage>> => {
-    const { data } = await axiosInstance.get<PaginatedResponse<ChatMessage>>(
-      `/chat/threads/${threadId}/messages`,
-      { params },
-    )
-    return data
-  },
+  getMessages: (threadId: string, params?: { page?: number; limit?: number }) =>
+    APICall<PaginatedResponse<ChatMessage>>(
+      'get',
+      params ?? null,
+      ENDPOINTS.CHAT.MESSAGES(threadId),
+    ).then((res) => res.data),
 
-  sendMessage: async (
-    threadId: string,
-    content: string,
-  ): Promise<ApiResponse<ChatMessage>> => {
-    const { data } = await axiosInstance.post<ApiResponse<ChatMessage>>(
-      `/chat/threads/${threadId}/messages`,
+  sendMessage: (threadId: string, content: string) =>
+    APICall<ApiResponse<ChatMessage>>(
+      'post',
       { content },
-    )
-    return data
-  },
+      ENDPOINTS.CHAT.SEND(threadId),
+    ).then((res) => res.data),
 
-  markThreadRead: async (threadId: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<null>>(
-      `/chat/threads/${threadId}/read`,
-    )
-    return data
-  },
+  markThreadRead: (threadId: string) =>
+    APICall<ApiResponse<null>>('patch', null, ENDPOINTS.CHAT.MARK_READ(threadId))
+      .then((res) => res.data),
 }

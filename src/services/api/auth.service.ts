@@ -1,47 +1,50 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type {
   LoginPayload,
-  AuthResponse,
   PatientRegistration,
   InternRegistration,
   ApiResponse,
+  LoginResponseData,
+  PatientRegisterResponseData,
+  InternRegisterResponseData,
 } from '@/types'
 
 export const authService = {
-  login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    const { data } = await axiosInstance.post<AuthResponse>('/auth/login', payload)
-    return data
-  },
+  /** POST /auth/login → { success, message, data: { token, user } } */
+  login: (payload: LoginPayload) =>
+    APICall<ApiResponse<LoginResponseData>>('post', payload, ENDPOINTS.AUTH.LOGIN)
+      .then((res) => res.data),
 
-  registerPatient: async (payload: PatientRegistration): Promise<AuthResponse> => {
-    const { data } = await axiosInstance.post<AuthResponse>('/auth/register/patient', payload)
-    return data
-  },
+  /** POST /auth/register/patient → { success, message, data: { ...user, patientProfile } } */
+  registerPatient: (payload: PatientRegistration) =>
+    APICall<ApiResponse<PatientRegisterResponseData>>(
+      'post',
+      payload,
+      ENDPOINTS.AUTH.REGISTER_PATIENT,
+    ).then((res) => res.data),
 
-  registerIntern: async (payload: InternRegistration): Promise<AuthResponse> => {
-    const { data } = await axiosInstance.post<AuthResponse>('/auth/register/intern', payload)
-    return data
-  },
+  /** POST /auth/register/intern → { success, message, data: { ...user, internProfile } } */
+  registerIntern: (payload: InternRegistration) =>
+    APICall<ApiResponse<InternRegisterResponseData>>(
+      'post',
+      payload,
+      ENDPOINTS.AUTH.REGISTER_INTERN,
+    ).then((res) => res.data),
 
-  logout: async (): Promise<void> => {
-    await axiosInstance.post('/auth/logout')
-  },
+  logout: () =>
+    APICall<void>('post', null, ENDPOINTS.AUTH.LOGOUT)
+      .then(() => undefined),
 
-  forgotPassword: async (email: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>('/auth/forgot-password', { email })
-    return data
-  },
+  forgotPassword: (email: string) =>
+    APICall<ApiResponse<null>>('post', { email }, ENDPOINTS.AUTH.FORGOT_PASSWORD)
+      .then((res) => res.data),
 
-  resetPassword: async (token: string, password: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>('/auth/reset-password', {
-      token,
-      password,
-    })
-    return data
-  },
+  resetPassword: (token: string, password: string) =>
+    APICall<ApiResponse<null>>('post', { token, password }, ENDPOINTS.AUTH.RESET_PASSWORD)
+      .then((res) => res.data),
 
-  refreshToken: async (refreshToken: string): Promise<{ token: string }> => {
-    const { data } = await axiosInstance.post<{ token: string }>('/auth/refresh', { refreshToken })
-    return data
-  },
+  refreshToken: (refreshToken: string) =>
+    APICall<{ token: string }>('post', { refreshToken }, ENDPOINTS.AUTH.REFRESH_TOKEN)
+      .then((res) => res.data),
 }

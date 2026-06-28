@@ -1,75 +1,71 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type { Patient, DietPlan, BloodReport, ApiResponse, PaginatedResponse } from '@/types'
 
 export const patientService = {
-  getProfile: async (): Promise<ApiResponse<Patient>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Patient>>('/patients/profile')
-    return data
+  /** Get own profile (patient role) */
+  getProfile: () =>
+    APICall<ApiResponse<Patient>>('get', null, ENDPOINTS.PATIENTS.PROFILE)
+      .then((res) => res.data),
+
+  /** Update own profile */
+  updateProfile: (payload: Partial<Patient>) =>
+    APICall<ApiResponse<Patient>>('patch', payload, ENDPOINTS.PATIENTS.PROFILE)
+      .then((res) => res.data),
+
+  /** Doctor/Admin — get a single patient by ID */
+  getById: (id: string) =>
+    APICall<ApiResponse<Patient>>('get', null, ENDPOINTS.PATIENTS.BY_ID(id))
+      .then((res) => res.data),
+
+  /** Doctor/Admin — get paginated patient list */
+  getAll: (params?: { page?: number; limit?: number; search?: string }) =>
+    APICall<PaginatedResponse<Patient>>('get', params ?? null, ENDPOINTS.PATIENTS.LIST)
+      .then((res) => res.data),
+
+  // ─── Diet Plans ────────────────────────────────────────────────────────────
+
+  /** Patient fetches own plans; doctor fetches by patientId */
+  getDietPlans: (patientId?: string) => {
+    const url = patientId
+      ? ENDPOINTS.PATIENTS.DIET_PLANS_BY_ID(patientId)
+      : ENDPOINTS.PATIENTS.DIET_PLANS
+    return APICall<ApiResponse<DietPlan[]>>('get', null, url).then((res) => res.data)
   },
 
-  updateProfile: async (payload: Partial<Patient>): Promise<ApiResponse<Patient>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Patient>>('/patients/profile', payload)
-    return data
-  },
-
-  // Doctor — get patient by ID
-  getById: async (id: string): Promise<ApiResponse<Patient>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Patient>>(`/patients/${id}`)
-    return data
-  },
-
-  // Doctor / Admin — get all patients
-  getAll: async (params?: {
-    page?: number
-    limit?: number
-    search?: string
-  }): Promise<PaginatedResponse<Patient>> => {
-    const { data } = await axiosInstance.get<PaginatedResponse<Patient>>('/patients', { params })
-    return data
-  },
-
-  // Diet Plans
-  getDietPlans: async (patientId?: string): Promise<ApiResponse<DietPlan[]>> => {
-    const url = patientId ? `/patients/${patientId}/diet-plans` : '/patients/diet-plans'
-    const { data } = await axiosInstance.get<ApiResponse<DietPlan[]>>(url)
-    return data
-  },
-
-  createDietPlan: async (
-    patientId: string,
-    payload: Partial<DietPlan>,
-  ): Promise<ApiResponse<DietPlan>> => {
-    const { data } = await axiosInstance.post<ApiResponse<DietPlan>>(
-      `/patients/${patientId}/diet-plans`,
+  /** Doctor — create a diet plan for a patient */
+  createDietPlan: (patientId: string, payload: Partial<DietPlan>) =>
+    APICall<ApiResponse<DietPlan>>(
+      'post',
       payload,
-    )
-    return data
-  },
+      ENDPOINTS.PATIENTS.DIET_PLANS_BY_ID(patientId),
+    ).then((res) => res.data),
 
-  // Blood Reports
-  uploadBloodReport: async (patientId: string, formData: FormData): Promise<ApiResponse<BloodReport>> => {
-    const { data } = await axiosInstance.post<ApiResponse<BloodReport>>(
-      `/patients/${patientId}/blood-reports`,
+  // ─── Blood Reports ─────────────────────────────────────────────────────────
+
+  /** Upload a blood report (multipart/form-data) */
+  uploadBloodReport: (patientId: string, formData: FormData) =>
+    APICall<ApiResponse<BloodReport>>(
+      'post',
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } },
-    )
-    return data
+      ENDPOINTS.PATIENTS.BLOOD_REPORTS_BY_ID(patientId),
+      {},
+      true, // formData = true
+    ).then((res) => res.data),
+
+  /** Patient fetches own reports; doctor fetches by patientId */
+  getBloodReports: (patientId?: string) => {
+    const url = patientId
+      ? ENDPOINTS.PATIENTS.BLOOD_REPORTS_BY_ID(patientId)
+      : ENDPOINTS.PATIENTS.BLOOD_REPORTS
+    return APICall<ApiResponse<BloodReport[]>>('get', null, url).then((res) => res.data)
   },
 
-  getBloodReports: async (patientId?: string): Promise<ApiResponse<BloodReport[]>> => {
-    const url = patientId ? `/patients/${patientId}/blood-reports` : '/patients/blood-reports'
-    const { data } = await axiosInstance.get<ApiResponse<BloodReport[]>>(url)
-    return data
-  },
-
-  addBloodReportNotes: async (
-    reportId: string,
-    notes: string,
-  ): Promise<ApiResponse<BloodReport>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<BloodReport>>(
-      `/blood-reports/${reportId}/notes`,
+  /** Doctor — add notes to a blood report */
+  addBloodReportNotes: (reportId: string, notes: string) =>
+    APICall<ApiResponse<BloodReport>>(
+      'patch',
       { notes },
-    )
-    return data
-  },
+      ENDPOINTS.BLOOD_REPORTS.ADD_NOTES(reportId),
+    ).then((res) => res.data),
 }
