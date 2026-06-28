@@ -1,14 +1,15 @@
-// ─── Roles ───────────────────────────────────────────────────────────────────
-export type UserRole = 'doctor' | 'patient' | 'intern' | 'admin'
+// ─── Roles ────────────────────────────────────────────────────────────────────
+// Backend returns uppercase roles — keep them uppercase throughout the app
+export type UserRole = 'DOCTOR' | 'PATIENT' | 'INTERN' | 'ADMIN'
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export interface AuthUser {
   id: string
-  name: string
+  fullName: string
   email: string
   role: UserRole
+  accountStatus: 'ACTIVE' | 'INACTIVE' | 'PENDING'
   avatar?: string
-  token: string
 }
 
 export interface LoginPayload {
@@ -16,71 +17,141 @@ export interface LoginPayload {
   password: string
 }
 
-export interface AuthResponse {
-  user: AuthUser
+/** Shape returned by POST /auth/login → data field */
+export interface LoginResponseData {
   token: string
-  refreshToken: string
+  user: AuthUser
 }
 
-// ─── Patient ──────────────────────────────────────────────────────────────────
+/** Shape returned by POST /auth/register/patient → data field */
+export interface PatientRegisterResponseData {
+  id: string
+  fullName: string
+  email: string
+  role: UserRole
+  accountStatus: string
+  registrationStatus: string
+  isEmailVerified: boolean
+  createdAt: string
+  updatedAt: string
+  patientProfile: {
+    id: string
+    userId: string
+    gender: string
+    location: string
+    phoneNumber: string
+    whatsappNumber: string
+    age: number
+    heightCm: number
+    weightKg: number
+    bloodGroup: string
+    socialHandle: string | null
+    isDefencePersonnel: boolean
+    createdAt: string
+    updatedAt: string
+  }
+}
+
+/** Shape returned by POST /auth/register/intern → data field */
+export interface InternRegisterResponseData {
+  id: string
+  fullName: string
+  email: string
+  role: UserRole
+  accountStatus: string
+  registrationStatus: string
+  isEmailVerified: boolean
+  createdAt: string
+  updatedAt: string
+  internProfile: {
+    id: string
+    userId: string
+    phoneNumber: string
+    universityName: string
+    specialization: string
+    semester: number
+    year: number
+    isApproved: boolean
+    createdAt: string
+    updatedAt: string
+  }
+}
+
+// ─── API wrapper shape ────────────────────────────────────────────────────────
+export interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+}
+
+// ─── Patient Registration payload (matches API exactly) ───────────────────────
+export type GenderEnum = 'MALE' | 'FEMALE' | 'OTHER' | 'PREFER_NOT_TO_SAY'
+export type BloodGroupEnum =
+  | 'A_POS' | 'A_NEG'
+  | 'B_POS' | 'B_NEG'
+  | 'AB_POS' | 'AB_NEG'
+  | 'O_POS' | 'O_NEG'
+
 export interface PatientRegistration {
-  name: string
-  phone: string
-  whatsappNo: string
+  fullName: string
   email: string
   password: string
-  gender: 'male' | 'female' | 'other'
-  area: string
+  gender: GenderEnum
+  location: string
+  phoneNumber: string
+  whatsappNumber: string
   age: number
-  height: number   // cm
-  weight: number   // kg
-  bloodGroup: string
-  instagramOrLinkedinId?: string
-  defencePersonnel: boolean
+  heightCm: number
+  weightKg: number
+  bloodGroup: BloodGroupEnum
+  socialHandle?: string
+  isDefencePersonnel: boolean
 }
 
+// ─── Intern Registration payload (matches API exactly) ───────────────────────
+export interface InternRegistration {
+  fullName: string
+  email: string
+  password: string
+  phoneNumber: string
+  universityName: string
+  specialization: string
+  semester: number
+  year: number
+}
+
+// ─── Patient (profile shape) ──────────────────────────────────────────────────
 export interface Patient {
   id: string
-  name: string
-  phone: string
-  whatsappNo: string
+  fullName: string
+  phoneNumber: string
+  whatsappNumber: string
   email: string
-  gender: 'male' | 'female' | 'other'
-  area: string
+  gender: GenderEnum
+  location: string
   age: number
-  height: number
-  weight: number
-  bloodGroup: string
-  instagramOrLinkedinId?: string
-  defencePersonnel: boolean
+  heightCm: number
+  weightKg: number
+  bloodGroup: BloodGroupEnum
+  socialHandle?: string
+  isDefencePersonnel: boolean
   avatar?: string
   createdAt: string
   updatedAt: string
 }
 
-// ─── Intern ───────────────────────────────────────────────────────────────────
-export interface InternRegistration {
-  name: string
-  phone: string
-  email: string
-  password: string
-  university: string
-  semester: number
-  year: number
-  course: string
-}
-
+// ─── Intern (profile shape) ───────────────────────────────────────────────────
 export interface Intern {
   id: string
-  name: string
-  phone: string
+  fullName: string
+  phoneNumber: string
   email: string
-  university: string
+  universityName: string
+  specialization: string
   semester: number
   year: number
-  course: string
   avatar?: string
-  isEligible?: boolean
+  isApproved?: boolean
   createdAt: string
 }
 
@@ -253,13 +324,7 @@ export interface PaymentVerification {
   razorpaySignature: string
 }
 
-// ─── API Shared ───────────────────────────────────────────────────────────────
-export interface ApiResponse<T> {
-  success: boolean
-  data: T
-  message?: string
-}
-
+// ─── Paginated response ───────────────────────────────────────────────────────
 export interface PaginatedResponse<T> {
   data: T[]
   total: number

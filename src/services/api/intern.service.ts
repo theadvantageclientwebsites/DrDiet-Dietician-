@@ -1,71 +1,53 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type { Intern, Course, Certificate, ApiResponse, PaginatedResponse } from '@/types'
 
 export const internService = {
-  getProfile: async (): Promise<ApiResponse<Intern>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Intern>>('/interns/profile')
-    return data
-  },
+  getProfile: () =>
+    APICall<ApiResponse<Intern>>('get', null, ENDPOINTS.INTERN.PROFILE)
+      .then((res) => res.data),
 
-  updateProfile: async (payload: Partial<Intern>): Promise<ApiResponse<Intern>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Intern>>('/interns/profile', payload)
-    return data
-  },
+  updateProfile: (payload: Partial<Intern>) =>
+    APICall<ApiResponse<Intern>>('patch', payload, ENDPOINTS.INTERN.PROFILE)
+      .then((res) => res.data),
 
-  checkEligibility: async (): Promise<ApiResponse<{ isEligible: boolean; reason?: string }>> => {
-    const { data } = await axiosInstance.get<ApiResponse<{ isEligible: boolean; reason?: string }>>(
-      '/interns/eligibility',
-    )
-    return data
-  },
+  // ─── Courses ──────────────────────────────────────────────────────────────
 
-  // Courses
-  getAvailableCourses: async (): Promise<ApiResponse<Course[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Course[]>>('/interns/courses')
-    return data
-  },
+  getAvailableCourses: () =>
+    APICall<ApiResponse<Course[]>>('get', null, ENDPOINTS.COURSES.LIST)
+      .then((res) => res.data),
 
-  getCourseById: async (id: string): Promise<ApiResponse<Course>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Course>>(`/interns/courses/${id}`)
-    return data
-  },
+  getCourseById: (id: string) =>
+    APICall<ApiResponse<Course>>('get', null, ENDPOINTS.COURSES.BY_ID(id))
+      .then((res) => res.data),
 
-  enrollInCourse: async (courseId: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>(`/interns/courses/${courseId}/enroll`)
-    return data
-  },
+  enrollInCourse: (courseId: string) =>
+    APICall<ApiResponse<null>>('post', null, `${ENDPOINTS.COURSES.BY_ID(courseId)}/enroll`)
+      .then((res) => res.data),
 
-  markVideoComplete: async (courseId: string, videoId: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>(
-      `/interns/courses/${courseId}/videos/${videoId}/complete`,
-    )
-    return data
-  },
+  markVideoComplete: (courseId: string, videoId: string) =>
+    APICall<ApiResponse<null>>(
+      'post',
+      null,
+      `${ENDPOINTS.COURSES.BY_ID(courseId)}/videos/${videoId}/complete`,
+    ).then((res) => res.data),
 
-  submitTest: async (
-    courseId: string,
-    answers: Record<string, string>,
-  ): Promise<ApiResponse<{ passed: boolean; score: number }>> => {
-    const { data } = await axiosInstance.post<ApiResponse<{ passed: boolean; score: number }>>(
-      `/interns/courses/${courseId}/test`,
+  submitTest: (courseId: string, answers: Record<string, string>) =>
+    APICall<ApiResponse<{ passed: boolean; score: number }>>(
+      'post',
       { answers },
-    )
-    return data
-  },
+      `${ENDPOINTS.COURSES.BY_ID(courseId)}/test`,
+    ).then((res) => res.data),
 
-  // Certificates
-  getCertificates: async (): Promise<ApiResponse<Certificate[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Certificate[]>>('/interns/certificates')
-    return data
-  },
+  // ─── Certificates ─────────────────────────────────────────────────────────
 
-  // Admin — manage interns
-  getAll: async (params?: {
-    page?: number
-    limit?: number
-    search?: string
-  }): Promise<PaginatedResponse<Intern>> => {
-    const { data } = await axiosInstance.get<PaginatedResponse<Intern>>('/interns', { params })
-    return data
-  },
+  getCertificates: () =>
+    APICall<ApiResponse<Certificate[]>>('get', null, ENDPOINTS.INTERN.CERTIFICATIONS)
+      .then((res) => res.data),
+
+  // ─── Admin — manage interns ────────────────────────────────────────────────
+
+  getAll: (params?: { page?: number; limit?: number; search?: string }) =>
+    APICall<PaginatedResponse<Intern>>('get', params ?? null, ENDPOINTS.ADMIN.INTERNS)
+      .then((res) => res.data),
 }

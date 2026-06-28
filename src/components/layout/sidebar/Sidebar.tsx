@@ -83,12 +83,12 @@ export default function Sidebar() {
           fontSize:       FONT_SIZE.sm,
         }}>
           {user.avatar
-            ? <img src={user.avatar} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            : user.name.charAt(0).toUpperCase()}
+            ? <img src={user.avatar} alt={user.fullName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : user.fullName.charAt(0).toUpperCase()}
         </div>
         <div style={{ overflow: 'hidden' }}>
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: FONT_SIZE.xs, lineHeight: 1.3 }}>Welcome back,</p>
-          <p style={{ color: COLORS.white, fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.name}</p>
+          <p style={{ color: COLORS.white, fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.fullName}</p>
         </div>
       </div>
 

@@ -54,16 +54,16 @@ const adminNav: NavItem[] = [
 ]
 
 export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
-  patient: patientNav,
-  doctor:  doctorNav,
-  intern:  internNav,
-  admin:   adminNav,
+  PATIENT: patientNav,
+  DOCTOR:  doctorNav,
+  INTERN:  internNav,
+  ADMIN:   adminNav,
 }
 
 /** Items shown in the mobile bottom tab bar (max 5) */
 export const BOTTOM_TAB_ITEMS: Record<UserRole, NavItem[]> = {
-  patient: patientNav.slice(0, 5),
-  doctor:  doctorNav.slice(0, 5),
-  intern:  internNav.slice(0, 5),
-  admin:   adminNav.slice(0, 5),
+  PATIENT: patientNav.slice(0, 5),
+  DOCTOR:  doctorNav.slice(0, 5),
+  INTERN:  internNav.slice(0, 5),
+  ADMIN:   adminNav.slice(0, 5),
 }

@@ -2,9 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
 import AuthCard from '@/components/shared/AuthCard'
 import FormField from '@/components/shared/FormField'
 import { ROUTES } from '@/config/routes'
+import { authService } from '@/services/api/auth.service'
 
 const schema = z.object({ email: z.string().email('Enter a valid email') })
 type FormData = z.infer<typeof schema>
@@ -14,10 +16,13 @@ const MailIcon = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="non
 
 export default function ForgotPasswordPage() {
   const nav = useNavigate()
-  const { register, handleSubmit, formState: { errors, isSubmitting, isSubmitSuccessful } } = useForm<FormData>({
+  const { mutate: sendReset, isPending, isSuccess } = useMutation({
+    mutationFn: (email: string) => authService.forgotPassword(email),
+  })
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
-  const onSubmit = async (_d: FormData) => { await new Promise(r => setTimeout(r, 600)) }
+  const onSubmit = ({ email }: FormData) => sendReset(email)
 
   return (
     <AuthCard>
@@ -38,7 +43,7 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      {isSubmitSuccessful ? (
+      {isSuccess ? (
         <div className="rounded-xl bg-[hsl(174,60%,94%)] border border-[hsl(174,68%,80%)] p-4 text-center">
           <p className="text-[13px] font-semibold text-[hsl(174,68%,36%)]">Check your inbox ✓</p>
           <p className="text-[11px] text-[#6b7280] mt-1">Reset link sent to your email address.</p>
@@ -47,9 +52,9 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FormField id="email" label="Email Address" type="email" placeholder="you@email.com"
             icon={<MailIcon />} error={errors.email?.message} {...register('email')} />
-          <button type="submit" disabled={isSubmitting}
+          <button type="submit" disabled={isPending}
             className="w-full h-10 bg-[hsl(174,68%,36%)] text-white text-[13px] font-semibold rounded-lg hover:bg-[hsl(174,68%,30%)] disabled:opacity-60 transition-colors">
-            {isSubmitting ? 'Sending…' : 'Send Reset Link'}
+            {isPending ? 'Sending…' : 'Send Reset Link'}
           </button>
         </form>
       )}

@@ -1,4 +1,5 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type { ApiResponse, DigitalProduct, Service, Course } from '@/types'
 
 interface RevenueStats {
@@ -20,100 +21,69 @@ interface DashboardStats {
 }
 
 export const adminService = {
-  getDashboardStats: async (): Promise<ApiResponse<DashboardStats>> => {
-    const { data } = await axiosInstance.get<ApiResponse<DashboardStats>>('/admin/stats')
-    return data
-  },
+  getDashboardStats: () =>
+    APICall<ApiResponse<DashboardStats>>('get', null, ENDPOINTS.ADMIN.STATS)
+      .then((res) => res.data),
 
-  getRevenue: async (params?: {
-    period?: 'monthly' | 'yearly'
-    year?: number
-  }): Promise<ApiResponse<RevenueStats>> => {
-    const { data } = await axiosInstance.get<ApiResponse<RevenueStats>>('/admin/revenue', {
-      params,
-    })
-    return data
-  },
+  getRevenue: (params?: { period?: 'monthly' | 'yearly'; year?: number }) =>
+    APICall<ApiResponse<RevenueStats>>('get', params ?? null, ENDPOINTS.ADMIN.REVENUE)
+      .then((res) => res.data),
 
-  // Digital Products
-  getDigitalProducts: async (): Promise<ApiResponse<DigitalProduct[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<DigitalProduct[]>>('/admin/digital-products')
-    return data
-  },
+  // ─── Digital Products ──────────────────────────────────────────────────────
 
-  createDigitalProduct: async (formData: FormData): Promise<ApiResponse<DigitalProduct>> => {
-    const { data } = await axiosInstance.post<ApiResponse<DigitalProduct>>(
-      '/admin/digital-products',
+  getDigitalProducts: () =>
+    APICall<ApiResponse<DigitalProduct[]>>('get', null, ENDPOINTS.ADMIN.DIGITAL_PRODUCTS)
+      .then((res) => res.data),
+
+  createDigitalProduct: (formData: FormData) =>
+    APICall<ApiResponse<DigitalProduct>>(
+      'post',
       formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } },
-    )
-    return data
-  },
+      ENDPOINTS.ADMIN.DIGITAL_PRODUCTS,
+      {},
+      true,
+    ).then((res) => res.data),
 
-  updateDigitalProduct: async (
-    id: string,
-    payload: Partial<DigitalProduct>,
-  ): Promise<ApiResponse<DigitalProduct>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<DigitalProduct>>(
-      `/admin/digital-products/${id}`,
+  updateDigitalProduct: (id: string, payload: Partial<DigitalProduct>) =>
+    APICall<ApiResponse<DigitalProduct>>(
+      'patch',
       payload,
-    )
-    return data
-  },
+      ENDPOINTS.ADMIN.DIGITAL_PRODUCT_BY_ID(id),
+    ).then((res) => res.data),
 
-  deleteDigitalProduct: async (id: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.delete<ApiResponse<null>>(
-      `/admin/digital-products/${id}`,
-    )
-    return data
-  },
+  deleteDigitalProduct: (id: string) =>
+    APICall<ApiResponse<null>>('delete', null, ENDPOINTS.ADMIN.DIGITAL_PRODUCT_BY_ID(id))
+      .then((res) => res.data),
 
-  // Services (Yoga, Zumba, Blood Test)
-  getServices: async (): Promise<ApiResponse<Service[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Service[]>>('/admin/services')
-    return data
-  },
+  // ─── Services (Yoga, Zumba, Blood Test) ───────────────────────────────────
 
-  createService: async (payload: Partial<Service>): Promise<ApiResponse<Service>> => {
-    const { data } = await axiosInstance.post<ApiResponse<Service>>('/admin/services', payload)
-    return data
-  },
+  getServices: () =>
+    APICall<ApiResponse<Service[]>>('get', null, ENDPOINTS.ADMIN.SERVICES)
+      .then((res) => res.data),
 
-  updateService: async (id: string, payload: Partial<Service>): Promise<ApiResponse<Service>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Service>>(
-      `/admin/services/${id}`,
-      payload,
-    )
-    return data
-  },
+  createService: (payload: Partial<Service>) =>
+    APICall<ApiResponse<Service>>('post', payload, ENDPOINTS.ADMIN.SERVICES)
+      .then((res) => res.data),
 
-  // Courses
-  createCourse: async (payload: Partial<Course>): Promise<ApiResponse<Course>> => {
-    const { data } = await axiosInstance.post<ApiResponse<Course>>('/admin/courses', payload)
-    return data
-  },
+  updateService: (id: string, payload: Partial<Service>) =>
+    APICall<ApiResponse<Service>>('patch', payload, ENDPOINTS.ADMIN.SERVICE_BY_ID(id))
+      .then((res) => res.data),
 
-  updateCourse: async (id: string, payload: Partial<Course>): Promise<ApiResponse<Course>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Course>>(
-      `/admin/courses/${id}`,
-      payload,
-    )
-    return data
-  },
+  // ─── Courses ──────────────────────────────────────────────────────────────
 
-  deleteCourse: async (id: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.delete<ApiResponse<null>>(`/admin/courses/${id}`)
-    return data
-  },
+  createCourse: (payload: Partial<Course>) =>
+    APICall<ApiResponse<Course>>('post', payload, ENDPOINTS.ADMIN.COURSES)
+      .then((res) => res.data),
 
-  issueCertificate: async (
-    internId: string,
-    courseId: string,
-  ): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>('/admin/certificates', {
-      internId,
-      courseId,
-    })
-    return data
-  },
+  updateCourse: (id: string, payload: Partial<Course>) =>
+    APICall<ApiResponse<Course>>('patch', payload, ENDPOINTS.ADMIN.COURSE_BY_ID(id))
+      .then((res) => res.data),
+
+  deleteCourse: (id: string) =>
+    APICall<ApiResponse<null>>('delete', null, ENDPOINTS.ADMIN.COURSE_BY_ID(id))
+      .then((res) => res.data),
+
+  issueCertificate: (internId: string, courseId: string) =>
+    APICall<ApiResponse<null>>('post', { internId, courseId }, ENDPOINTS.ADMIN.CERTIFICATES)
+      .then((res) => res.data),
 }

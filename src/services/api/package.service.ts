@@ -1,43 +1,37 @@
-import axiosInstance from '@/lib/axios'
+import APICall from '@/lib/apiCall'
+import ENDPOINTS from '@/config/endpoints'
 import type { Package, ApiResponse, RazorpayOrder, PaymentVerification } from '@/types'
 
 export const packageService = {
-  getAll: async (): Promise<ApiResponse<Package[]>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Package[]>>('/packages')
-    return data
-  },
+  getAll: () =>
+    APICall<ApiResponse<Package[]>>('get', null, ENDPOINTS.PACKAGES.LIST)
+      .then((res) => res.data),
 
-  getById: async (id: string): Promise<ApiResponse<Package>> => {
-    const { data } = await axiosInstance.get<ApiResponse<Package>>(`/packages/${id}`)
-    return data
-  },
+  getById: (id: string) =>
+    APICall<ApiResponse<Package>>('get', null, ENDPOINTS.PACKAGES.BY_ID(id))
+      .then((res) => res.data),
 
-  // Admin — create / update / delete
-  create: async (payload: Partial<Package>): Promise<ApiResponse<Package>> => {
-    const { data } = await axiosInstance.post<ApiResponse<Package>>('/packages', payload)
-    return data
-  },
+  // ─── Admin — CRUD ─────────────────────────────────────────────────────────
 
-  update: async (id: string, payload: Partial<Package>): Promise<ApiResponse<Package>> => {
-    const { data } = await axiosInstance.patch<ApiResponse<Package>>(`/packages/${id}`, payload)
-    return data
-  },
+  create: (payload: Partial<Package>) =>
+    APICall<ApiResponse<Package>>('post', payload, ENDPOINTS.PACKAGES.LIST)
+      .then((res) => res.data),
 
-  delete: async (id: string): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.delete<ApiResponse<null>>(`/packages/${id}`)
-    return data
-  },
+  update: (id: string, payload: Partial<Package>) =>
+    APICall<ApiResponse<Package>>('patch', payload, ENDPOINTS.PACKAGES.BY_ID(id))
+      .then((res) => res.data),
 
-  // Payment via Razorpay
-  createOrder: async (packageId: string): Promise<ApiResponse<RazorpayOrder>> => {
-    const { data } = await axiosInstance.post<ApiResponse<RazorpayOrder>>('/payments/order', {
-      packageId,
-    })
-    return data
-  },
+  delete: (id: string) =>
+    APICall<ApiResponse<null>>('delete', null, ENDPOINTS.PACKAGES.BY_ID(id))
+      .then((res) => res.data),
 
-  verifyPayment: async (payload: PaymentVerification): Promise<ApiResponse<null>> => {
-    const { data } = await axiosInstance.post<ApiResponse<null>>('/payments/verify', payload)
-    return data
-  },
+  // ─── Payments ─────────────────────────────────────────────────────────────
+
+  createOrder: (packageId: string) =>
+    APICall<ApiResponse<RazorpayOrder>>('post', { packageId }, ENDPOINTS.PAYMENTS.CREATE_ORDER)
+      .then((res) => res.data),
+
+  verifyPayment: (payload: PaymentVerification) =>
+    APICall<ApiResponse<null>>('post', payload, ENDPOINTS.PAYMENTS.VERIFY)
+      .then((res) => res.data),
 }

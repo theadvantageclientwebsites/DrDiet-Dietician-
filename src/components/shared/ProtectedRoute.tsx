@@ -19,12 +19,13 @@ export default function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   if (!allowedRoles.includes(user.role)) {
     // Logged in but wrong role — redirect to their own dashboard
     const roleRedirects: Record<UserRole, string> = {
-      doctor: ROUTES.DOCTOR.DASHBOARD,
-      patient: ROUTES.PATIENT.DASHBOARD,
-      intern: ROUTES.INTERN.DASHBOARD,
-      admin: ROUTES.ADMIN.DASHBOARD,
+      DOCTOR:  ROUTES.DOCTOR.DASHBOARD,
+      PATIENT: ROUTES.PATIENT.DASHBOARD,
+      INTERN:  ROUTES.INTERN.DASHBOARD,
+      ADMIN:   ROUTES.ADMIN.DASHBOARD,
     }
-    return <Navigate to={roleRedirects[user.role]} replace />
+    // Guard against stale persisted state with unrecognised roles
+    return <Navigate to={roleRedirects[user.role] ?? ROUTES.SIGN_IN} replace />
   }
 
   return <Outlet />
