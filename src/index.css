@@ -1,20 +1,19 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
 
 @layer base {
   :root {
-    /* Brand teal — matches the dark teal in screenshot */
-    --brand: 188 72% 26%;          /* #1a5c6e  — dark teal for buttons/text */
-    --brand-mid: 185 55% 38%;      /* #2d8a96  — mid teal for accents */
-    --brand-light: 188 60% 91%;    /* #d0eef3  — very light for icon circles */
-    --brand-border: 188 40% 86%;   /* #c2e4ec  — card borders */
+    --brand: 188 72% 26%;
+    --brand-mid: 185 55% 38%;
+    --brand-light: 188 60% 91%;
+    --brand-border: 188 40% 86%;
 
-    --background: 195 20% 96%;     /* page bg */
-    --foreground: 200 40% 14%;     /* #1a3c4d dark navy text */
-    --muted-text: 200 20% 45%;     /* #5a7a86 muted */
+    --background: 195 20% 96%;
+    --foreground: 200 40% 14%;
+    --muted-text: 200 20% 45%;
     --card-bg: 0 0% 100%;
-    --input-bg: 200 14% 97%;       /* #f4f8f9 input background */
-    --input-border: 200 20% 88%;   /* #ccd9dd */
+    --input-bg: 200 14% 97%;
+    --input-border: 200 20% 88%;
     --divider: 200 15% 92%;
   }
 }
