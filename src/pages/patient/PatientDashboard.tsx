@@ -49,8 +49,8 @@ export default function PatientDashboard() {
     handleViewAllActivity,
   } = usePatientDashboard()
 
-  const heroHeadline = profile?.name
-    ? `Welcome back, ${profile.name.split(' ')[0]}.`
+  const heroHeadline = profile?.fullName
+    ? `Welcome back, ${profile.fullName.split(' ')[0]}.`
     : 'Your health, our clinical priority.'
 
   return (

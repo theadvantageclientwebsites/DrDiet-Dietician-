@@ -3,6 +3,7 @@
  * Variants: danger | warning | success | info
  */
 
+import type { ReactElement } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { COLORS, FONT_SIZE, FONT_WEIGHT } from '@/config/theme'
 
@@ -73,7 +74,7 @@ interface VariantConfig {
   iconColor:string
   btnBg:    string
   btnHover: string
-  Icon:     () => JSX.Element
+  Icon:     () => ReactElement
 }
 
 const VARIANTS: Record<ModalVariant, VariantConfig> = {

@@ -20,18 +20,18 @@ const STEPS = ['Personal', 'Biometric', 'Complete']
 
 // ─── Schema — field names match the API payload exactly ───────────────────────
 const schema = z.object({
-  fullName:          z.string().min(2, 'Full name is required'),
-  email:             z.string().email('Valid email required'),
-  password:          z.string().min(8, 'Minimum 8 characters'),
-  gender:            z.enum(['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'], { required_error: 'Required' }),
-  location:          z.string().min(2, 'Location is required'),
-  phoneNumber:       z.string().min(10, 'Valid phone number required'),
-  whatsappNumber:    z.string().min(10, 'Valid WhatsApp number required'),
-  age:               z.coerce.number().min(1).max(120),
-  heightCm:          z.coerce.number().min(50, 'Min 50 cm').max(250, 'Max 250 cm'),
-  weightKg:          z.coerce.number().min(10, 'Min 10 kg').max(300, 'Max 300 kg'),
-  bloodGroup:        z.enum(['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'], { required_error: 'Required' }),
-  socialHandle:      z.string().optional(),
+  fullName:           z.string().min(2, 'Full name is required'),
+  email:              z.string().email('Valid email required'),
+  password:           z.string().min(8, 'Minimum 8 characters'),
+  gender:             z.enum(['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'] as const, { error: 'Required' }),
+  location:           z.string().min(2, 'Location is required'),
+  phoneNumber:        z.string().min(10, 'Valid phone number required'),
+  whatsappNumber:     z.string().min(10, 'Valid WhatsApp number required'),
+  age:                z.coerce.number().min(1).max(120),
+  heightCm:           z.coerce.number().min(50, 'Min 50 cm').max(250, 'Max 250 cm'),
+  weightKg:           z.coerce.number().min(10, 'Min 10 kg').max(300, 'Max 300 kg'),
+  bloodGroup:         z.enum(['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'] as const, { error: 'Required' }),
+  socialHandle:       z.string().optional(),
   isDefencePersonnel: z.boolean(),
 })
 type FD = z.infer<typeof schema>
@@ -97,7 +97,8 @@ export default function PatientRegisterPage() {
   const registerPatient = useRegisterPatient()
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<FD>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema) as any,
     defaultValues: { isDefencePersonnel: false },
   })
 

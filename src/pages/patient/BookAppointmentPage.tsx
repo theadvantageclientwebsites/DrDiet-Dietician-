@@ -45,7 +45,6 @@ export default function BookAppointmentPage() {
   const [selectedSlot, setSlot]     = useState('')
   const [selectedDate, setDate]     = useState('')
   const [paying, setPaying]         = useState(false)
-  const [booking, setBooking]       = useState(false)
 
   const handlePay = () => {
     setPaying(true)
@@ -54,11 +53,6 @@ export default function BookAppointmentPage() {
 
   const handleSlotNext = () => {
     if (selectedDate && selectedSlot) setStep('confirm')
-  }
-
-  const handleConfirm = () => {
-    setBooking(true)
-    setTimeout(() => { setBooking(false); setStep('confirm') }, 1200)
   }
 
   const today = new Date().toISOString().split('T')[0]

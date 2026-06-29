@@ -90,7 +90,8 @@ export default function InternRegisterPage() {
   const registerIntern = useRegisterIntern()
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<FD>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema) as any,
   })
 
   const onSubmit = (d: FD) => {
