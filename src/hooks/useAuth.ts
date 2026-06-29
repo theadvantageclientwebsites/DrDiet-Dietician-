@@ -100,15 +100,17 @@ export const useRegisterIntern = () => {
 // ─── Logout ───────────────────────────────────────────────────────────────────
 export const useLogout = () => {
   const { clearAuth } = useAuthStore()
-  const navigate = useNavigate()
   const { toast } = useToast()
 
   return useMutation({
     mutationFn: () => authService.logout(),
     onSettled: () => {
+      // Always clear local state regardless of server response —
+      // JWT is stateless so the token is unusable after this point
       clearAuth()
       toast({ variant: 'default', title: 'Signed out successfully' })
-      navigate(ROUTES.SIGN_IN)
+      // Hard replace so back-button can't return to dashboard
+      window.location.replace(ROUTES.SIGN_IN)
     },
   })
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
 import { useLogout } from '@/hooks/useAuth'
 import { NAV_ITEMS } from '@/config/navigation'
@@ -5,6 +6,7 @@ import {
   COLORS, FONT_SIZE, FONT_WEIGHT, SIDEBAR_WIDTH,
 } from '@/config/theme'
 import SidebarNavItem from './SidebarNavItem'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 import { LogOut } from 'lucide-react'
 
 const BRAND   = 'Clinical Vitality'
@@ -13,9 +15,16 @@ const TAGLINE = 'Care & Longevity'
 export default function Sidebar() {
   const { user } = useAuthStore()
   const logout   = useLogout()
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   if (!user) return null
   const navItems = NAV_ITEMS[user.role] ?? []
+
+  const handleLogoutConfirm = () => {
+    // Don't close modal here — keep it open so the spinner shows during the API call.
+    // The modal will be dismissed naturally when window.location.replace fires in onSettled.
+    logout.mutate()
+  }
 
   return (
     <aside style={{
@@ -105,7 +114,7 @@ export default function Sidebar() {
           Secure Clinical Access · HIPAA
         </p>
         <button
-          onClick={() => logout.mutate()}
+          onClick={() => setShowLogoutConfirm(true)}
           disabled={logout.isPending}
           style={{
             display:        'flex',
@@ -128,6 +137,19 @@ export default function Sidebar() {
           <span>{logout.isPending ? 'Signing out…' : 'Sign Out Session'}</span>
         </button>
       </div>
+
+      {/* ── Logout confirmation modal ─────────────────────────────────── */}
+      <ConfirmModal
+        open={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogoutConfirm}
+        variant="danger"
+        title="Sign out of your account?"
+        description="You'll need to sign in again to access your dashboard. Any unsaved changes will be lost."
+        confirmLabel="Yes, Sign Out"
+        cancelLabel="Stay Signed In"
+        loading={logout.isPending}
+      />
     </aside>
   )
 }
