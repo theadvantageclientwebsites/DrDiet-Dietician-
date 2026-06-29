@@ -32,9 +32,10 @@ export const authService = {
       ENDPOINTS.AUTH.REGISTER_INTERN,
     ).then((res) => res.data),
 
+  /** POST /auth/logout — protected, no body required */
   logout: () =>
-    APICall<void>('post', null, ENDPOINTS.AUTH.LOGOUT)
-      .then(() => undefined),
+    APICall<ApiResponse<null>>('post', null, ENDPOINTS.AUTH.LOGOUT)
+      .then((res) => res.data),
 
   forgotPassword: (email: string) =>
     APICall<ApiResponse<null>>('post', { email }, ENDPOINTS.AUTH.FORGOT_PASSWORD)

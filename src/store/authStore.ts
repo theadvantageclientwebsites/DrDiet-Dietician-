@@ -30,7 +30,11 @@ export const useAuthStore = create<AuthState>()(
       // Only zustand persist writes to localStorage — no manual setItem calls
       setAuth: (user, token) => set({ user, token, isAuthenticated: true }),
 
-      clearAuth: () => set({ user: null, token: null, isAuthenticated: false }),
+      clearAuth: () => {
+        // Explicitly wipe the persisted key so nothing lingers in localStorage
+        localStorage.removeItem(AUTH_STORE_KEY)
+        set({ user: null, token: null, isAuthenticated: false })
+      },
 
       hasRole: (role) => get().user?.role === role,
     }),
