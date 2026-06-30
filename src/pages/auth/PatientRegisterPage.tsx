@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import FormField from '@/components/shared/FormField'
@@ -23,18 +23,20 @@ const schema = z.object({
   fullName:          z.string().min(2, 'Full name is required'),
   email:             z.string().email('Valid email required'),
   password:          z.string().min(8, 'Minimum 8 characters'),
-  gender:            z.enum(['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'], { required_error: 'Required' }),
+  gender:            z.enum(['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'] as const, { error: 'Required' }),
   location:          z.string().min(2, 'Location is required'),
   phoneNumber:       z.string().min(10, 'Valid phone number required'),
   whatsappNumber:    z.string().min(10, 'Valid WhatsApp number required'),
   age:               z.coerce.number().min(1).max(120),
   heightCm:          z.coerce.number().min(50, 'Min 50 cm').max(250, 'Max 250 cm'),
   weightKg:          z.coerce.number().min(10, 'Min 10 kg').max(300, 'Max 300 kg'),
-  bloodGroup:        z.enum(['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'], { required_error: 'Required' }),
+  bloodGroup:        z.enum(['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'] as const, { error: 'Required' }),
   socialHandle:      z.string().optional(),
   isDefencePersonnel: z.boolean(),
 })
 type FD = z.infer<typeof schema>
+// Raw form values: coerced fields have unknown input type in Zod v4
+type RawFD = Omit<FD, 'age' | 'heightCm' | 'weightKg'> & { age: unknown; heightCm: unknown; weightKg: unknown }
 
 function StepBar() {
   return (
@@ -96,12 +98,13 @@ export default function PatientRegisterPage() {
   const nav = useNavigate()
   const registerPatient = useRegisterPatient()
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<FD>({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { register, handleSubmit, control, formState: { errors } } = useForm<RawFD, unknown, FD>({
     resolver: zodResolver(schema),
     defaultValues: { isDefencePersonnel: false },
   })
 
-  const onSubmit = (d: FD) => {
+  const onSubmit: SubmitHandler<FD> = (d) => {
     registerPatient.mutate({
       ...d,
       gender:     d.gender as GenderEnum,

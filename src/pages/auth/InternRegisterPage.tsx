@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import FormField from '@/components/shared/FormField'
@@ -35,6 +35,8 @@ const schema = z.object({
   year:           z.coerce.number().min(2000).max(2030),
 })
 type FD = z.infer<typeof schema>
+// Raw form values: coerced fields have unknown input type in Zod v4
+type RawFD = Omit<FD, 'semester' | 'year'> & { semester: unknown; year: unknown }
 
 function Sidebar() {
   return (
@@ -89,11 +91,11 @@ export default function InternRegisterPage() {
   const nav = useNavigate()
   const registerIntern = useRegisterIntern()
 
-  const { register, handleSubmit, control, formState: { errors } } = useForm<FD>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<RawFD, unknown, FD>({
     resolver: zodResolver(schema),
   })
 
-  const onSubmit = (d: FD) => {
+  const onSubmit: SubmitHandler<FD> = (d) => {
     registerIntern.mutate(d)
   }
 
