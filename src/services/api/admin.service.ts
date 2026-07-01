@@ -20,9 +20,20 @@ interface DashboardStats {
   revenue: number
 }
 
+export interface DashboardSummary {
+  totalPatients: number
+  totalDoctors: number
+  pendingDoctors: number
+  totalInterns: number
+}
+
 export const adminService = {
   getDashboardStats: () =>
     APICall<ApiResponse<DashboardStats>>('get', null, ENDPOINTS.ADMIN.STATS)
+      .then((res) => res.data),
+
+  getDashboardSummary: () =>
+    APICall<ApiResponse<DashboardSummary>>('get', null, ENDPOINTS.ADMIN.DASHBOARD_SUMMARY)
       .then((res) => res.data),
 
   getRevenue: (params?: { period?: 'monthly' | 'yearly'; year?: number }) =>
