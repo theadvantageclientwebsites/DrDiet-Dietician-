@@ -399,6 +399,103 @@ export interface AdminPatientUpdatePayload {
   }
 }
 
+export interface InternsSummary {
+  totalInterns:     number
+  approved:         number
+  pending:          number
+  completedCourses: number
+}
+
+export interface AdminInternProfile {
+  phoneNumber:     string | null
+  universityName:  string | null
+  specialization:  string | null
+  semester:        number | null
+  year:            number | null
+  isApproved:      boolean
+}
+
+export interface AdminIntern {
+  id:              string
+  fullName:        string
+  email:           string
+  accountStatus:   'ACTIVE' | 'INACTIVE' | 'PENDING'
+  profilePhotoUrl: string | null
+  createdAt:       string
+  internProfile:   AdminInternProfile | null
+}
+
+export interface AdminInternDetail extends AdminIntern {
+  updatedAt: string
+}
+
+export interface AdminInternsPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface AdminInternsFilters {
+  search?:        string | null
+  status?:        string | null
+  isApproved?:    string | null
+  university?:    string | null
+  specialization?: string | null
+  semester?:      string | null
+  year?:          string | null
+  minSemester?:   string | null
+  maxSemester?:   string | null
+}
+
+export interface AdminInternsPaginatedData {
+  items:      AdminIntern[]
+  pagination: AdminInternsPagination
+  filters:    AdminInternsFilters
+}
+
+export interface AdminInternsParams {
+  page?:          number
+  limit?:         number
+  search?:        string
+  status?:        string
+  isApproved?:    string
+  university?:    string
+  specialization?: string
+  semester?:      number
+  year?:          number
+  minSemester?:   number
+  maxSemester?:   number
+}
+
+export interface AdminInternCreatePayload {
+  fullName:        string
+  email:           string
+  phoneNumber?:    string
+  universityName?: string
+  specialization?: string
+  semester?:       number
+  year?:           number
+}
+
+export interface AdminInternCreateResponse extends AdminInternDetail {
+  generatedPassword: string
+}
+
+export interface AdminInternUpdatePayload {
+  fullName?:      string
+  email?:         string
+  accountStatus?: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_APPROVAL'
+  internProfile?: {
+    phoneNumber?:     string
+    universityName?:  string
+    specialization?:  string
+    semester?:        number
+    year?:            number
+    isApproved?:      boolean
+  }
+}
+
 export interface ApiError {
   message: string
   statusCode: number

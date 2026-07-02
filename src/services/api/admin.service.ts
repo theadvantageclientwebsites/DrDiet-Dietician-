@@ -10,6 +10,14 @@ import type {
   AdminPatientsPaginatedData,
   AdminPatientsParams,
   AdminPatientUpdatePayload,
+  InternsSummary,
+  AdminIntern,
+  AdminInternDetail,
+  AdminInternsPaginatedData,
+  AdminInternsParams,
+  AdminInternCreatePayload,
+  AdminInternCreateResponse,
+  AdminInternUpdatePayload,
 } from '@/types'
 
 interface RevenueStats {
@@ -36,6 +44,8 @@ export interface DashboardSummary {
   pendingDoctors: number
   totalInterns: number
 }
+
+export { type InternsSummary }
 
 export const adminService = {
   getDashboardStats: () =>
@@ -65,6 +75,33 @@ export const adminService = {
 
   deletePatient: (id: string) =>
     APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.PATIENT_BY_ID(id))
+      .then((res) => res.data),
+
+  getInternsSummary: () =>
+    APICall<ApiResponse<InternsSummary>>('get', null, ENDPOINTS.ADMIN.INTERNS_SUMMARY)
+      .then((res) => res.data),
+
+  getInterns: (params: AdminInternsParams = {}) =>
+    APICall<ApiResponse<AdminInternsPaginatedData>>(
+      'get',
+      params,
+      ENDPOINTS.ADMIN.INTERNS_LIST,
+    ).then((res) => res.data),
+
+  getInternById: (id: string) =>
+    APICall<ApiResponse<AdminInternDetail>>('get', null, ENDPOINTS.ADMIN.INTERN_BY_ID(id))
+      .then((res) => res.data),
+
+  createIntern: (payload: AdminInternCreatePayload) =>
+    APICall<ApiResponse<AdminInternCreateResponse>>('post', payload, ENDPOINTS.ADMIN.INTERNS_LIST)
+      .then((res) => res.data),
+
+  updateIntern: (id: string, payload: AdminInternUpdatePayload) =>
+    APICall<ApiResponse<AdminInternDetail>>('put', payload, ENDPOINTS.ADMIN.INTERN_BY_ID(id))
+      .then((res) => res.data),
+
+  deleteIntern: (id: string) =>
+    APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.INTERN_BY_ID(id))
       .then((res) => res.data),
 
   getRevenue: (params?: { period?: 'monthly' | 'yearly'; year?: number }) =>
