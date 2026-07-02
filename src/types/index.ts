@@ -399,6 +399,25 @@ export interface AdminPatientUpdatePayload {
   }
 }
 
+export interface AdminPatientCreatePayload {
+  fullName:            string
+  email:               string
+  gender?:             GenderEnum
+  location?:           string
+  phoneNumber?:        string
+  whatsappNumber?:     string
+  age?:                number
+  heightCm?:           number
+  weightKg?:           number
+  bloodGroup?:         BloodGroupEnum
+  socialHandle?:       string
+  isDefencePersonnel?: boolean
+}
+
+export interface AdminPatientCreateResponse extends AdminPatientDetail {
+  generatedPassword: string
+}
+
 export interface InternsSummary {
   totalInterns:     number
   approved:         number

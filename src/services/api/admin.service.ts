@@ -10,6 +10,8 @@ import type {
   AdminPatientsPaginatedData,
   AdminPatientsParams,
   AdminPatientUpdatePayload,
+  AdminPatientCreatePayload,
+  AdminPatientCreateResponse,
   InternsSummary,
   AdminIntern,
   AdminInternDetail,
@@ -64,6 +66,10 @@ export const adminService = {
       { page: params.page ?? 1, limit: params.limit ?? 10 },
       ENDPOINTS.ADMIN.PATIENTS_LIST,
     ).then((res) => res.data),
+
+  createPatient: (payload: AdminPatientCreatePayload) =>
+    APICall<ApiResponse<AdminPatientCreateResponse>>('post', payload, ENDPOINTS.ADMIN.PATIENTS_LIST)
+      .then((res) => res.data),
 
   getPatientById: (id: string) =>
     APICall<ApiResponse<AdminPatientDetail>>('get', null, ENDPOINTS.ADMIN.PATIENT_BY_ID(id))
@@ -148,7 +154,15 @@ export const adminService = {
     APICall<ApiResponse<Service>>('patch', payload, ENDPOINTS.ADMIN.SERVICE_BY_ID(id))
       .then((res) => res.data),
 
+  deleteService: (id: string) =>
+    APICall<ApiResponse<null>>('delete', null, ENDPOINTS.ADMIN.SERVICE_BY_ID(id))
+      .then((res) => res.data),
+
   // ─── Courses ──────────────────────────────────────────────────────────────
+
+  getCourses: () =>
+    APICall<ApiResponse<Course[]>>('get', null, ENDPOINTS.ADMIN.COURSES)
+      .then((res) => res.data),
 
   createCourse: (payload: Partial<Course>) =>
     APICall<ApiResponse<Course>>('post', payload, ENDPOINTS.ADMIN.COURSES)
