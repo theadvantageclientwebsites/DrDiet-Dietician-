@@ -7,7 +7,7 @@ import FormField   from '@/components/shared/FormField'
 import SelectField from '@/components/shared/SelectField'
 import AdminBtn    from '@/components/admin/AdminBtn'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
-import type { AdminPatientUpdatePayload } from '@/types'
+import type { AdminPatientUpdatePayload, GenderEnum, BloodGroupEnum } from '@/types'
 
 const GENDER_OPTS = [
   { value: 'MALE',              label: 'Male'             },
@@ -118,14 +118,14 @@ export default function PatientEditModal({ patientId, onClose }: PatientEditModa
       email:         form.email         || undefined,
       accountStatus: (form.accountStatus || undefined) as AdminPatientUpdatePayload['accountStatus'],
       patientProfile: {
-        gender:             (form.gender || undefined) as AdminPatientUpdatePayload['patientProfile']['gender'],
+        gender:             (form.gender || undefined) as GenderEnum | undefined,
         location:           form.location      || undefined,
         phoneNumber:        form.phoneNumber    || undefined,
         whatsappNumber:     form.whatsappNumber || undefined,
         age:                form.age            ? Number(form.age)      : undefined,
         heightCm:           form.heightCm       ? Number(form.heightCm) : undefined,
         weightKg:           form.weightKg       ? Number(form.weightKg) : undefined,
-        bloodGroup:         (form.bloodGroup || undefined) as AdminPatientUpdatePayload['patientProfile']['bloodGroup'],
+        bloodGroup:         (form.bloodGroup || undefined) as BloodGroupEnum | undefined,
         socialHandle:       form.socialHandle   || undefined,
         isDefencePersonnel: form.isDefencePersonnel,
       },

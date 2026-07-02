@@ -48,6 +48,6 @@ export const internService = {
   // ─── Admin — manage interns ────────────────────────────────────────────────
 
   getAll: (params?: { page?: number; limit?: number; search?: string }) =>
-    APICall<PaginatedResponse<Intern>>('get', params ?? null, ENDPOINTS.ADMIN.INTERNS)
+    APICall<PaginatedResponse<Intern>>('get', params ?? null, ENDPOINTS.ADMIN.INTERNS_LIST)
       .then((res) => res.data),
 }
