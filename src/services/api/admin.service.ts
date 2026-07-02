@@ -1,6 +1,16 @@
 import APICall from '@/lib/apiCall'
 import ENDPOINTS from '@/config/endpoints'
-import type { ApiResponse, DigitalProduct, Service, Course } from '@/types'
+import type {
+  ApiResponse,
+  DigitalProduct,
+  Service,
+  Course,
+  AdminPatient,
+  AdminPatientDetail,
+  AdminPatientsPaginatedData,
+  AdminPatientsParams,
+  AdminPatientUpdatePayload,
+} from '@/types'
 
 interface RevenueStats {
   consultationIncome: number
@@ -20,9 +30,41 @@ interface DashboardStats {
   revenue: number
 }
 
+export interface DashboardSummary {
+  totalPatients: number
+  totalDoctors: number
+  pendingDoctors: number
+  totalInterns: number
+}
+
 export const adminService = {
   getDashboardStats: () =>
     APICall<ApiResponse<DashboardStats>>('get', null, ENDPOINTS.ADMIN.STATS)
+      .then((res) => res.data),
+
+  getDashboardSummary: () =>
+    APICall<ApiResponse<DashboardSummary>>('get', null, ENDPOINTS.ADMIN.DASHBOARD_SUMMARY)
+      .then((res) => res.data),
+
+  // ─── Patients ──────────────────────────────────────────────────────────────
+
+  getPatients: (params: AdminPatientsParams = {}) =>
+    APICall<ApiResponse<AdminPatientsPaginatedData>>(
+      'get',
+      { page: params.page ?? 1, limit: params.limit ?? 10 },
+      ENDPOINTS.ADMIN.PATIENTS_LIST,
+    ).then((res) => res.data),
+
+  getPatientById: (id: string) =>
+    APICall<ApiResponse<AdminPatientDetail>>('get', null, ENDPOINTS.ADMIN.PATIENT_BY_ID(id))
+      .then((res) => res.data),
+
+  updatePatient: (id: string, payload: AdminPatientUpdatePayload) =>
+    APICall<ApiResponse<AdminPatientDetail>>('put', payload, ENDPOINTS.ADMIN.PATIENT_BY_ID(id))
+      .then((res) => res.data),
+
+  deletePatient: (id: string) =>
+    APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.PATIENT_BY_ID(id))
       .then((res) => res.data),
 
   getRevenue: (params?: { period?: 'monthly' | 'yearly'; year?: number }) =>

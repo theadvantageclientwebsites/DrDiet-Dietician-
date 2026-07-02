@@ -333,6 +333,72 @@ export interface PaginatedResponse<T> {
   totalPages: number
 }
 
+// ─── Admin: Patient list item (GET /admin/patients) ───────────────────────────
+export interface AdminPatientProfile {
+  phoneNumber:        string | null
+  whatsappNumber:     string | null
+  gender:             GenderEnum | null
+  age:                number | null
+  bloodGroup:         BloodGroupEnum | null
+  location:           string | null
+  heightCm:           number | null
+  weightKg:           number | null
+  socialHandle:       string | null
+  isDefencePersonnel: boolean
+}
+
+export interface AdminPatient {
+  id:              string
+  fullName:        string
+  email:           string
+  accountStatus:   'ACTIVE' | 'INACTIVE' | 'PENDING'
+  profilePhotoUrl: string | null
+  createdAt:       string
+  patientProfile:  AdminPatientProfile | null
+}
+
+export interface AdminPatientDetail extends AdminPatient {
+  updatedAt: string
+}
+
+export interface AdminPatientsPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface AdminPatientsPaginatedData {
+  items:      AdminPatient[]
+  pagination: AdminPatientsPagination
+}
+
+export interface AdminPatientsParams {
+  page?:   number
+  limit?:  number
+  search?: string
+  status?: string
+}
+
+export interface AdminPatientUpdatePayload {
+  fullName?:       string
+  email?:          string
+  accountStatus?:  'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_APPROVAL'
+  profilePhotoUrl?: string
+  patientProfile?: {
+    gender?:             GenderEnum
+    location?:           string
+    phoneNumber?:        string
+    whatsappNumber?:     string
+    age?:                number
+    heightCm?:           number
+    weightKg?:           number
+    bloodGroup?:         BloodGroupEnum
+    socialHandle?:       string
+    isDefencePersonnel?: boolean
+  }
+}
+
 export interface ApiError {
   message: string
   statusCode: number

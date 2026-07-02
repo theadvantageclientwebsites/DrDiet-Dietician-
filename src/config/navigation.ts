@@ -43,14 +43,16 @@ const internNav: NavItem[] = [
 
 // ─── Admin Nav ────────────────────────────────────────────────────────────────
 const adminNav: NavItem[] = [
-  { label: 'Dashboard',     path: ROUTES.ADMIN.DASHBOARD,          icon: 'LayoutDashboard' },
-  { label: 'Revenue',       path: ROUTES.ADMIN.REVENUE,            icon: 'TrendingUp' },
-  { label: 'Patients',      path: ROUTES.ADMIN.PATIENTS,           icon: 'Users' },
-  { label: 'Interns',       path: ROUTES.ADMIN.INTERNS,            icon: 'GraduationCap' },
-  { label: 'Appointments',  path: ROUTES.ADMIN.APPOINTMENTS,       icon: 'CalendarDays' },
-  { label: 'Packages',      path: ROUTES.ADMIN.PACKAGES,           icon: 'Package' },
-  { label: 'Services',      path: ROUTES.ADMIN.SERVICES,           icon: 'Briefcase' },
-  { label: 'Blog',          path: ROUTES.ADMIN.BLOG,               icon: 'Newspaper' },
+  { label: 'Dashboard',      path: ROUTES.ADMIN.DASHBOARD,         icon: 'LayoutDashboard' },
+  { label: 'Revenue',        path: ROUTES.ADMIN.REVENUE,           icon: 'TrendingUp' },
+  { label: 'Patients',       path: ROUTES.ADMIN.PATIENTS,          icon: 'Users' },
+  { label: 'Interns',        path: ROUTES.ADMIN.INTERNS,           icon: 'GraduationCap' },
+  { label: 'Appointments',   path: ROUTES.ADMIN.APPOINTMENTS,      icon: 'CalendarDays' },
+  { label: 'Packages',       path: ROUTES.ADMIN.PACKAGES,          icon: 'Package' },
+  { label: 'Digital Prods',  path: ROUTES.ADMIN.DIGITAL_PRODUCTS,  icon: 'FileText' },
+  { label: 'Courses',        path: ROUTES.ADMIN.COURSES,           icon: 'BookOpen' },
+  { label: 'Services',       path: ROUTES.ADMIN.SERVICES,          icon: 'Briefcase' },
+  { label: 'Blog',           path: ROUTES.ADMIN.BLOG,              icon: 'Newspaper' },
 ]
 
 export const NAV_ITEMS: Record<UserRole, NavItem[]> = {

@@ -96,7 +96,10 @@ const ENDPOINTS = {
   // ─── Admin ─────────────────────────────────────────────────────────────────
   ADMIN: {
     STATS:                '/admin/stats',
+    DASHBOARD_SUMMARY:    '/admin/dashboard/summary',
     REVENUE:              '/admin/revenue',
+    PATIENTS_LIST:        '/admin/patients',
+    PATIENT_BY_ID:        (id: string) => `/admin/patients/${id}`,
     DIGITAL_PRODUCTS:     '/admin/digital-products',
     DIGITAL_PRODUCT_BY_ID:(id: string) => `/admin/digital-products/${id}`,
     SERVICES:             '/admin/services',

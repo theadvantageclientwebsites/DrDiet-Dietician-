@@ -54,17 +54,17 @@ export const ROUTES = {
 
   // Admin
   ADMIN: {
-    ROOT: '/admin',
-    DASHBOARD: '/admin/dashboard',
-    REVENUE: '/admin/revenue',
-    PATIENTS: '/admin/patients',
-    INTERNS: '/admin/interns',
-    APPOINTMENTS: '/admin/appointments',
-    PACKAGES: '/admin/packages',
+    ROOT:             '/admin',
+    DASHBOARD:        '/admin/dashboard',
+    REVENUE:          '/admin/revenue',
+    PATIENTS:         '/admin/patients',
+    INTERNS:          '/admin/interns',
+    APPOINTMENTS:     '/admin/appointments',
+    PACKAGES:         '/admin/packages',
     DIGITAL_PRODUCTS: '/admin/digital-products',
-    COURSES: '/admin/courses',
-    SERVICES: '/admin/services',
-    BLOG: '/admin/blog',
-    NOTIFICATIONS: '/admin/notifications',
+    COURSES:          '/admin/courses',
+    SERVICES:         '/admin/services',
+    BLOG:             '/admin/blog',
+    NOTIFICATIONS:    '/admin/notifications',
   },
 } as const
