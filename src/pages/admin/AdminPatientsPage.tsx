@@ -12,6 +12,7 @@ import AdminEmptyState   from '@/components/admin/AdminEmptyState'
 import ConfirmModal      from '@/components/ui/ConfirmModal'
 import PatientDetailModal from '@/components/admin/PatientDetailModal'
 import PatientEditModal   from '@/components/admin/PatientEditModal'
+import PatientCreateModal from '@/components/admin/PatientCreateModal'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { useAdminPatients, DEFAULT_PATIENTS_LIMIT } from '@/hooks/useAdminPatients'
 import { useDeletePatient } from '@/hooks/useAdminPatientMutations'
@@ -350,6 +351,7 @@ export default function AdminPatientsPage() {
   const [limit,         setLimit]         = useState(DEFAULT_PATIENTS_LIMIT)
   const [selectedId,    setSelectedId]    = useState<string | null>(null)
   const [editId,        setEditId]        = useState<string | null>(null)
+  const [isCreating,    setIsCreating]    = useState(false)
   const [deleteTarget,  setDeleteTarget]  = useState<AdminPatient | null>(null)
 
   // ── Debounce search (400 ms) ─────────────────────────────────────────────
@@ -440,7 +442,7 @@ export default function AdminPatientsPage() {
         title="Patient Management"
         subtitle={`${pagination.totalItems > 0 ? `${pagination.totalItems} registered patients` : 'Manage all registered patients'}`}
         actions={
-          <AdminBtn icon={<UserPlus size={15} />} onClick={() => {}}>
+          <AdminBtn icon={<UserPlus size={15} />} onClick={() => setIsCreating(true)}>
             Add Patient
           </AdminBtn>
         }
@@ -577,6 +579,11 @@ export default function AdminPatientsPage() {
       <PatientDetailModal
         patientId={selectedId}
         onClose={() => setSelectedId(null)}
+      />
+
+      <PatientCreateModal
+        open={isCreating}
+        onClose={() => setIsCreating(false)}
       />
 
       <PatientEditModal

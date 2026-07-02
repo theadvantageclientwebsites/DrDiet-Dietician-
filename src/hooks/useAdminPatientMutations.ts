@@ -2,11 +2,38 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { adminService } from '@/services/api/admin.service'
 import { useToast } from '@/components/ui/toast'
 import { adminPatientsKey, DEFAULT_PATIENTS_LIMIT } from '@/hooks/useAdminPatients'
-import type { AdminPatientUpdatePayload } from '@/types'
+import type { AdminPatientUpdatePayload, AdminPatientCreatePayload } from '@/types'
 
 function getErrorMessage(err: unknown, fallback: string): string {
   const e = err as { response?: { data?: { message?: string } } }
   return e?.response?.data?.message ?? fallback
+}
+
+export function useCreatePatient(onSuccess?: (password: string) => void) {
+  const { toast } = useToast()
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: AdminPatientCreatePayload) =>
+      adminService.createPatient(payload),
+    onSuccess: (res) => {
+      const pwd = res.data.generatedPassword
+      toast({
+        variant: 'success',
+        title: 'Patient created',
+        description: res.message ?? 'Patient account created successfully.',
+      })
+      qc.invalidateQueries({ queryKey: adminPatientsKey({ page: 1, limit: DEFAULT_PATIENTS_LIMIT }) })
+      onSuccess?.(pwd)
+    },
+    onError: (err) => {
+      toast({
+        variant: 'error',
+        title: 'Create failed',
+        description: getErrorMessage(err, 'Could not create patient. Please try again.'),
+      })
+    },
+  })
 }
 
 export function useUpdatePatient(onSuccess?: () => void) {
