@@ -15,7 +15,8 @@ import PatientEditModal   from '@/components/admin/PatientEditModal'
 import PatientCreateModal from '@/components/admin/PatientCreateModal'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { useAdminPatients, DEFAULT_PATIENTS_LIMIT } from '@/hooks/useAdminPatients'
-import { useDeletePatient } from '@/hooks/useAdminPatientMutations'import type { AdminPatient } from '@/types'
+import { useDeletePatient } from '@/hooks/useAdminPatientMutations'
+import type { AdminPatient } from '@/types'
 import { BLOOD_GROUP_LABELS } from '@/config/constants'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
