@@ -18,6 +18,13 @@ import type {
   AdminInternCreatePayload,
   AdminInternCreateResponse,
   AdminInternUpdatePayload,
+  AdminDoctorDetail,
+  AdminDoctorsPaginatedData,
+  AdminDoctorsParams,
+  AdminDoctorCreatePayload,
+  AdminDoctorCreateResponse,
+  AdminDoctorUpdatePayload,
+  DoctorAccountStatus,
 } from '@/types'
 
 interface RevenueStats {
@@ -176,5 +183,38 @@ export const adminService = {
 
   issueCertificate: (internId: string, courseId: string) =>
     APICall<ApiResponse<null>>('post', { internId, courseId }, ENDPOINTS.ADMIN.CERTIFICATES)
+      .then((res) => res.data),
+
+  // ─── Doctors ──────────────────────────────────────────────────────────────
+
+  getDoctors: (params: AdminDoctorsParams = {}) =>
+    APICall<ApiResponse<AdminDoctorsPaginatedData>>(
+      'get',
+      { page: params.page ?? 1, limit: params.limit ?? 10, ...params },
+      ENDPOINTS.ADMIN.DOCTORS_LIST,
+    ).then((res) => res.data),
+
+  getDoctorById: (id: string) =>
+    APICall<ApiResponse<AdminDoctorDetail>>('get', null, ENDPOINTS.ADMIN.DOCTOR_BY_ID(id))
+      .then((res) => res.data),
+
+  createDoctor: (payload: AdminDoctorCreatePayload) =>
+    APICall<ApiResponse<AdminDoctorCreateResponse>>('post', payload, ENDPOINTS.ADMIN.DOCTORS_LIST)
+      .then((res) => res.data),
+
+  updateDoctor: (id: string, payload: AdminDoctorUpdatePayload) =>
+    APICall<ApiResponse<AdminDoctorDetail>>('put', payload, ENDPOINTS.ADMIN.DOCTOR_BY_ID(id))
+      .then((res) => res.data),
+
+  updateDoctorStatus: (id: string, status: DoctorAccountStatus) =>
+    APICall<ApiResponse<AdminDoctorDetail>>('patch', { status }, ENDPOINTS.ADMIN.DOCTOR_STATUS(id))
+      .then((res) => res.data),
+
+  approveDoctor: (id: string) =>
+    APICall<ApiResponse<AdminDoctorDetail>>('patch', {}, ENDPOINTS.ADMIN.DOCTOR_APPROVE(id))
+      .then((res) => res.data),
+
+  deleteDoctor: (id: string) =>
+    APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.DOCTOR_BY_ID(id))
       .then((res) => res.data),
 }

@@ -65,6 +65,7 @@ const AdminDigitalProductsPage = lazy(() => import('@/pages/admin/DigitalProduct
 const CourseManagementPage = lazy(() => import('@/pages/admin/CourseManagementPage'))
 const ServicesManagementPage = lazy(() => import('@/pages/admin/ServicesManagementPage'))
 const BlogPage = lazy(() => import('@/pages/admin/BlogPage'))
+const AdminDoctorsPage = lazy(() => import('@/pages/admin/AdminDoctorsPage'))
 
 // Lazy suspense wrapper
 const S = (Component: React.ComponentType) => (
@@ -184,6 +185,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ADMIN.COURSES,          element: S(CourseManagementPage) },
               { path: ROUTES.ADMIN.SERVICES,         element: S(ServicesManagementPage) },
               { path: ROUTES.ADMIN.BLOG,             element: S(BlogPage) },
+              { path: ROUTES.ADMIN.DOCTORS,          element: S(AdminDoctorsPage) },
             ],
           },
         ],
