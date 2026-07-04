@@ -9,8 +9,8 @@ import SidebarNavItem from './SidebarNavItem'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { LogOut } from 'lucide-react'
 
-const BRAND   = 'Clinical Vitality'
-const TAGLINE = 'Care & Longevity'
+const BRAND   = 'DrDiet Therapy'
+const TAGLINE = 'Your Nutrition Partner'
 
 export default function Sidebar() {
   const { user } = useAuthStore()
@@ -60,7 +60,7 @@ export default function Sidebar() {
           fontWeight:     FONT_WEIGHT.bold,
           fontSize:       FONT_SIZE.sm,
           letterSpacing:  '0.5px',
-        }}>CV</div>
+        }}>DD</div>
         <div>
           <p style={{ color: COLORS.white,  fontWeight: FONT_WEIGHT.semibold, fontSize: FONT_SIZE.md,  lineHeight: 1.2 }}>{BRAND}</p>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: FONT_SIZE.xs, lineHeight: 1.4, textTransform: 'uppercase', letterSpacing: '0.6px' }}>{TAGLINE}</p>
