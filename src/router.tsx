@@ -12,6 +12,7 @@ import NotFound from '@/components/shared/NotFound'
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import('@/pages/public/HomePage'))
+const ThemePreviewPage = lazy(() => import('@/pages/dev/ThemePreviewPage'))
 
 // Auth
 const SignInPage = lazy(() => import('@/pages/auth/SignInPage'))
@@ -82,6 +83,7 @@ export const router = createBrowserRouter([
       // Public
       { index: true, element: <Navigate to={ROUTES.SIGN_IN} replace /> },
       { path: '/home', element: S(HomePage) },
+      { path: ROUTES.THEME_PREVIEW, element: S(ThemePreviewPage) },
 
       // Auth (guests only)
       {
