@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import AdminPageShell       from '@/components/admin/AdminPageShell'
 import StatusBadge          from '@/components/admin/StatusBadge'
-import AdminBtn             from '@/components/admin/AdminBtn'
 import AdminEmptyState      from '@/components/admin/AdminEmptyState'
 import ConfirmModal         from '@/components/ui/ConfirmModal'
 import AppointmentDetailModal from '@/components/admin/AppointmentDetailModal'
