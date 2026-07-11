@@ -521,6 +521,102 @@ export interface ApiError {
   errors?: Record<string, string[]>
 }
 
+// ─── Admin: Doctor types ───────────────────────────────────────────────────────
+export type DoctorAccountStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_APPROVAL'
+
+export interface AdminDoctorProfile {
+  phoneNumber:       string | null
+  specialization:    string | null
+  qualification:     string | null
+  licenseNumber:     string | null
+  yearsOfExperience: number | null
+  hospitalName:      string | null
+  clinicAddress:     string | null
+  isApproved:        boolean
+}
+
+export interface AdminDoctor {
+  id:              string
+  fullName:        string
+  email:           string
+  accountStatus:   DoctorAccountStatus
+  profilePhotoUrl: string | null
+  createdAt:       string
+  doctorProfile:   AdminDoctorProfile | null
+}
+
+export interface AdminDoctorDetail extends AdminDoctor {
+  updatedAt: string
+}
+
+export interface AdminDoctorsPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface AdminDoctorsFilters {
+  search?:         string | null
+  status?:         string | null
+  isApproved?:     string | null
+  specialization?: string | null
+  hospital?:       string | null
+  minExperience?:  string | null
+  maxExperience?:  string | null
+}
+
+export interface AdminDoctorsPaginatedData {
+  items:      AdminDoctor[]
+  pagination: AdminDoctorsPagination
+  filters?:   AdminDoctorsFilters
+}
+
+export interface AdminDoctorsParams {
+  page?:           number
+  limit?:          number
+  search?:         string
+  status?:         string
+  isApproved?:     string
+  specialization?: string
+  hospital?:       string
+  minExperience?:  number
+  maxExperience?:  number
+}
+
+export interface AdminDoctorCreatePayload {
+  fullName:           string
+  email:              string
+  phoneNumber?:       string
+  specialization?:    string
+  qualification?:     string
+  licenseNumber?:     string
+  yearsOfExperience?: number
+  hospitalName?:      string
+  clinicAddress?:     string
+}
+
+export interface AdminDoctorCreateResponse extends AdminDoctorDetail {
+  generatedPassword: string
+}
+
+export interface AdminDoctorUpdatePayload {
+  fullName?:       string
+  email?:          string
+  accountStatus?:  DoctorAccountStatus
+  profilePhotoUrl?: string
+  doctorProfile?: {
+    phoneNumber?:       string
+    specialization?:    string
+    qualification?:     string
+    licenseNumber?:     string
+    yearsOfExperience?: number
+    hospitalName?:      string
+    clinicAddress?:     string
+    isApproved?:        boolean
+  }
+}
+
 // ─── Admin: Appointments ──────────────────────────────────────────────────────
 
 export type AdminAppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'

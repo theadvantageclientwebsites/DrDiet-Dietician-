@@ -120,6 +120,10 @@ const ENDPOINTS = {
     PACKAGE_STATUS:       (id: string) => `/admin/packages/${id}/status`,
     BLOG:                 '/admin/blog',
     BLOG_BY_ID:           (id: string) => `/admin/blog/${id}`,
+    DOCTORS_LIST:         '/admin/doctors',
+    DOCTOR_BY_ID:         (id: string) => `/admin/doctors/${id}`,
+    DOCTOR_STATUS:        (id: string) => `/admin/doctors/${id}/status`,
+    DOCTOR_APPROVE:       (id: string) => `/admin/doctors/${id}/approve`,
   },
 
   // ─── Payments ──────────────────────────────────────────────────────────────

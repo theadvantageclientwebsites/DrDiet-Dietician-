@@ -12,6 +12,7 @@ import NotFound from '@/components/shared/NotFound'
 
 // Lazy-loaded pages
 const HomePage = lazy(() => import('@/pages/public/HomePage'))
+const ThemePreviewPage = lazy(() => import('@/pages/dev/ThemePreviewPage'))
 
 // Auth
 const SignInPage = lazy(() => import('@/pages/auth/SignInPage'))
@@ -65,6 +66,7 @@ const AdminDigitalProductsPage = lazy(() => import('@/pages/admin/DigitalProduct
 const CourseManagementPage = lazy(() => import('@/pages/admin/CourseManagementPage'))
 const ServicesManagementPage = lazy(() => import('@/pages/admin/ServicesManagementPage'))
 const BlogPage = lazy(() => import('@/pages/admin/BlogPage'))
+const AdminDoctorsPage = lazy(() => import('@/pages/admin/AdminDoctorsPage'))
 
 // Lazy suspense wrapper
 const S = (Component: React.ComponentType) => (
@@ -81,6 +83,7 @@ export const router = createBrowserRouter([
       // Public
       { index: true, element: <Navigate to={ROUTES.SIGN_IN} replace /> },
       { path: '/home', element: S(HomePage) },
+      { path: ROUTES.THEME_PREVIEW, element: S(ThemePreviewPage) },
 
       // Auth (guests only)
       {
@@ -184,6 +187,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ADMIN.COURSES,          element: S(CourseManagementPage) },
               { path: ROUTES.ADMIN.SERVICES,         element: S(ServicesManagementPage) },
               { path: ROUTES.ADMIN.BLOG,             element: S(BlogPage) },
+              { path: ROUTES.ADMIN.DOCTORS,          element: S(AdminDoctorsPage) },
             ],
           },
         ],

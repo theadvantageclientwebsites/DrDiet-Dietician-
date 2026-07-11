@@ -53,6 +53,7 @@ const adminNav: NavItem[] = [
   { label: 'Courses',        path: ROUTES.ADMIN.COURSES,           icon: 'BookOpen' },
   { label: 'Services',       path: ROUTES.ADMIN.SERVICES,          icon: 'Briefcase' },
   { label: 'Blog',           path: ROUTES.ADMIN.BLOG,              icon: 'Newspaper' },
+  { label: 'Doctors',        path: ROUTES.ADMIN.DOCTORS,           icon: 'Stethoscope' },
 ]
 
 export const NAV_ITEMS: Record<UserRole, NavItem[]> = {

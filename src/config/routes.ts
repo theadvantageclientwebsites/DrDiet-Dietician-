@@ -6,7 +6,7 @@ export const ROUTES = {
   SIGN_UP: '/sign-up',
   SIGN_UP_PATIENT: '/sign-up/patient',
   SIGN_UP_INTERN: '/sign-up/intern',
-  FORGOT_PASSWORD: '/forgot-password',
+  FORGOT_PASSWORD: '/forgot-password', 
   RESET_PASSWORD: '/reset-password',
 
   // Doctor
@@ -52,6 +52,9 @@ export const ROUTES = {
     PROFILE: '/intern/profile',
   },
 
+  // Dev/Preview
+  THEME_PREVIEW: '/theme-preview',
+
   // Admin
   ADMIN: {
     ROOT:             '/admin',
@@ -66,5 +69,6 @@ export const ROUTES = {
     SERVICES:         '/admin/services',
     BLOG:             '/admin/blog',
     NOTIFICATIONS:    '/admin/notifications',
+    DOCTORS:          '/admin/doctors',
   },
 } as const
