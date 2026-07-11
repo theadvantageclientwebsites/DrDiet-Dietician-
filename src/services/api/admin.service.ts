@@ -18,6 +18,16 @@ import type {
   AdminInternCreatePayload,
   AdminInternCreateResponse,
   AdminInternUpdatePayload,
+  AdminAppointmentsSummary,
+  AdminAppointmentsPaginatedData,
+  AdminAppointmentsParams,
+  AdminAppointmentDetail,
+  AdminAppointmentStatus,
+  AdminPackage,
+  AdminPackagesPaginatedData,
+  AdminPackagesParams,
+  AdminPackageCreatePayload,
+  AdminPackageUpdatePayload,
 } from '@/types'
 
 interface RevenueStats {
@@ -176,5 +186,76 @@ export const adminService = {
 
   issueCertificate: (internId: string, courseId: string) =>
     APICall<ApiResponse<null>>('post', { internId, courseId }, ENDPOINTS.ADMIN.CERTIFICATES)
+      .then((res) => res.data),
+
+  // ─── Admin: Appointments ───────────────────────────────────────────────────
+
+  getAppointmentsSummary: () =>
+    APICall<ApiResponse<AdminAppointmentsSummary>>('get', null, ENDPOINTS.ADMIN.APPOINTMENTS_SUMMARY)
+      .then((res) => res.data),
+
+  getAppointments: (params: AdminAppointmentsParams = {}) => {
+    // Strip empty-string values so they don't get sent as query params
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<AdminAppointmentsPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.APPOINTMENTS,
+    ).then((res) => res.data)
+  },
+
+  getAppointmentById: (id: string) =>
+    APICall<ApiResponse<AdminAppointmentDetail>>('get', null, ENDPOINTS.ADMIN.APPOINTMENT_BY_ID(id))
+      .then((res) => res.data),
+
+  updateAppointmentStatus: (id: string, status: AdminAppointmentStatus) =>
+    APICall<ApiResponse<AdminAppointmentDetail>>(
+      'patch',
+      { status },
+      ENDPOINTS.ADMIN.APPOINTMENT_STATUS(id),
+    ).then((res) => res.data),
+
+  deleteAppointment: (id: string) =>
+    APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.APPOINTMENT_BY_ID(id))
+      .then((res) => res.data),
+
+  // ─── Admin: Packages ───────────────────────────────────────────────────────
+
+  getAdminPackages: (params: AdminPackagesParams = {}) => {
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<AdminPackagesPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.PACKAGES,
+    ).then((res) => res.data)
+  },
+
+  getAdminPackageById: (id: string) =>
+    APICall<ApiResponse<AdminPackage>>('get', null, ENDPOINTS.ADMIN.PACKAGE_BY_ID(id))
+      .then((res) => res.data),
+
+  createAdminPackage: (payload: AdminPackageCreatePayload) =>
+    APICall<ApiResponse<AdminPackage>>('post', payload, ENDPOINTS.ADMIN.PACKAGES)
+      .then((res) => res.data),
+
+  updateAdminPackage: (id: string, payload: AdminPackageUpdatePayload) =>
+    APICall<ApiResponse<AdminPackage>>('put', payload, ENDPOINTS.ADMIN.PACKAGE_BY_ID(id))
+      .then((res) => res.data),
+
+  toggleAdminPackageStatus: (id: string, isActive: boolean) =>
+    APICall<ApiResponse<AdminPackage>>(
+      'patch',
+      { isActive },
+      ENDPOINTS.ADMIN.PACKAGE_STATUS(id),
+    ).then((res) => res.data),
+
+  deleteAdminPackage: (id: string) =>
+    APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.PACKAGE_BY_ID(id))
       .then((res) => res.data),
 }

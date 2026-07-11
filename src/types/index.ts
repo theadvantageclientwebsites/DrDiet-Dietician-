@@ -520,3 +520,170 @@ export interface ApiError {
   statusCode: number
   errors?: Record<string, string[]>
 }
+
+// ─── Admin: Appointments ──────────────────────────────────────────────────────
+
+export type AdminAppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+export type AdminAppointmentType   = 'ONLINE'  | 'IN_PERSON'
+
+export interface AdminAppointmentPatientProfile {
+  phoneNumber:  string | null
+  gender?:      string | null
+  age?:         number | null
+  bloodGroup?:  string | null
+  location?:    string | null
+}
+
+export interface AdminAppointmentDoctorProfile {
+  phoneNumber:    string | null
+  specialization: string | null
+  qualification?: string | null
+  hospitalName?:  string | null
+}
+
+export interface AdminAppointmentPatient {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  patientProfile:  AdminAppointmentPatientProfile | null
+}
+
+export interface AdminAppointmentDoctor {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  doctorProfile:   AdminAppointmentDoctorProfile | null
+}
+
+/** Shape returned in the paginated list */
+export interface AdminAppointment {
+  id:        string
+  dateTime:  string
+  type:      AdminAppointmentType
+  status:    AdminAppointmentStatus
+  notes:     string | null
+  createdAt: string
+  patient:   AdminAppointmentPatient | null
+  doctor:    AdminAppointmentDoctor  | null
+}
+
+/** Shape returned by GET /admin/appointments/:id */
+export interface AdminAppointmentDetail extends AdminAppointment {
+  updatedAt: string
+}
+
+export interface AdminAppointmentsSummary {
+  total:     number
+  today:     number
+  pending:   number
+  confirmed: number
+  completed: number
+  cancelled: number
+}
+
+export interface AdminAppointmentsPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface AdminAppointmentsFilters {
+  search:    string | null
+  status:    string | null
+  type:      string | null
+  doctorId:  string | null
+  patientId: string | null
+  fromDate:  string | null
+  toDate:    string | null
+  today:     boolean | null
+}
+
+export interface AdminAppointmentsPaginatedData {
+  items:      AdminAppointment[]
+  pagination: AdminAppointmentsPagination
+  filters:    AdminAppointmentsFilters
+}
+
+export interface AdminAppointmentsParams {
+  page?:      number
+  limit?:     number
+  search?:    string
+  status?:    AdminAppointmentStatus | ''
+  type?:      AdminAppointmentType   | ''
+  doctorId?:  string
+  patientId?: string
+  fromDate?:  string
+  toDate?:    string
+  today?:     boolean
+}
+
+// ─── Admin: Packages ──────────────────────────────────────────────────────────
+
+/** Category values used in the API (sent/received as plain strings) */
+export type AdminPackageCategory = 'Thyroid' | 'Diabetes' | 'Weight Loss' | 'General' | string
+
+export interface AdminPackage {
+  id:            string
+  name:          string
+  category:      AdminPackageCategory
+  description:   string | null
+  price1Month:   number
+  price3Months:  number
+  price6Months:  number
+  features:      string[]
+  isActive:      boolean
+  createdAt:     string
+  updatedAt:     string
+}
+
+export interface AdminPackagesPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface AdminPackagesFilters {
+  search:   string | null
+  category: string | null
+  isActive: string | null
+}
+
+export interface AdminPackagesPaginatedData {
+  items:      AdminPackage[]
+  pagination: AdminPackagesPagination
+  filters:    AdminPackagesFilters
+}
+
+export interface AdminPackagesParams {
+  page?:     number
+  limit?:    number
+  search?:   string
+  category?: string
+  isActive?: boolean
+}
+
+export interface AdminPackageCreatePayload {
+  name:          string
+  category:      AdminPackageCategory
+  description?:  string
+  price1Month:   number
+  price3Months:  number
+  price6Months:  number
+  features?:     string[]
+  isActive?:     boolean
+}
+
+export interface AdminPackageUpdatePayload {
+  name?:         string
+  category?:     AdminPackageCategory
+  description?:  string
+  price1Month?:  number
+  price3Months?: number
+  price6Months?: number
+  features?:     string[]
+  isActive?:     boolean
+}
