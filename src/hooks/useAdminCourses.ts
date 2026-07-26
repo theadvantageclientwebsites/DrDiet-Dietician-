@@ -10,8 +10,12 @@ export function useAdminCourses() {
     retry: 1,
   })
 
+  // Guard against API returning a non-array (e.g. wrapped object or null)
+  const rawCourses = data?.data
+  const courses = Array.isArray(rawCourses) ? rawCourses : []
+
   return {
-    courses: data?.data ?? [],
+    courses,
     isLoading,
     isError,
     refetch,

@@ -10,8 +10,12 @@ export function useAdminServices() {
     retry: 1,
   })
 
+  // Guard against API returning a non-array (e.g. wrapped object or null)
+  const rawServices = data?.data
+  const services = Array.isArray(rawServices) ? rawServices : []
+
   return {
-    services: data?.data ?? [],
+    services,
     isLoading,
     isError,
     refetch,

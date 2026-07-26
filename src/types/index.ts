@@ -254,16 +254,84 @@ export interface ChatThread {
 }
 
 // ─── Digital Product ──────────────────────────────────────────────────────────
+export type DigitalProductStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED'
+
 export interface DigitalProduct {
   id: string
   title: string
   description: string
   price: number
-  fileUrl: string
+  fileUrl?: string
   thumbnailUrl?: string
-  category: 'ebook' | 'diet_guide' | 'recipe_book'
-  isActive: boolean
+  /** Free-form category string: 'Thyroid', 'Diabetes', 'Weight Loss', 'General', etc. */
+  category: string
+  status: DigitalProductStatus
+  author?: string
+  pageCount?: number
+  language?: string
+  isFree: boolean
+  totalSales: number
   createdAt: string
+  updatedAt: string
+}
+
+export interface DigitalProductCreatePayload {
+  title: string
+  category: string
+  status?: DigitalProductStatus
+  price?: number
+  description?: string
+  fileUrl?: string
+  thumbnailUrl?: string
+  author?: string
+  pageCount?: number
+  language?: string
+  isFree?: boolean
+}
+
+export interface DigitalProductUpdatePayload {
+  title?: string
+  category?: string
+  status?: DigitalProductStatus
+  price?: number
+  description?: string
+  fileUrl?: string
+  thumbnailUrl?: string
+  author?: string
+  pageCount?: number
+  language?: string
+  isFree?: boolean
+}
+
+export interface DigitalProductsPaginatedData {
+  items: DigitalProduct[]
+  pagination: {
+    page: number
+    limit: number
+    totalItems: number
+    totalPages: number
+  }
+  filters: {
+    search: string | null
+    category: string | null
+    status: string | null
+    isFree: boolean | null
+    language: string | null
+    minPrice: number | null
+    maxPrice: number | null
+  }
+}
+
+export interface DigitalProductUploadFileResponse {
+  fileUrl: string
+  originalName: string
+  size: number
+}
+
+export interface DigitalProductUploadThumbnailResponse {
+  thumbnailUrl: string
+  originalName: string
+  size: number
 }
 
 // ─── Course (Intern) ──────────────────────────────────────────────────────────
@@ -782,4 +850,88 @@ export interface AdminPackageUpdatePayload {
   price6Months?: number
   features?:     string[]
   isActive?:     boolean
+}
+
+// ─── Admin: Revenue ───────────────────────────────────────────────────────────
+
+export type OrderStatus   = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
+export type OrderItemType = 'PACKAGE' | 'DIGITAL_PRODUCT'
+export type OrderDuration = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS' | null
+
+export interface RevenueOrderPatient {
+  id:              string
+  fullName:        string | null
+  email:           string | null
+  profilePhotoUrl: string | null
+}
+
+/** Shape used in recentTransactions from /admin/revenue/summary */
+export interface RecentTransaction {
+  id:       string
+  itemType: OrderItemType
+  itemName: string | null
+  amount:   number
+  duration: OrderDuration
+  paidAt:   string | null
+  patient:  RevenueOrderPatient | null
+}
+
+export interface RevenueSummaryStats {
+  totalRevenue: number
+  thisMonth:    number
+  thisWeek:     number
+  totalOrders:  number
+}
+
+export interface RevenueCategoryBreakdown {
+  revenue:    number
+  percentage: number
+}
+
+export interface RevenueBreakdown {
+  packages:        RevenueCategoryBreakdown
+  digitalProducts: RevenueCategoryBreakdown
+}
+
+export interface RevenueSummaryData {
+  summary:            RevenueSummaryStats
+  breakdown:          RevenueBreakdown
+  recentTransactions: RecentTransaction[]
+}
+
+/** Full paginated order item from /admin/revenue/orders */
+export interface RevenueOrder {
+  id:                string
+  itemType:          OrderItemType
+  itemName:          string | null
+  amount:            number
+  currency:          string | null
+  duration:          OrderDuration
+  status:            OrderStatus
+  razorpayOrderId:   string | null
+  razorpayPaymentId: string | null
+  paidAt:            string | null
+  createdAt:         string
+  patient:           RevenueOrderPatient | null
+}
+
+export interface RevenueOrdersPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface RevenueOrdersPaginatedData {
+  items:      RevenueOrder[]
+  pagination: RevenueOrdersPagination
+}
+
+export interface RevenueOrdersParams {
+  page?:      number
+  limit?:     number
+  status?:    OrderStatus | ''
+  itemType?:  OrderItemType | ''
+  fromDate?:  string
+  toDate?:    string
 }

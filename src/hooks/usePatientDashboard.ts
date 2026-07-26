@@ -103,7 +103,8 @@ export function usePatientDashboard() {
 
   // ── Derived: next upcoming appointment ────────────────────────────────────
   const upcomingAppointment: Appointment | null = useMemo(() => {
-    const list = appointmentsData?.data ?? []
+    const raw = appointmentsData?.data
+    const list = Array.isArray(raw) ? raw : []
     return list.length > 0 ? list[0] : null
   }, [appointmentsData])
 

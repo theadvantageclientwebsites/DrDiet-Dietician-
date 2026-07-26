@@ -3,6 +3,12 @@ import ENDPOINTS from '@/config/endpoints'
 import type {
   ApiResponse,
   DigitalProduct,
+  DigitalProductCreatePayload,
+  DigitalProductUpdatePayload,
+  DigitalProductsPaginatedData,
+  DigitalProductUploadFileResponse,
+  DigitalProductUploadThumbnailResponse,
+  DigitalProductStatus,
   Service,
   Course,
   AdminPatientDetail,
@@ -35,6 +41,9 @@ import type {
   AdminPackagesParams,
   AdminPackageCreatePayload,
   AdminPackageUpdatePayload,
+  RevenueSummaryData,
+  RevenueOrdersPaginatedData,
+  RevenueOrdersParams,
 } from '@/types'
 
 interface RevenueStats {
@@ -60,6 +69,18 @@ export interface DashboardSummary {
   totalDoctors: number
   pendingDoctors: number
   totalInterns: number
+}
+
+export interface AdminDigitalProductsParams {
+  page?: number
+  limit?: number
+  search?: string
+  category?: string
+  status?: string
+  isFree?: boolean
+  language?: string
+  minPrice?: number
+  maxPrice?: number
 }
 
 export { type InternsSummary }
@@ -131,24 +152,54 @@ export const adminService = {
 
   // ─── Digital Products ──────────────────────────────────────────────────────
 
-  getDigitalProducts: () =>
-    APICall<ApiResponse<DigitalProduct[]>>('get', null, ENDPOINTS.ADMIN.DIGITAL_PRODUCTS)
-      .then((res) => res.data),
+  /** Step 1 of create flow: upload the PDF file. Returns the fileUrl to use in createDigitalProduct. */
+  uploadDigitalProductFile: (file: File) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return APICall<ApiResponse<DigitalProductUploadFileResponse>>(
+      'post', fd, ENDPOINTS.ADMIN.UPLOAD_DIGITAL_PRODUCT_FILE, {}, true,
+    ).then((res) => res.data)
+  },
 
-  createDigitalProduct: (formData: FormData) =>
+  /** Step 2 of create flow: upload the thumbnail image. Returns the thumbnailUrl to use in createDigitalProduct. */
+  uploadDigitalProductThumbnail: (image: File) => {
+    const fd = new FormData()
+    fd.append('thumbnail', image)
+    return APICall<ApiResponse<DigitalProductUploadThumbnailResponse>>(
+      'post', fd, ENDPOINTS.ADMIN.UPLOAD_DIGITAL_PRODUCT_THUMB, {}, true,
+    ).then((res) => res.data)
+  },
+
+  /** Step 3 of create flow: create the product with the URLs from steps 1 & 2. */
+  createDigitalProduct: (payload: DigitalProductCreatePayload) =>
     APICall<ApiResponse<DigitalProduct>>(
-      'post',
-      formData,
-      ENDPOINTS.ADMIN.DIGITAL_PRODUCTS,
-      {},
-      true,
+      'post', payload, ENDPOINTS.ADMIN.DIGITAL_PRODUCTS,
     ).then((res) => res.data),
 
-  updateDigitalProduct: (id: string, payload: Partial<DigitalProduct>) =>
+  getDigitalProducts: (params: AdminDigitalProductsParams = {}) => {
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<DigitalProductsPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.DIGITAL_PRODUCTS,
+    ).then((res) => res.data)
+  },
+
+  getDigitalProductById: (id: string) =>
+    APICall<ApiResponse<DigitalProduct>>('get', null, ENDPOINTS.ADMIN.DIGITAL_PRODUCT_BY_ID(id))
+      .then((res) => res.data),
+
+  updateDigitalProduct: (id: string, payload: DigitalProductUpdatePayload) =>
     APICall<ApiResponse<DigitalProduct>>(
-      'patch',
-      payload,
-      ENDPOINTS.ADMIN.DIGITAL_PRODUCT_BY_ID(id),
+      'put', payload, ENDPOINTS.ADMIN.DIGITAL_PRODUCT_BY_ID(id),
+    ).then((res) => res.data),
+
+  updateDigitalProductStatus: (id: string, status: DigitalProductStatus) =>
+    APICall<ApiResponse<DigitalProduct>>(
+      'patch', { status }, ENDPOINTS.ADMIN.DIGITAL_PRODUCT_STATUS(id),
     ).then((res) => res.data),
 
   deleteDigitalProduct: (id: string) =>
@@ -298,4 +349,22 @@ export const adminService = {
   deleteAdminPackage: (id: string) =>
     APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.ADMIN.PACKAGE_BY_ID(id))
       .then((res) => res.data),
+
+  // ─── Admin: Revenue ────────────────────────────────────────────────────────
+
+  getRevenueSummary: () =>
+    APICall<ApiResponse<RevenueSummaryData>>('get', null, ENDPOINTS.ADMIN.REVENUE_SUMMARY)
+      .then((res) => res.data),
+
+  getRevenueOrders: (params: RevenueOrdersParams = {}) => {
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<RevenueOrdersPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.REVENUE_ORDERS,
+    ).then((res) => res.data)
+  },
 }
