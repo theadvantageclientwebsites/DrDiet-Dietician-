@@ -1,6 +1,6 @@
 export default function VideoCallPage() {
   return (
-    <div className="p-6">
+    <div className="p-6 w-full">
       <h1 className="text-2xl font-bold text-foreground">VideoCallPage</h1>
       <p className="text-muted-foreground mt-2">Coming soon...</p>
     </div>

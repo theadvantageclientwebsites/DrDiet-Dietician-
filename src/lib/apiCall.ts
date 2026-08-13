@@ -77,14 +77,14 @@ const APICall = <T = unknown>(
 
   if (url) config.url = url
 
-  // Params vs body
+  // Params vs body — never send literal `null` as JSON body (breaks DELETE/PATCH/cancel)
   if (body && (method === 'get' || method === 'delete')) {
     config.params = body
   } else if (body && formData) {
     // FormData — body can be a plain object or already a FormData instance
     config.data = body instanceof FormData ? body : toFormData(body as Record<string, unknown>)
     config.headers = { 'Content-Type': 'multipart/form-data' }
-  } else {
+  } else if (body !== null && body !== undefined) {
     config.data = body
   }
 

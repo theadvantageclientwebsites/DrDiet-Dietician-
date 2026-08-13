@@ -21,6 +21,25 @@ const ENDPOINTS = {
     REFRESH_TOKEN:      '/auth/refresh',
   },
 
+  // ─── Doctor ────────────────────────────────────────────────────────────────
+  DOCTOR: {
+    DASHBOARD:        '/doctor/dashboard',
+    PROFILE:          '/doctor/profile',
+    APPOINTMENTS:     '/doctor/appointments',
+    APPOINTMENT_BY_ID:(id: string) => `/doctor/appointments/${id}`,
+    APPOINTMENT_STATUS:(id: string) => `/doctor/appointments/${id}/status`,
+    PATIENTS:         '/doctor/patients',
+    PATIENT_BY_ID:    (id: string) => `/doctor/patients/${id}`,
+    BLOOD_REPORTS:    '/doctor/blood-reports',
+    BLOOD_REPORT_BY_ID:(id: string) => `/doctor/blood-reports/${id}`,
+  },
+
+  // ─── Uploads ───────────────────────────────────────────────────────────────
+  UPLOAD: {
+    PROFILE_PHOTO:  '/upload/profile-photo',
+    BLOOD_REPORT:   '/upload/blood-report',
+  },
+
   // ─── Patients ──────────────────────────────────────────────────────────────
   PATIENTS: {
     LIST:             '/patients',
@@ -135,6 +154,24 @@ const ENDPOINTS = {
   PAYMENTS: {
     CREATE_ORDER:       '/payments/create-order',
     VERIFY:             '/payments/verify',
+  },
+
+  // ─── Patient Portal ────────────────────────────────────────────────────────
+  PATIENT: {
+    DASHBOARD:              '/patient/dashboard',
+    PROFILE:                '/patient/profile',
+    APPOINTMENTS_DOCTORS:   '/patient/appointments/doctors',
+    APPOINTMENTS:           '/patient/appointments',
+    APPOINTMENT_BY_ID:      (id: string) => `/patient/appointments/${id}`,
+    APPOINTMENT_CANCEL:     (id: string) => `/patient/appointments/${id}/cancel`,
+    PACKAGES:               '/patient/packages',
+    PACKAGE_BY_ID:          (id: string) => `/patient/packages/${id}`,
+    DIGITAL_PRODUCTS:       '/patient/digital-products',
+    DIGITAL_PRODUCT_BY_ID:  (id: string) => `/patient/digital-products/${id}`,
+    PAYMENTS_CREATE_ORDER:  '/patient/payments/create-order',
+    PAYMENTS_VERIFY:        '/patient/payments/verify',
+    PAYMENTS_MY_ORDERS:     '/patient/payments/my-orders',
+    BLOOD_REPORTS:          '/patient/blood-reports',
   },
 } as const
 

@@ -935,3 +935,477 @@ export interface RevenueOrdersParams {
   fromDate?:  string
   toDate?:    string
 }
+
+// ─── Doctor ───────────────────────────────────────────────────────────────────
+
+export type DoctorAppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+export type DoctorAppointmentType   = 'ONLINE'  | 'IN_PERSON'
+
+export interface DoctorProfile {
+  phoneNumber:       string | null
+  specialization:    string | null
+  qualification:     string | null
+  licenseNumber:     string | null
+  yearsOfExperience: number | null
+  hospitalName:      string | null
+  clinicAddress:     string | null
+  isApproved:        boolean
+}
+
+export interface DoctorUser {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  lastLoginAt:     string | null
+  isEmailVerified?: boolean
+  createdAt?:      string
+  updatedAt?:      string
+  doctorProfile:   DoctorProfile | null
+}
+
+export interface DoctorStats {
+  todayAppointments:    number
+  totalPatients:        number
+  pendingAppointments:  number
+  completedAppointments:number
+}
+
+export interface DoctorAppointmentPatientProfile {
+  phoneNumber:       string | null
+  age:               number | null
+  gender:            GenderEnum | null
+  bloodGroup:        BloodGroupEnum | null
+  location?:         string | null
+  heightCm?:         number | null
+  weightKg?:         number | null
+  whatsappNumber?:   string | null
+  socialHandle?:     string | null
+  isDefencePersonnel?:boolean
+}
+
+export interface DoctorAppointmentPatient {
+  id:              string
+  fullName:        string
+  email?:          string
+  profilePhotoUrl: string | null
+  patientProfile:  DoctorAppointmentPatientProfile | null
+}
+
+export interface DoctorAppointment {
+  id:        string
+  dateTime:  string
+  type:      DoctorAppointmentType
+  status:    DoctorAppointmentStatus
+  notes:     string | null
+  createdAt: string
+  updatedAt?: string
+  patient:   DoctorAppointmentPatient | null
+}
+
+export interface DoctorAppointmentDetail extends DoctorAppointment {
+  updatedAt: string
+  patient: DoctorAppointmentPatient & {
+    email: string
+    patientProfile: NonNullable<DoctorAppointmentPatient['patientProfile']>
+  }
+}
+
+export interface DoctorDashboardData {
+  doctor:              DoctorUser
+  stats:               DoctorStats
+  upcomingAppointment: DoctorAppointment | null
+}
+
+// Doctor profile update payload
+export interface DoctorProfileUpdatePayload {
+  fullName?:        string
+  profilePhotoUrl?: string
+  doctorProfile?: {
+    phoneNumber?:       string
+    specialization?:    string
+    qualification?:     string
+    yearsOfExperience?: number
+    hospitalName?:      string
+    clinicAddress?:     string
+  }
+}
+
+// Doctor appointments list
+export interface DoctorAppointmentsParams {
+  status?:   DoctorAppointmentStatus | ''
+  type?:     DoctorAppointmentType   | ''
+  upcoming?: boolean
+  today?:    boolean
+  search?:   string
+  page?:     number
+  limit?:    number
+}
+
+export interface DoctorAppointmentsPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface DoctorAppointmentsPaginatedData {
+  items:      DoctorAppointment[]
+  pagination: DoctorAppointmentsPagination
+}
+
+export interface DoctorAppointmentStatusPayload {
+  status: 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+  notes?: string
+}
+
+// Doctor patients
+export interface DoctorPatientListItem {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  patientProfile:  DoctorAppointmentPatientProfile | null
+  lastAppointment: {
+    id:       string
+    dateTime: string
+    status:   DoctorAppointmentStatus
+    type:     DoctorAppointmentType
+  } | null
+}
+
+export interface DoctorPatientsPaginatedData {
+  items:      DoctorPatientListItem[]
+  pagination: DoctorAppointmentsPagination
+}
+
+export interface DoctorPatientsParams {
+  search?: string
+  page?:   number
+  limit?:  number
+}
+
+export interface DoctorPatientAppointmentHistoryItem {
+  id:       string
+  dateTime: string
+  type:     DoctorAppointmentType
+  status:   DoctorAppointmentStatus
+  notes:    string | null
+}
+
+export interface DoctorPatientDetail {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  createdAt:       string
+  patientProfile:  DoctorAppointmentPatientProfile | null
+  appointmentHistory: DoctorPatientAppointmentHistoryItem[]
+}
+
+// Blood reports
+export interface DoctorBloodReport {
+  id:          string
+  title:       string
+  fileUrl:     string
+  notes:       string | null
+  uploadedAt:  string
+  updatedAt:   string
+  patient:     {
+    id:              string
+    fullName:        string
+    email?:          string
+    profilePhotoUrl: string | null
+    patientProfile?: DoctorAppointmentPatientProfile | null
+  }
+}
+
+export interface DoctorBloodReportDetail extends DoctorBloodReport {
+  patient: DoctorBloodReport['patient'] & {
+    email:          string
+    patientProfile: {
+      age:         number | null
+      gender:      GenderEnum | null
+      bloodGroup:  BloodGroupEnum | null
+      phoneNumber: string | null
+    } | null
+  }
+}
+
+export interface DoctorBloodReportCreatePayload {
+  patientId: string
+  title:     string
+  fileUrl:   string
+  notes?:    string
+}
+
+export interface DoctorBloodReportUpdatePayload {
+  title?:   string
+  notes?:   string
+  fileUrl?: string
+}
+
+export interface DoctorBloodReportsPaginatedData {
+  items:      DoctorBloodReport[]
+  pagination: DoctorAppointmentsPagination
+}
+
+export interface DoctorBloodReportsParams {
+  patientId?: string
+  search?:    string
+  page?:      number
+  limit?:     number
+}
+
+export interface UploadBloodReportResponse {
+  fileUrl:      string
+  originalName: string
+  size:         number
+}
+
+export interface UploadProfilePhotoResponse {
+  url: string
+}
+
+// ─── Patient Portal ───────────────────────────────────────────────────────────
+
+export type PatientAppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
+export type PatientAppointmentType   = 'ONLINE'  | 'IN_PERSON'
+export type PatientPackageDuration   = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS'
+export type PatientOrderItemType     = 'PACKAGE' | 'DIGITAL_PRODUCT'
+export type PatientOrderStatus       = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
+
+export interface PatientPortalDoctorProfile {
+  specialization:    string | null
+  qualification?:    string | null
+  hospitalName:      string | null
+  clinicAddress?:    string | null
+  phoneNumber:       string | null
+  yearsOfExperience?: number | null
+}
+
+export interface PatientPortalDoctor {
+  id:              string
+  fullName:        string
+  email?:          string
+  profilePhotoUrl: string | null
+  doctorProfile:   PatientPortalDoctorProfile | null
+}
+
+export interface PatientPortalAppointment {
+  id:        string
+  dateTime:  string
+  type:      PatientAppointmentType
+  status:    PatientAppointmentStatus
+  notes:     string | null
+  createdAt: string
+  updatedAt?: string
+  doctor:    PatientPortalDoctor
+}
+
+export interface PatientBookAppointmentPayload {
+  doctorId: string
+  dateTime: string
+  type?:    PatientAppointmentType
+  notes?:   string
+}
+
+export interface PatientAppointmentsParams {
+  page?:     number
+  limit?:    number
+  status?:   PatientAppointmentStatus | ''
+  type?:     PatientAppointmentType | ''
+  upcoming?: boolean
+  past?:     boolean
+}
+
+export interface PatientPortalPagination {
+  page:       number
+  limit:      number
+  totalItems: number
+  totalPages: number
+}
+
+export interface PatientAppointmentsPaginatedData {
+  items:      PatientPortalAppointment[]
+  pagination: PatientPortalPagination
+}
+
+export interface PatientDoctorsParams {
+  search?:          string
+  specialization?:  string
+}
+
+export interface PatientPortalVitals {
+  gender:       GenderEnum | null
+  age:          number | null
+  heightCm:     number | null
+  weightKg:     number | null
+  bloodGroup:   BloodGroupEnum | null
+  location:     string | null
+  bmi:          number | null
+  bmiStatus:    string | null
+  vitalsStatus: string | null
+}
+
+export interface PatientDashboardPatient {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  memberSince:     string
+  vitals:          PatientPortalVitals | null
+}
+
+export interface PatientDashboardData {
+  patient:              PatientDashboardPatient
+  upcomingAppointment:  PatientPortalAppointment | null
+  nextCheckup:          { days: number | null; label: string | null } | null
+  stats:                { totalAppointments: number }
+  quickActions:         { availablePackages: number; availableDigitalProducts: number }
+  dietPlan:             unknown | null
+  recentActivity:       unknown[]
+}
+
+export interface PatientPortalProfileData {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+  isEmailVerified: boolean
+  lastLoginAt:     string | null
+  createdAt:       string
+  patientProfile: {
+    gender:             GenderEnum | null
+    location:           string | null
+    phoneNumber:        string | null
+    whatsappNumber:     string | null
+    age:                number | null
+    heightCm:           number | null
+    weightKg:           number | null
+    bloodGroup:         BloodGroupEnum | null
+    socialHandle:       string | null
+    isDefencePersonnel: boolean
+    bmi?:               number | null
+    bmiStatus?:         string | null
+  } | null
+}
+
+export interface PatientPortalProfileUpdatePayload {
+  fullName?: string
+  patientProfile?: {
+    gender?:             GenderEnum
+    location?:           string
+    phoneNumber?:        string
+    whatsappNumber?:     string
+    age?:                number
+    heightCm?:           number
+    weightKg?:           number
+    bloodGroup?:         BloodGroupEnum
+    socialHandle?:       string
+    isDefencePersonnel?: boolean
+  }
+}
+
+export interface PatientPortalPackage {
+  id:            string
+  name:          string
+  category:      string
+  description:   string | null
+  price1Month:   number
+  price3Months:  number
+  price6Months:  number
+  features:      string[]
+  isActive:      boolean
+  createdAt:     string
+}
+
+export interface PatientPortalDigitalProduct {
+  id:           string
+  title:        string
+  category:     string
+  price:        number
+  description:  string | null
+  thumbnailUrl: string | null
+  fileUrl?:     string
+  author:       string | null
+  pageCount:    number | null
+  language:     string | null
+  isFree:       boolean
+  totalSales:   number
+  createdAt:    string
+}
+
+export interface PatientDigitalProductsParams {
+  page?:     number
+  limit?:    number
+  search?:   string
+  category?: string
+  isFree?:   boolean
+  language?: string
+  minPrice?: number
+  maxPrice?: number
+}
+
+export interface PatientDigitalProductsPaginatedData {
+  items:      PatientPortalDigitalProduct[]
+  pagination: PatientPortalPagination
+}
+
+export interface PatientPortalBloodReport {
+  id:         string
+  patientId:  string
+  doctorId:   string
+  title:      string
+  fileUrl:    string
+  notes:      string | null
+  uploadedAt: string
+  updatedAt:  string
+  doctor:     PatientPortalDoctor
+}
+
+export interface PatientBloodReportsPaginatedData {
+  items:      PatientPortalBloodReport[]
+  pagination: PatientPortalPagination
+}
+
+export interface PatientCreateOrderPayload {
+  itemType:  PatientOrderItemType
+  itemId:    string
+  duration?: PatientPackageDuration
+}
+
+export interface PatientRazorpayOrderData {
+  orderId:   string
+  amount:    number
+  currency:  string
+  keyId:     string
+  itemName:  string
+  dbOrderId: string
+}
+
+export interface PatientPaymentVerifyPayload {
+  razorpayOrderId:   string
+  razorpayPaymentId: string
+  razorpaySignature: string
+}
+
+export interface PatientOrder {
+  id:                string
+  itemType:          PatientOrderItemType
+  itemId:            string
+  itemName:          string
+  amount:            number
+  currency:          string
+  duration:          PatientPackageDuration | null
+  status:            PatientOrderStatus
+  razorpayOrderId:   string | null
+  razorpayPaymentId: string | null
+  paidAt:            string | null
+  createdAt:         string
+}
+
+export interface PatientOrdersPaginatedData {
+  items:      PatientOrder[]
+  pagination: PatientPortalPagination
+}
