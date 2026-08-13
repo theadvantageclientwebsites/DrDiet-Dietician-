@@ -17,6 +17,7 @@ import type {
   DoctorAppointmentsPaginatedData,
   DoctorAppointmentsParams,
   DoctorAppointmentStatusPayload,
+  DoctorAppointmentUpdatePayload,
   DoctorPatientsPaginatedData,
   DoctorPatientsParams,
   DoctorPatientDetail,
@@ -86,6 +87,10 @@ export const doctorService = {
 
   updateAppointmentStatus: (id: string, payload: DoctorAppointmentStatusPayload) =>
     APICall<ApiResponse<DoctorAppointment>>('patch', payload, ENDPOINTS.DOCTOR.APPOINTMENT_STATUS(id))
+      .then((res) => res.data),
+
+  updateAppointment: (id: string, payload: DoctorAppointmentUpdatePayload) =>
+    APICall<ApiResponse<DoctorAppointment>>('patch', payload, ENDPOINTS.DOCTOR.APPOINTMENT_BY_ID(id))
       .then((res) => res.data),
 
   // ─── Patients ───────────────────────────────────────────────────────────────

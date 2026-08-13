@@ -11,7 +11,7 @@ import {
   DEFAULT_DOCTOR_APPOINTMENTS_LIMIT,
 } from '@/hooks/useDoctorAppointments'
 import { DOCTOR_DASHBOARD_KEY } from '@/hooks/useDoctorDashboard'
-import type { DoctorAppointmentStatusPayload } from '@/types'
+import type { DoctorAppointmentStatusPayload, DoctorAppointmentUpdatePayload } from '@/types'
 
 function getErrorMessage(err: unknown, fallback: string): string {
   const e = err as { response?: { data?: { message?: string } } }
@@ -43,6 +43,36 @@ export function useUpdateDoctorAppointmentStatus(onSuccess?: () => void) {
         variant:     'error',
         title:       'Update failed',
         description: getErrorMessage(err, 'Could not update appointment status.'),
+      })
+    },
+  })
+}
+
+export function useUpdateDoctorAppointment(onSuccess?: () => void) {
+  const { toast } = useToast()
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: DoctorAppointmentUpdatePayload }) =>
+      doctorService.updateAppointment(id, payload),
+
+    onSuccess: (res, { id }) => {
+      toast({
+        variant:     'success',
+        title:       'Appointment updated',
+        description: res.message ?? 'Appointment rescheduled successfully.',
+      })
+      qc.invalidateQueries({ queryKey: doctorAppointmentDetailKey(id) })
+      qc.invalidateQueries({ queryKey: ['doctor', 'appointments', 'list'] })
+      qc.invalidateQueries({ queryKey: DOCTOR_DASHBOARD_KEY })
+      onSuccess?.()
+    },
+
+    onError: (err) => {
+      toast({
+        variant:     'error',
+        title:       'Update failed',
+        description: getErrorMessage(err, 'Could not update appointment.'),
       })
     },
   })

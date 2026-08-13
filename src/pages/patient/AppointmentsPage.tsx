@@ -7,6 +7,7 @@ import EmptyState from '@/components/patient/shared/EmptyState'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { ROUTES } from '@/config/routes'
 import { usePatientPortalAppointments, useCancelPatientAppointment } from '@/hooks/usePatientPortal'
+import AppointmentRescheduleNotice, { isDoctorRescheduled } from '@/components/patient/shared/AppointmentRescheduleNotice'
 import type { PatientAppointmentStatus, PatientPortalAppointment } from '@/types'
 import { format, parseISO } from 'date-fns'
 
@@ -108,12 +109,27 @@ export default function AppointmentsPage() {
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[appt.status] ?? ''}`}>
                       {appt.status.charAt(0) + appt.status.slice(1).toLowerCase()}
                     </span>
+                    {isDoctorRescheduled(appt) && (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#b45309]">
+                        Doctor changed
+                      </span>
+                    )}
                   </div>
+                  {isDoctorRescheduled(appt) && (
+                    <AppointmentRescheduleNotice appointment={appt} className="mb-2" />
+                  )}
                   {appt.doctor.doctorProfile?.specialization && (
                     <p className="text-[12px] text-[#6b8896] mb-2">{appt.doctor.doctorProfile.specialization}</p>
                   )}
                   <div className="flex items-center gap-3 flex-wrap text-[12px] text-[#6b8896]">
-                    <span className="flex items-center gap-1"><CalendarDays size={12} />{fmtDateTime(appt.dateTime)}</span>
+                    <span className="flex items-center gap-1">
+                      <CalendarDays size={12} />
+                      {isDoctorRescheduled(appt) ? (
+                        <span className="font-medium text-[#1a3c4d]">{fmtDateTime(appt.dateTime)}</span>
+                      ) : (
+                        fmtDateTime(appt.dateTime)
+                      )}
+                    </span>
                     <span className="flex items-center gap-1">
                       {appt.type === 'ONLINE' ? <Video size={12} /> : <MapPin size={12} />}
                       {appt.type === 'ONLINE' ? 'Online' : 'In-Person'}

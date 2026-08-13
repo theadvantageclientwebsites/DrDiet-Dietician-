@@ -4,6 +4,7 @@
 
 import { Video, CalendarDays, Clock, MapPin } from 'lucide-react'
 import type { PatientPortalAppointment } from '@/types'
+import AppointmentRescheduleNotice, { isDoctorRescheduled } from '@/components/patient/shared/AppointmentRescheduleNotice'
 import { format, parseISO } from 'date-fns'
 
 function formatApptDateTime(iso: string): { date: string; time: string } {
@@ -87,7 +88,15 @@ export default function UpcomingAppointmentCard({
           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[appointment.status] ?? ''}`}>
             {appointment.status.charAt(0) + appointment.status.slice(1).toLowerCase()}
           </span>
+          {isDoctorRescheduled(appointment) && (
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#fef3c7] text-[#b45309]">
+              Doctor changed
+            </span>
+          )}
         </div>
+        {isDoctorRescheduled(appointment) && (
+          <AppointmentRescheduleNotice appointment={appointment} variant="compact" className="mb-2" />
+        )}
         <div className="flex items-center flex-wrap gap-1.5 mb-2 text-[12px] text-[#6b8896]">
           {appointment.type === 'ONLINE' ? <Video size={13} /> : <MapPin size={13} />}
           <span>{specialty}</span>

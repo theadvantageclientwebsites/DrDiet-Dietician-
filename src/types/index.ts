@@ -1059,6 +1059,13 @@ export interface DoctorAppointmentStatusPayload {
   notes?: string
 }
 
+/** PATCH /doctor/appointments/:id — reschedule / edit (at least one field required) */
+export interface DoctorAppointmentUpdatePayload {
+  dateTime?: string
+  type?:     DoctorAppointmentType
+  notes?:    string
+}
+
 // Doctor patients
 export interface DoctorPatientListItem {
   id:              string
@@ -1192,6 +1199,13 @@ export interface PatientPortalDoctor {
   doctorProfile:   PatientPortalDoctorProfile | null
 }
 
+export interface PatientAppointmentRescheduleInfo {
+  rescheduledByDoctor: boolean
+  rescheduledAt:       string
+  previousDateTime:    string
+  message:             string
+}
+
 export interface PatientPortalAppointment {
   id:        string
   dateTime:  string
@@ -1200,6 +1214,11 @@ export interface PatientPortalAppointment {
   notes:     string | null
   createdAt: string
   updatedAt?: string
+  /** Set when doctor changed the appointment time */
+  rescheduledByDoctor?: boolean
+  previousDateTime?:   string | null
+  rescheduledAt?:      string | null
+  rescheduleInfo?:     PatientAppointmentRescheduleInfo | null
   doctor:    PatientPortalDoctor
 }
 

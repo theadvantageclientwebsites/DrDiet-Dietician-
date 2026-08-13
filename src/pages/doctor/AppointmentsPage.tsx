@@ -1,11 +1,11 @@
 /**
  * AppointmentsPage — Doctor appointments list with filters, pagination, status updates.
- * Data: GET /doctor/appointments, PATCH /doctor/appointments/:id/status
+ * Data: GET /doctor/appointments, PATCH /doctor/appointments/:id/status, PATCH /doctor/appointments/:id
  */
 import { useState, useCallback, useEffect, useRef } from 'react'
 import {
   CalendarDays, Search, AlertTriangle, RefreshCw,
-  ChevronLeft, ChevronRight, Video, MapPin, X,
+  ChevronLeft, ChevronRight, Video, MapPin, X, CalendarClock,
 } from 'lucide-react'
 import StatusBadge from '@/components/admin/StatusBadge'
 import ConfirmModal from '@/components/ui/ConfirmModal'
@@ -15,8 +15,8 @@ import {
   useDoctorAppointmentDetail,
   DEFAULT_DOCTOR_APPOINTMENTS_LIMIT,
 } from '@/hooks/useDoctorAppointments'
-import { useUpdateDoctorAppointmentStatus } from '@/hooks/useDoctorAppointmentMutations'
-import type { DoctorAppointment, DoctorAppointmentStatus } from '@/types'
+import { useUpdateDoctorAppointmentStatus, useUpdateDoctorAppointment } from '@/hooks/useDoctorAppointmentMutations'
+import type { DoctorAppointment, DoctorAppointmentStatus, DoctorAppointmentType } from '@/types'
 import { format, parseISO } from 'date-fns'
 
 const STATUS_TABS = [
@@ -43,6 +43,24 @@ const NEXT_STATUSES: Record<DoctorAppointmentStatus, DoctorAppointmentStatus[]> 
 function fmtDateTime(iso: string) {
   try { return format(parseISO(iso), 'MMM d, yyyy · h:mm a') }
   catch { return iso }
+}
+
+function isoToDateInput(iso: string) {
+  try { return format(parseISO(iso), 'yyyy-MM-dd') }
+  catch { return '' }
+}
+
+function isoToTimeInput(iso: string) {
+  try { return format(parseISO(iso), 'HH:mm') }
+  catch { return '' }
+}
+
+function buildDateTimeIso(date: string, time: string): string {
+  return new Date(`${date}T${time}`).toISOString()
+}
+
+function canReschedule(status: DoctorAppointmentStatus) {
+  return status === 'PENDING' || status === 'CONFIRMED'
 }
 
 function getInitials(name: string | null | undefined) {
@@ -72,12 +90,52 @@ function ErrorBanner({ onRetry }: { onRetry: () => void }) {
   )
 }
 
-function DetailModal({ id, onClose }: { id: string; onClose: () => void }) {
+function DetailModal({ id, startRescheduling = false, onClose }: {
+  id: string
+  startRescheduling?: boolean
+  onClose: () => void
+}) {
   const { appointment, isLoading } = useDoctorAppointmentDetail(id)
   const updateStatus = useUpdateDoctorAppointmentStatus(onClose)
+  const updateAppointment = useUpdateDoctorAppointment(() => setRescheduling(false))
   const [pendingStatus, setPendingStatus] = useState<DoctorAppointmentStatus | null>(null)
+  const [rescheduling, setRescheduling] = useState(startRescheduling)
+  const [editDate, setEditDate] = useState('')
+  const [editTime, setEditTime] = useState('')
+  const [editType, setEditType] = useState<DoctorAppointmentType>('ONLINE')
+  const [editNotes, setEditNotes] = useState('')
 
   const next = appointment ? NEXT_STATUSES[appointment.status] : []
+  const today = format(new Date(), 'yyyy-MM-dd')
+
+  useEffect(() => {
+    if (startRescheduling && appointment) openRescheduleForm(appointment)
+  }, [startRescheduling, appointment?.id])
+
+  const openRescheduleForm = (appt: DoctorAppointment) => {
+    setEditDate(isoToDateInput(appt.dateTime))
+    setEditTime(isoToTimeInput(appt.dateTime))
+    setEditType(appt.type)
+    setEditNotes(appt.notes ?? '')
+    setRescheduling(true)
+  }
+
+  const openReschedule = () => {
+    if (!appointment) return
+    openRescheduleForm(appointment)
+  }
+
+  const handleReschedule = () => {
+    if (!appointment || !editDate || !editTime) return
+    updateAppointment.mutate({
+      id,
+      payload: {
+        dateTime: buildDateTimeIso(editDate, editTime),
+        type:     editType,
+        notes:    editNotes.trim() || undefined,
+      },
+    })
+  }
 
   return (
     <div style={{
@@ -142,7 +200,7 @@ function DetailModal({ id, onClose }: { id: string; onClose: () => void }) {
                 </div>
               </div>
 
-              {appointment.notes && (
+              {appointment.notes && !rescheduling && (
                 <div style={{
                   padding: '10px 12px', borderRadius: 8, background: COLORS.brandLight,
                   borderLeft: `3px solid ${COLORS.brand}`, marginBottom: 16,
@@ -151,7 +209,120 @@ function DetailModal({ id, onClose }: { id: string; onClose: () => void }) {
                 </div>
               )}
 
-              {next.length > 0 && (
+              {rescheduling && (
+                <div style={{
+                  padding: 14, borderRadius: 12, background: COLORS.inputBg,
+                  border: `1px solid ${COLORS.divider}`, marginBottom: 16,
+                }}>
+                  <p style={{ margin: '0 0 12px', fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy }}>
+                    Reschedule appointment
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 10, color: COLORS.muted, marginBottom: 4, textTransform: 'uppercase' }}>
+                        New date
+                      </label>
+                      <input
+                        type="date"
+                        min={today}
+                        value={editDate}
+                        onChange={e => setEditDate(e.target.value)}
+                        style={{
+                          width: '100%', padding: '8px 10px', borderRadius: 8,
+                          border: `1px solid ${COLORS.divider}`, fontSize: FONT_SIZE.sm,
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: 10, color: COLORS.muted, marginBottom: 4, textTransform: 'uppercase' }}>
+                        New time
+                      </label>
+                      <input
+                        type="time"
+                        value={editTime}
+                        onChange={e => setEditTime(e.target.value)}
+                        style={{
+                          width: '100%', padding: '8px 10px', borderRadius: 8,
+                          border: `1px solid ${COLORS.divider}`, fontSize: FONT_SIZE.sm,
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <label style={{ display: 'block', fontSize: 10, color: COLORS.muted, marginBottom: 4, textTransform: 'uppercase' }}>
+                      Type
+                    </label>
+                    <select
+                      value={editType}
+                      onChange={e => setEditType(e.target.value as DoctorAppointmentType)}
+                      style={{
+                        width: '100%', padding: '8px 10px', borderRadius: 8,
+                        border: `1px solid ${COLORS.divider}`, fontSize: FONT_SIZE.sm,
+                      }}
+                    >
+                      <option value="ONLINE">Online</option>
+                      <option value="IN_PERSON">In-Person</option>
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: 12 }}>
+                    <label style={{ display: 'block', fontSize: 10, color: COLORS.muted, marginBottom: 4, textTransform: 'uppercase' }}>
+                      Notes
+                    </label>
+                    <textarea
+                      value={editNotes}
+                      onChange={e => setEditNotes(e.target.value)}
+                      rows={3}
+                      placeholder="Optional notes for the patient"
+                      style={{
+                        width: '100%', padding: '8px 10px', borderRadius: 8,
+                        border: `1px solid ${COLORS.divider}`, fontSize: FONT_SIZE.sm,
+                        resize: 'vertical', fontFamily: 'inherit',
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <button
+                      disabled={updateAppointment.isPending || !editDate || !editTime}
+                      onClick={handleReschedule}
+                      style={{
+                        padding: '8px 14px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                        background: COLORS.brand, color: '#fff',
+                        fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,
+                        opacity: updateAppointment.isPending || !editDate || !editTime ? 0.6 : 1,
+                      }}
+                    >
+                      {updateAppointment.isPending ? 'Saving…' : 'Save changes'}
+                    </button>
+                    <button
+                      disabled={updateAppointment.isPending}
+                      onClick={() => setRescheduling(false)}
+                      style={{
+                        padding: '8px 14px', borderRadius: 8,
+                        border: `1px solid ${COLORS.divider}`, background: '#fff', cursor: 'pointer',
+                        fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy,
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!rescheduling && canReschedule(appointment.status) && (
+                <button
+                  onClick={openReschedule}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '8px 14px', borderRadius: 8, marginBottom: 12,
+                    border: `1px solid ${COLORS.divider}`, background: '#fff', cursor: 'pointer',
+                    fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.brand,
+                  }}
+                >
+                  <CalendarClock size={15} /> Reschedule
+                </button>
+              )}
+
+              {!rescheduling && next.length > 0 && (
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {next.map(s => (
                     <button
@@ -202,7 +373,7 @@ export default function AppointmentsPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage]           = useState(1)
   const [limit, setLimit]         = useState(DEFAULT_DOCTOR_APPOINTMENTS_LIMIT)
-  const [detailId, setDetailId]   = useState<string | null>(null)
+  const [detailTarget, setDetailTarget] = useState<{ id: string; reschedule?: boolean } | null>(null)
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -389,7 +560,7 @@ export default function AppointmentsPage() {
                       </button>
                     ))}
                     <button
-                      onClick={() => setDetailId(appt.id)}
+                      onClick={() => setDetailTarget({ id: appt.id })}
                       style={{
                         padding: '5px 10px', borderRadius: 7,
                         border: `1px solid ${COLORS.divider}`, background: '#fff', cursor: 'pointer',
@@ -398,6 +569,18 @@ export default function AppointmentsPage() {
                     >
                       Details
                     </button>
+                    {canReschedule(appt.status) && (
+                      <button
+                        onClick={() => setDetailTarget({ id: appt.id, reschedule: true })}
+                        style={{
+                          padding: '5px 10px', borderRadius: 7,
+                          border: `1px solid ${COLORS.brand}`, background: COLORS.brandLight, cursor: 'pointer',
+                          fontSize: 11, fontWeight: FONT_WEIGHT.semibold, color: COLORS.brand,
+                        }}
+                      >
+                        Reschedule
+                      </button>
+                    )}
                   </div>
                 </div>
               )
@@ -441,7 +624,13 @@ export default function AppointmentsPage() {
         )}
       </div>
 
-      {detailId && <DetailModal id={detailId} onClose={() => setDetailId(null)} />}
+      {detailTarget && (
+        <DetailModal
+          id={detailTarget.id}
+          startRescheduling={detailTarget.reschedule}
+          onClose={() => setDetailTarget(null)}
+        />
+      )}
     </div>
   )
 }
