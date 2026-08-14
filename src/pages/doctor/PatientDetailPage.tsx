@@ -59,7 +59,7 @@ export default function PatientDetailPage() {
         }}>
           <AlertTriangle size={18} color="#ea580c" />
           <span style={{ flex: 1, color: '#c2410c' }}>Could not load patient details.</span>
-          <button onClick={refetch} style={{
+          <button onClick={() => { void refetch() }} style={{
             display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px',
             borderRadius: 7, background: '#ea580c', color: '#fff', border: 'none', cursor: 'pointer',
           }}>

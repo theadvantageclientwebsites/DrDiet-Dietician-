@@ -53,16 +53,6 @@ function fmtDate(iso: string | null | undefined): string {
   } catch { return '—' }
 }
 
-function fmtDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—'
-  try {
-    return new Date(iso).toLocaleString('en-IN', {
-      day: 'numeric', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    })
-  } catch { return '—' }
-}
-
 function formatDuration(d: string | null | undefined): string {
   if (!d) return '—'
   const map: Record<string, string> = {

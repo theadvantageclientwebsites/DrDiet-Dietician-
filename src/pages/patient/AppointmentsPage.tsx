@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, Clock, Video, MapPin, X, AlertCircle, RefreshCw } from 'lucide-react'
+import { CalendarDays, Video, MapPin, X, AlertCircle, RefreshCw } from 'lucide-react'
 import PageShell from '@/components/patient/shared/PageShell'
 import PrimaryButton from '@/components/patient/shared/PrimaryButton'
 import EmptyState from '@/components/patient/shared/EmptyState'

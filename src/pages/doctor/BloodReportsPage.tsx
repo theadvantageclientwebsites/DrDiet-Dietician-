@@ -191,7 +191,7 @@ export default function BloodReportsPage() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(DEFAULT_DOCTOR_BLOOD_REPORTS_LIMIT)
+  const limit = DEFAULT_DOCTOR_BLOOD_REPORTS_LIMIT
   const [showUpload, setShowUpload] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null)

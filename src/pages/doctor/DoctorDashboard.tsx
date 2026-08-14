@@ -13,7 +13,7 @@
 import { useNavigate } from 'react-router-dom'
 import {
   Calendar, Users, Clock, CheckCircle,
-  Video, MapPin, Phone, RefreshCw, AlertTriangle,
+  Video, MapPin, RefreshCw, AlertTriangle,
   ArrowRight, UserCircle, CalendarCheck, FileText, PhoneCall,
 } from 'lucide-react'
 import { useDoctorDashboard } from '@/hooks/useDoctorDashboard'
@@ -37,18 +37,6 @@ function initials(name: string | null | undefined) {
   return name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('')
 }
 
-function bloodGroupLabel(bg: string | null) {
-  if (!bg) return '—'
-  return bg.replace('_POS', '+').replace('_NEG', '-')
-}
-
-function genderLabel(g: string | null) {
-  if (!g) return '—'
-  const map: Record<string, string> = {
-    MALE: 'Male', FEMALE: 'Female', OTHER: 'Other', PREFER_NOT_TO_SAY: 'Undisclosed',
-  }
-  return map[g] ?? g
-}
 
 // ─── Status badge for appointment ────────────────────────────────────────────
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
@@ -196,185 +184,6 @@ function ErrorBanner({ onRetry }: { onRetry: () => void }) {
         }}
       >
         <RefreshCw size={12} /> Retry
-      </button>
-    </div>
-  )
-}
-
-// ─── Upcoming appointment card ────────────────────────────────────────────────
-function UpcomingAppointmentCard({ appt, onViewAll, onStartCall }: {
-  appt: NonNullable<ReturnType<typeof useDoctorDashboard>['upcomingAppointment']>
-  onViewAll: () => void
-  onStartCall: (id: string) => void
-}) {
-  const patient = appt.patient
-  const profile = patient?.patientProfile
-
-  return (
-    <div style={{
-      background: COLORS.white, borderRadius: 16,
-      boxShadow: SHADOW.card, border: `1px solid ${COLORS.divider}`,
-      overflow: 'hidden',
-    }}>
-      {/* Header strip */}
-      <div style={{
-        background: 'linear-gradient(90deg, #0f3d4a 0%, #1a6b7a 100%)',
-        padding: '14px 20px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Calendar size={16} color="rgba(255,255,255,0.85)" />
-          <span style={{ fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: '#fff' }}>
-            Next Appointment
-          </span>
-        </div>
-        <StatusPill status={appt.status} />
-      </div>
-
-      <div style={{ padding: '20px' }}>
-        {/* Date + type */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: 14,
-            background: COLORS.brandLight, display: 'flex',
-            alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            {appt.type === 'ONLINE'
-              ? <Video size={22} color={COLORS.brand} />
-              : <MapPin size={22} color={COLORS.brand} />}
-          </div>
-          <div>
-            <p style={{ fontSize: FONT_SIZE.md, fontWeight: FONT_WEIGHT.bold, color: COLORS.navy, margin: 0 }}>
-              {formatDate(appt.dateTime)}
-            </p>
-            <p style={{ fontSize: FONT_SIZE.sm, color: COLORS.muted, margin: '2px 0 0' }}>
-              {appt.type === 'ONLINE' ? 'Online Consultation' : 'In-Person Visit'}
-            </p>
-          </div>
-        </div>
-
-        {/* Patient info */}
-        {patient && (
-          <div style={{
-            background: COLORS.pageBg, borderRadius: 12, padding: '14px 16px',
-            display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16,
-          }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-              background: COLORS.brandLight, display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              fontSize: 16, fontWeight: FONT_WEIGHT.bold, color: COLORS.brand,
-            }}>
-              {patient.profilePhotoUrl
-                ? <img src={patient.profilePhotoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                : patient.fullName?.[0]?.toUpperCase() ?? '?'}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: FONT_SIZE.base, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, margin: 0 }}>
-                {patient.fullName}
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginTop: 4 }}>
-                {profile?.age && (
-                  <span style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted }}>
-                    Age {profile.age}
-                  </span>
-                )}
-                {profile?.gender && (
-                  <span style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted }}>
-                    {genderLabel(profile.gender)}
-                  </span>
-                )}
-                {profile?.bloodGroup && (
-                  <span style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted }}>
-                    {bloodGroupLabel(profile.bloodGroup)}
-                  </span>
-                )}
-                {profile?.phoneNumber && (
-                  <span style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted, display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <Phone size={10} /> {profile.phoneNumber}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Notes */}
-        {appt.notes && (
-          <p style={{
-            fontSize: FONT_SIZE.sm, color: COLORS.body,
-            background: COLORS.pageBg, borderRadius: 8,
-            padding: '10px 12px', margin: '0 0 16px',
-            borderLeft: `3px solid ${COLORS.brand}`,
-          }}>
-            {appt.notes}
-          </p>
-        )}
-
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {canJoinVideoCall({ dateTime: appt.dateTime, status: appt.status, type: appt.type }) && (
-            <button
-              onClick={() => onStartCall(appt.id)}
-              style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 10,
-              background: COLORS.brand, color: '#fff',
-              border: 'none', cursor: 'pointer',
-              fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,
-            }}>
-              <Video size={14} /> Start Call
-            </button>
-          )}
-          <button
-            onClick={onViewAll}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 10,
-              background: COLORS.brandLight, color: COLORS.brand,
-              border: 'none', cursor: 'pointer',
-              fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,
-            }}
-          >
-            View All Appointments <ArrowRight size={13} />
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Empty appointment state ──────────────────────────────────────────────────
-function NoAppointmentCard({ onViewAll }: { onViewAll: () => void }) {
-  return (
-    <div style={{
-      background: COLORS.white, borderRadius: 16,
-      boxShadow: SHADOW.card, border: `1px solid ${COLORS.divider}`,
-      padding: '32px 24px', textAlign: 'center',
-    }}>
-      <div style={{
-        width: 56, height: 56, borderRadius: 16, margin: '0 auto 14px',
-        background: COLORS.brandLight, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <Calendar size={26} color={COLORS.brand} />
-      </div>
-      <p style={{ fontSize: FONT_SIZE.base, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, margin: '0 0 6px' }}>
-        No upcoming appointments
-      </p>
-      <p style={{ fontSize: FONT_SIZE.sm, color: COLORS.muted, margin: '0 0 18px' }}>
-        You're all clear for now. New appointments will appear here.
-      </p>
-      <button
-        onClick={onViewAll}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '8px 18px', borderRadius: 10,
-          background: COLORS.brandLight, color: COLORS.brand,
-          border: 'none', cursor: 'pointer',
-          fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,
-        }}
-      >
-        View All Appointments <ArrowRight size={13} />
       </button>
     </div>
   )
@@ -593,14 +402,14 @@ export default function DoctorDashboard() {
                     background: COLORS.brandLight, display: 'flex', alignItems: 'center',
                     justifyContent: 'center', color: COLORS.brand, fontSize: 15, fontWeight: FONT_WEIGHT.bold,
                   }}>
-                    {upcomingAppointment.patient.profilePhotoUrl
+                    {upcomingAppointment.patient?.profilePhotoUrl
                       ? <img src={upcomingAppointment.patient.profilePhotoUrl} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                      : initials(upcomingAppointment.patient.fullName)
+                      : initials(upcomingAppointment.patient?.fullName)
                     }
                   </div>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontSize: FONT_SIZE.base, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, margin: 0 }}>
-                      {upcomingAppointment.patient.fullName}
+                      {upcomingAppointment.patient?.fullName ?? 'Patient'}
                     </p>
                     <p style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted, margin: '2px 0 0' }}>
                       {fmtDate(upcomingAppointment.dateTime)}
@@ -613,9 +422,9 @@ export default function DoctorDashboard() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', padding: '12px', borderRadius: 10, background: COLORS.inputBg }}>
                   {[
                     { label: 'Type',       value: upcomingAppointment.type === 'ONLINE' ? '🖥 Online' : '🏥 In-Person' },
-                    { label: 'Phone',      value: upcomingAppointment.patient.patientProfile?.phoneNumber },
-                    { label: 'Age',        value: upcomingAppointment.patient.patientProfile?.age != null ? `${upcomingAppointment.patient.patientProfile.age} yrs` : null },
-                    { label: 'Blood Grp',  value: upcomingAppointment.patient.patientProfile?.bloodGroup?.replace('_', ' ') },
+                    { label: 'Phone',      value: upcomingAppointment.patient?.patientProfile?.phoneNumber },
+                    { label: 'Age',        value: upcomingAppointment.patient?.patientProfile?.age != null ? `${upcomingAppointment.patient?.patientProfile?.age} yrs` : null },
+                    { label: 'Blood Grp',  value: upcomingAppointment.patient?.patientProfile?.bloodGroup?.replace('_', ' ') },
                   ].map(row => row.value ? (
                     <div key={row.label}>
                       <p style={{ fontSize: '10px', color: COLORS.muted, margin: 0, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{row.label}</p>

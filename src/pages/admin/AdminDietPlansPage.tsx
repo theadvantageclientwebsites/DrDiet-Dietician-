@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { UtensilsCrossed, AlertTriangle, RefreshCw } from 'lucide-react'
 import AdminPageShell from '@/components/admin/AdminPageShell'
-import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
+import { COLORS, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { DIET_PLAN_DURATION_LABELS } from '@/config/constants'
 import { useAdminDietPlans, useApproveDietPlan, useRejectDietPlan } from '@/hooks/useAdminDietPlans'
 import type { DietPlanStatus } from '@/types'
