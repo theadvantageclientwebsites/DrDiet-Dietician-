@@ -29,6 +29,7 @@ import type {
   PatientPackageSubscription,
   PatientSubscriptionsParams,
   PatientSubscriptionsPaginatedData,
+  PatientDietPlanView,
   UploadProfilePhotoResponse,
 } from '@/types'
 
@@ -159,4 +160,8 @@ export const patientPortalService = {
       ENDPOINTS.PATIENT.PAYMENTS_MY_ORDERS,
     ).then((res) => res.data)
   },
+
+  getDietPlan: () =>
+    APICall<ApiResponse<PatientDietPlanView>>('get', null, ENDPOINTS.PATIENT.DIET_PLAN)
+      .then((res) => res.data),
 }

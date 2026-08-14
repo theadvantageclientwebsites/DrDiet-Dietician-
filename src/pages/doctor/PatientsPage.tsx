@@ -168,6 +168,16 @@ export default function PatientsPage() {
                         New package patient
                       </span>
                     )}
+                    {p.dietPlan?.isOverdue && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: '#fee2e2', color: '#dc2626' }}>
+                        Overdue
+                      </span>
+                    )}
+                    {!p.dietPlan?.isOverdue && p.dietPlan?.hoursRemaining != null && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: '#fffbeb', color: '#b45309' }}>
+                        Plan due in {p.dietPlan.hoursRemaining}h
+                      </span>
+                    )}
                   </p>
                   <p style={{ margin: '2px 0 0', fontSize: FONT_SIZE.xs, color: COLORS.muted }}>{p.email}</p>
                   {p.packageSubscription?.package?.name && (

@@ -47,6 +47,9 @@ import type {
   AdminSubscriptionsParams,
   AdminSubscriptionsPaginatedData,
   AdminSubscription,
+  DietPlansListParams,
+  DietPlansPaginatedData,
+  DietPlanRecord,
 } from '@/types'
 
 interface RevenueStats {
@@ -393,4 +396,28 @@ export const adminService = {
       { doctorId },
       ENDPOINTS.ADMIN.SUBSCRIPTION_ASSIGN(id),
     ).then((res) => res.data),
+
+  getDietPlans: (params: DietPlansListParams = {}) => {
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<DietPlansPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.DIET_PLANS,
+    ).then((res) => res.data)
+  },
+
+  getDietPlanById: (id: string) =>
+    APICall<ApiResponse<DietPlanRecord>>('get', null, ENDPOINTS.ADMIN.DIET_PLAN_BY_ID(id))
+      .then((res) => res.data),
+
+  approveDietPlan: (id: string) =>
+    APICall<ApiResponse<DietPlanRecord>>('patch', null, ENDPOINTS.ADMIN.DIET_PLAN_APPROVE(id))
+      .then((res) => res.data),
+
+  rejectDietPlan: (id: string, reason?: string) =>
+    APICall<ApiResponse<DietPlanRecord>>('patch', { reason }, ENDPOINTS.ADMIN.DIET_PLAN_REJECT(id))
+      .then((res) => res.data),
 }

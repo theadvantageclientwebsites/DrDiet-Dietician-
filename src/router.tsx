@@ -26,6 +26,8 @@ const DoctorDashboard = lazy(() => import('@/pages/doctor/DoctorDashboard'))
 const DoctorAppointmentsPage = lazy(() => import('@/pages/doctor/AppointmentsPage'))
 const DoctorPatientsPage = lazy(() => import('@/pages/doctor/PatientsPage'))
 const PatientDetailPage = lazy(() => import('@/pages/doctor/PatientDetailPage'))
+const DoctorDietPlanPage = lazy(() => import('@/pages/doctor/DietPlanPage'))
+const DoctorDietPlansPage = lazy(() => import('@/pages/doctor/DietPlansPage'))
 const DoctorChatPage = lazy(() => import('@/pages/doctor/ChatPage'))
 const DoctorVideoCallPage = lazy(() => import('@/pages/doctor/VideoCallPage'))
 const DoctorBloodReportsPage = lazy(() => import('@/pages/doctor/BloodReportsPage'))
@@ -68,6 +70,7 @@ const ServicesManagementPage = lazy(() => import('@/pages/admin/ServicesManageme
 const BlogPage = lazy(() => import('@/pages/admin/BlogPage'))
 const AdminDoctorsPage = lazy(() => import('@/pages/admin/AdminDoctorsPage'))
 const AdminSubscriptionsPage = lazy(() => import('@/pages/admin/AdminSubscriptionsPage'))
+const AdminDietPlansPage = lazy(() => import('@/pages/admin/AdminDietPlansPage'))
 
 // Lazy suspense wrapper
 const S = (Component: React.ComponentType) => (
@@ -115,6 +118,8 @@ export const router = createBrowserRouter([
               { path: ROUTES.DOCTOR.APPOINTMENTS,  element: S(DoctorAppointmentsPage) },
               { path: ROUTES.DOCTOR.PATIENTS,      element: S(DoctorPatientsPage) },
               { path: ROUTES.DOCTOR.PATIENT_DETAIL,element: S(PatientDetailPage) },
+              { path: ROUTES.DOCTOR.PATIENT_DIET_PLAN, element: S(DoctorDietPlanPage) },
+              { path: ROUTES.DOCTOR.DIET_PLANS,    element: S(DoctorDietPlansPage) },
               { path: ROUTES.DOCTOR.CHAT,          element: S(DoctorChatPage) },
               { path: ROUTES.DOCTOR.VIDEO_CALL,    element: S(DoctorVideoCallPage) },
               { path: ROUTES.DOCTOR.BLOOD_REPORTS, element: S(DoctorBloodReportsPage) },
@@ -185,6 +190,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.ADMIN.APPOINTMENTS,     element: S(AdminAppointmentsPage) },
               { path: ROUTES.ADMIN.PACKAGES,         element: S(PackagesManagementPage) },
               { path: ROUTES.ADMIN.SUBSCRIPTIONS,    element: S(AdminSubscriptionsPage) },
+              { path: ROUTES.ADMIN.DIET_PLANS,       element: S(AdminDietPlansPage) },
               { path: ROUTES.ADMIN.DIGITAL_PRODUCTS, element: S(AdminDigitalProductsPage) },
               { path: ROUTES.ADMIN.COURSES,          element: S(CourseManagementPage) },
               { path: ROUTES.ADMIN.SERVICES,         element: S(ServicesManagementPage) },

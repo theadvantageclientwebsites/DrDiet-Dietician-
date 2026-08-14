@@ -30,6 +30,7 @@ export const PATIENT_PORTAL_KEYS = {
   orders:        (p: object) => ['patient', 'orders', p] as const,
   activeSub:     ['patient', 'subscription', 'active'] as const,
   subscriptions: (p: object) => ['patient', 'subscriptions', p] as const,
+  dietPlan:      ['patient', 'diet-plan'] as const,
 }
 
 const FALLBACK_PAGINATION: PatientPortalPagination = {
@@ -281,6 +282,21 @@ export function usePatientSubscriptions(params: PatientSubscriptionsParams = {})
   return {
     subscriptions: data?.data?.items ?? [],
     pagination:    data?.data?.pagination ?? FALLBACK_PAGINATION,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  }
+}
+
+export function usePatientDietPlan() {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: PATIENT_PORTAL_KEYS.dietPlan,
+    queryFn:  () => patientPortalService.getDietPlan(),
+    retry:    1,
+  })
+  return {
+    dietPlan: data?.data ?? null,
     isLoading,
     isError,
     error,

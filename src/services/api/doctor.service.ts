@@ -29,6 +29,11 @@ import type {
   DoctorBloodReportUpdatePayload,
   UploadBloodReportResponse,
   UploadProfilePhotoResponse,
+  DoctorDietPlanPayload,
+  DietPlanRecord,
+  DietPlansPaginatedData,
+  DietPlansListParams,
+  DoctorPatientDietPlanData,
 } from '@/types'
 
 function cleanParams<T extends Record<string, unknown>>(params: T): Record<string, unknown> {
@@ -131,5 +136,30 @@ export const doctorService = {
 
   deleteBloodReport: (id: string) =>
     APICall<ApiResponse<{ message: string }>>('delete', null, ENDPOINTS.DOCTOR.BLOOD_REPORT_BY_ID(id))
+      .then((res) => res.data),
+
+  getPatientDietPlan: (patientId: string) =>
+    APICall<ApiResponse<DoctorPatientDietPlanData>>('get', null, ENDPOINTS.DOCTOR.PATIENT_DIET_PLAN(patientId))
+      .then((res) => res.data),
+
+  upsertDietPlan: (payload: DoctorDietPlanPayload) =>
+    APICall<ApiResponse<DietPlanRecord>>('post', payload, ENDPOINTS.DOCTOR.DIET_PLANS)
+      .then((res) => res.data),
+
+  getDietPlans: (params: DietPlansListParams = {}) => {
+    const clean = cleanParams(params as Record<string, unknown>)
+    return APICall<ApiResponse<DietPlansPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.DOCTOR.DIET_PLANS,
+    ).then((res) => res.data)
+  },
+
+  getDietPlanById: (id: string) =>
+    APICall<ApiResponse<DietPlanRecord>>('get', null, ENDPOINTS.DOCTOR.DIET_PLAN_BY_ID(id))
+      .then((res) => res.data),
+
+  submitDietPlan: (id: string) =>
+    APICall<ApiResponse<DietPlanRecord>>('patch', null, ENDPOINTS.DOCTOR.DIET_PLAN_SUBMIT(id))
       .then((res) => res.data),
 }

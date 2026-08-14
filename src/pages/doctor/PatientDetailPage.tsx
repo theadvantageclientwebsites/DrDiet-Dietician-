@@ -163,6 +163,22 @@ export default function PatientDetailPage() {
           <p style={{ margin: '4px 0 0', fontSize: FONT_SIZE.sm, color: COLORS.body }}>
             {patient.packageSubscription.status} · ends {fmtDateTime(patient.packageSubscription.endsAt)}
           </p>
+          {patient.dietPlan?.isOverdue && (
+            <p style={{ margin: '8px 0 0', fontSize: FONT_SIZE.sm, color: '#dc2626', fontWeight: FONT_WEIGHT.semibold }}>Diet plan overdue</p>
+          )}
+          {!patient.dietPlan?.isOverdue && patient.dietPlan?.hoursRemaining != null && (
+            <p style={{ margin: '8px 0 0', fontSize: FONT_SIZE.sm, color: '#b45309' }}>Plan due in {patient.dietPlan.hoursRemaining}h</p>
+          )}
+          <button
+            onClick={() => nav(ROUTES.DOCTOR.PATIENT_DIET_PLAN.replace(':id', patient.id))}
+            style={{
+              marginTop: 12, padding: '8px 14px', borderRadius: 8, border: 'none',
+              background: COLORS.brand, color: '#fff', cursor: 'pointer',
+              fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,
+            }}
+          >
+            {patient.dietPlan?.plan ? 'Edit diet plan' : 'Create diet plan'}
+          </button>
         </div>
       )}
 

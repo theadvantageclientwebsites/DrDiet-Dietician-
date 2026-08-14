@@ -1081,6 +1081,7 @@ export interface DoctorPatientListItem {
     type:     DoctorAppointmentType
   } | null
   packageSubscription?: DoctorPatientPackageSubscription | null
+  dietPlan?: DoctorPatientDietPlanSummary | null
 }
 
 export interface DoctorPatientsPaginatedData {
@@ -1111,6 +1112,7 @@ export interface DoctorPatientDetail {
   patientProfile:  DoctorAppointmentPatientProfile | null
   appointmentHistory: DoctorPatientAppointmentHistoryItem[]
   packageSubscription?: DoctorPatientPackageSubscription | null
+  dietPlan?: DoctorPatientDietPlanSummary | null
 }
 
 // Blood reports
@@ -1286,7 +1288,7 @@ export interface PatientDashboardData {
   nextCheckup:          { days: number | null; label: string | null } | null
   stats:                { totalAppointments: number }
   quickActions:         { availablePackages: number; availableDigitalProducts: number }
-  dietPlan:             unknown | null
+  dietPlan:             PatientDietPlanView | null
   recentActivity:       unknown[]
   activePackage:        PatientPackageSubscription | null
 }
@@ -1524,4 +1526,92 @@ export interface AdminSubscriptionsParams {
 export interface AdminSubscriptionsPaginatedData {
   items:      AdminSubscription[]
   pagination: PatientPortalPagination
+}
+
+export type DietPlanStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED'
+export type DietPlanDuration = 'SEVEN_DAYS' | 'TEN_DAYS' | 'FIFTEEN_DAYS'
+export type PatientDietPlanStatus =
+  | 'NO_PACKAGE'
+  | 'WAITING_FOR_DOCTOR_ASSIGNMENT'
+  | 'IN_PROGRESS'
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+
+export interface DoctorPatientDietPlanSummary {
+  plan: { id: string; status: DietPlanStatus } | null
+  dueAt: string | null
+  isOverdue: boolean
+  hoursRemaining: number | null
+}
+
+export interface DietPlanRecord {
+  id:               string
+  duration:         DietPlanDuration | string
+  durationDays?:    number | null
+  calorieTarget:    number | null
+  foodsToEat:       string[]
+  foodsToAvoid:     string[]
+  breakfast:        string | null
+  lunch:            string | null
+  dinner:           string | null
+  snacks:           string | null
+  notes:            string | null
+  status:           DietPlanStatus
+  submittedAt?:     string | null
+  approvedAt?:      string | null
+  rejectedAt?:      string | null
+  rejectionReason?: string | null
+  createdAt?:       string
+  updatedAt?:       string
+  patientId?:       string
+  doctorId?:        string
+  dueAt?:           string | null
+  isOverdue?:       boolean
+  hoursRemaining?:  number | null
+  patient?:         { id: string; fullName: string; email?: string; profilePhotoUrl?: string | null } | null
+  doctor?:          { id?: string; fullName: string; profilePhotoUrl?: string | null } | null
+  subscription?:    { id: string; assignedAt?: string | null; package?: PatientPackageSummary | null } | null
+}
+
+export interface DoctorDietPlanPayload {
+  patientId:      string
+  duration:       DietPlanDuration
+  calorieTarget?: number | null
+  foodsToEat?:    string[]
+  foodsToAvoid?:  string[]
+  breakfast?:     string
+  lunch?:         string
+  dinner?:        string
+  snacks?:        string
+  notes?:         string
+}
+
+export interface DoctorPatientDietPlanData {
+  subscriptionId: string
+  assignedAt:     string | null
+  plan:           DietPlanRecord | null
+  dueAt:          string | null
+  isOverdue:      boolean
+  hoursRemaining: number | null
+}
+
+export interface DietPlansPaginatedData {
+  items:      DietPlanRecord[]
+  pagination: PatientPortalPagination
+}
+
+export interface DietPlansListParams {
+  page?:      number
+  limit?:     number
+  status?:    DietPlanStatus | ''
+  patientId?: string
+  doctorId?:  string
+  search?:    string
+}
+
+export interface PatientDietPlanView {
+  visible:       boolean
+  patientStatus: PatientDietPlanStatus | string
+  message:       string
+  plan:          DietPlanRecord | null
 }

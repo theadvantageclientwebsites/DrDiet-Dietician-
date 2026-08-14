@@ -50,6 +50,12 @@ export const PACKAGE_DURATION_LABELS: Record<string, string> = {
   TWELVE_MONTHS:  '12 Months',
 }
 
+export const DIET_PLAN_DURATION_LABELS: Record<string, string> = {
+  SEVEN_DAYS:   '7 days',
+  TEN_DAYS:     '10 days',
+  FIFTEEN_DAYS: '15 days',
+}
+
 export const PACKAGE_CATEGORIES = [
   { value: 'thyroid', label: 'Thyroid' },
   { value: 'diabetes', label: 'Diabetes' },

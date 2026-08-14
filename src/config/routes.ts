@@ -16,9 +16,11 @@ export const ROUTES = {
     APPOINTMENTS: '/doctor/appointments',
     PATIENTS: '/doctor/patients',
     PATIENT_DETAIL: '/doctor/patients/:id',
+    PATIENT_DIET_PLAN: '/doctor/patients/:id/diet-plan',
     CHAT: '/doctor/chat',
     VIDEO_CALL: '/doctor/video-call/:roomId',
     BLOOD_REPORTS: '/doctor/blood-reports',
+    DIET_PLANS: '/doctor/diet-plans',
     SERVICES: '/doctor/services',
     NOTIFICATIONS: '/doctor/notifications',
   },
@@ -71,5 +73,6 @@ export const ROUTES = {
     BLOG:             '/admin/blog',
     NOTIFICATIONS:    '/admin/notifications',
     DOCTORS:          '/admin/doctors',
+    DIET_PLANS:       '/admin/diet-plans',
   },
 } as const

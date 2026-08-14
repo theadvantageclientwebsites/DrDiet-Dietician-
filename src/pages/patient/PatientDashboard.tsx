@@ -4,6 +4,7 @@ import QuickActionsGrid from '@/components/patient/dashboard/QuickActionsGrid'
 import RecentActivityList from '@/components/patient/dashboard/RecentActivityList'
 import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
 import { usePatientDashboard } from '@/hooks/usePatientDashboard'
+import { ROUTES } from '@/config/routes'
 
 function SectionHeading({ title, actionLabel, onAction }: {
   title: string; actionLabel?: string; onAction?: () => void
@@ -59,6 +60,18 @@ export default function PatientDashboard() {
           <SectionHeading title="Your package" />
           <ActivePackageCard subscription={dashboard?.activePackage ?? null} />
         </section>
+
+        {dashboard?.dietPlan && (
+          <section>
+            <SectionHeading title="Diet plan" actionLabel="Open" onAction={() => handleActionClick(ROUTES.PATIENT.DIET_PLANS)} />
+            <div className={`rounded-2xl border p-4 ${dashboard.dietPlan.visible ? 'bg-white border-[#e6edf0]' : 'bg-[#fffbeb] border-[#fde68a]'}`}>
+              <p className="text-[14px] font-semibold text-[#1a3c4d] m-0">{dashboard.dietPlan.message}</p>
+              {!dashboard.dietPlan.visible && (
+                <p className="text-[12px] text-[#92400e] mt-1 mb-0">Meals appear after admin approval.</p>
+              )}
+            </div>
+          </section>
+        )}
 
         <section>
           <SectionHeading title="Upcoming Appointment" actionLabel="View All" onAction={handleViewAllAppointments} />
