@@ -69,6 +69,7 @@ function formatDuration(d: string | null | undefined): string {
     ONE_MONTH:    '1 Month',
     THREE_MONTHS: '3 Months',
     SIX_MONTHS:   '6 Months',
+    TWELVE_MONTHS: '12 Months',
   }
   return map[d] ?? d
 }

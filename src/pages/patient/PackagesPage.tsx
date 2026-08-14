@@ -2,54 +2,78 @@ import { useState } from 'react'
 import { Check, AlertCircle, RefreshCw } from 'lucide-react'
 import PageShell from '@/components/patient/shared/PageShell'
 import PrimaryButton from '@/components/patient/shared/PrimaryButton'
-import { usePatientPortalPackages } from '@/hooks/usePatientPortal'
-import type { PatientPackageDuration } from '@/types'
+import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import {
+  usePatientPortalPackages,
+  usePatientDummyCheckout,
+  usePatientActiveSubscription,
+} from '@/hooks/usePatientPortal'
+import type { PatientPackageDuration, PatientPortalPackage } from '@/types'
 
-type Duration = '1_month' | '3_months' | '6_months'
+type Duration = PatientPackageDuration
 
-const DURATION_LABELS: Record<Duration, string> = {
-  '1_month':  '1 Month',
-  '3_months': '3 Months',
-  '6_months': '6 Months',
-}
-
-const DURATION_TO_API: Record<Duration, PatientPackageDuration> = {
-  '1_month':  'ONE_MONTH',
-  '3_months': 'THREE_MONTHS',
-  '6_months': 'SIX_MONTHS',
-}
+const DURATION_TABS: { value: Duration; label: string }[] = [
+  { value: 'THREE_MONTHS',  label: '3 Months'  },
+  { value: 'SIX_MONTHS',    label: '6 Months'  },
+  { value: 'TWELVE_MONTHS', label: '12 Months' },
+]
 
 function formatPrice(p: number) {
   return `₹${p.toLocaleString('en-IN')}`
 }
 
-function getPrice(pkg: { price1Month: number; price3Months: number; price6Months: number }, d: Duration) {
-  if (d === '1_month') return pkg.price1Month
-  if (d === '3_months') return pkg.price3Months
-  return pkg.price6Months
+function getPrice(pkg: PatientPortalPackage, d: Duration) {
+  if (d === 'THREE_MONTHS') return pkg.price3Months
+  if (d === 'SIX_MONTHS') return pkg.price6Months
+  return pkg.price12Months
 }
 
 export default function PackagesPage() {
-  const [duration, setDuration] = useState<Duration>('1_month')
-  const { packages, isLoading, isError, refetch } = usePatientPortalPackages()
+  const [duration, setDuration] = useState<Duration>('THREE_MONTHS')
+  const [pendingBuy, setPendingBuy] = useState<{ pkg: PatientPortalPackage; price: number } | null>(null)
+  const [paidName, setPaidName] = useState<string | null>(null)
 
-  const handleBuy = (packageId: string, price: number) => {
-    // Razorpay flow: usePatientCreateOrder + verify — wire when checkout modal added
-    alert(`Payment integration: package ${packageId}, ₹${price} (${DURATION_TO_API[duration]})`)
+  const { packages, isLoading, isError, refetch } = usePatientPortalPackages()
+  const { subscription } = usePatientActiveSubscription()
+  const checkout = usePatientDummyCheckout()
+
+  const handleConfirmBuy = () => {
+    if (!pendingBuy) return
+    checkout.mutate(
+      { itemType: 'PACKAGE', itemId: pendingBuy.pkg.id, duration },
+      {
+        onSuccess: (res) => {
+          setPaidName(res.data?.itemName ?? pendingBuy.pkg.name)
+          setPendingBuy(null)
+        },
+      },
+    )
   }
 
   return (
-    <PageShell title="Care Packages" subtitle="Choose a plan that fits your health goals. All plans include direct dietician support.">
+    <PageShell title="Care Packages" subtitle="Choose a 3, 6, or 12 month plan. Appointments start after a doctor is assigned.">
+      <ActivePackageCard subscription={subscription} compact />
+
+      {paidName && (
+        <div className="rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] p-4">
+          <p className="text-[14px] font-semibold text-[#15803d] m-0">Payment successful</p>
+          <p className="text-[13px] text-[#166534] mt-1 mb-0">
+            {paidName} is waiting for doctor assignment. Admin will assign a doctor soon — you cannot book until then.
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center gap-2 p-1 bg-[#f0f4f6] rounded-xl w-fit">
-        {(Object.keys(DURATION_LABELS) as Duration[]).map(d => (
+        {DURATION_TABS.map(d => (
           <button
-            key={d}
-            onClick={() => setDuration(d)}
+            key={d.value}
+            onClick={() => setDuration(d.value)}
             className={`px-4 py-2 rounded-lg text-[13px] font-semibold transition-all ${
-              duration === d ? 'bg-white text-[#1a6b7a] shadow-sm' : 'text-[#6b8896]'
+              duration === d.value ? 'bg-white text-[#1a6b7a] shadow-sm' : 'text-[#6b8896]'
             }`}
           >
-            {DURATION_LABELS[d]}
+            {d.label}
           </button>
         ))}
       </div>
@@ -88,13 +112,26 @@ export default function PackagesPage() {
                     </li>
                   ))}
                 </ul>
-                <PrimaryButton fullWidth onClick={() => handleBuy(pkg.id, price)}>
-                  Buy {DURATION_LABELS[duration]}
+                <PrimaryButton fullWidth onClick={() => setPendingBuy({ pkg, price })}>
+                  Pay now (test mode)
                 </PrimaryButton>
               </div>
             )
           })}
         </div>
+      )}
+
+      {pendingBuy && (
+        <ConfirmModal
+          open
+          variant="info"
+          title="Confirm test payment?"
+          description={`Pay ₹${pendingBuy.price.toLocaleString('en-IN')} for ${pendingBuy.pkg.name} (${DURATION_TABS.find(d => d.value === duration)?.label}). Razorpay is not live — this marks the package as paid.`}
+          confirmLabel={checkout.isPending ? 'Processing…' : 'Pay now (test mode)'}
+          loading={checkout.isPending}
+          onConfirm={handleConfirmBuy}
+          onClose={() => { if (!checkout.isPending) setPendingBuy(null) }}
+        />
       )}
     </PageShell>
   )

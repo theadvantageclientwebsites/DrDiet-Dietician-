@@ -2,6 +2,7 @@ import HeroBanner from '@/components/shared/HeroBanner'
 import UpcomingAppointmentCard from '@/components/patient/dashboard/UpcomingAppointmentCard'
 import QuickActionsGrid from '@/components/patient/dashboard/QuickActionsGrid'
 import RecentActivityList from '@/components/patient/dashboard/RecentActivityList'
+import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
 import { usePatientDashboard } from '@/hooks/usePatientDashboard'
 
 function SectionHeading({ title, actionLabel, onAction }: {
@@ -26,6 +27,7 @@ export default function PatientDashboard() {
     nextCheckup,
     vitals,
     quickActions,
+    dashboard,
     isLoading,
     hasAppointmentError,
     handleViewAllAppointments,
@@ -52,6 +54,11 @@ export default function PatientDashboard() {
           body="Manage consultations, view blood diagnostics, and access doctor-approved diet protocols."
           pills={heroPills}
         />
+
+        <section>
+          <SectionHeading title="Your package" />
+          <ActivePackageCard subscription={dashboard?.activePackage ?? null} />
+        </section>
 
         <section>
           <SectionHeading title="Upcoming Appointment" actionLabel="View All" onAction={handleViewAllAppointments} />

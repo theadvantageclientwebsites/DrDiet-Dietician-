@@ -7,8 +7,10 @@ import {
   usePatientPortalProfile,
   useUpdatePatientPortalProfile,
   useUploadPatientProfilePhoto,
+  usePatientActiveSubscription,
 } from '@/hooks/usePatientPortal'
 import type { PatientPortalProfileData } from '@/types'
+import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
 
 interface FormState {
   fullName: string
@@ -35,6 +37,7 @@ function profileToForm(p: PatientPortalProfileData): FormState {
 
 export default function ProfilePage() {
   const { data, isLoading, isError, refetch } = usePatientPortalProfile()
+  const { subscription } = usePatientActiveSubscription()
   const update = useUpdatePatientPortalProfile()
   const uploadPhoto = useUploadPatientProfilePhoto()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -106,6 +109,8 @@ export default function ProfilePage() {
       }
     >
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={handlePhoto} />
+
+      <ActivePackageCard subscription={subscription} />
 
       <div className="flex flex-col gap-5">
         <div className="bg-white rounded-2xl border border-[#e6edf0] p-6">

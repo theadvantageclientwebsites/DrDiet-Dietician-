@@ -64,6 +64,7 @@ export const ROUTES = {
     INTERNS:          '/admin/interns',
     APPOINTMENTS:     '/admin/appointments',
     PACKAGES:         '/admin/packages',
+    SUBSCRIPTIONS:    '/admin/subscriptions',
     DIGITAL_PRODUCTS: '/admin/digital-products',
     COURSES:          '/admin/courses',
     SERVICES:         '/admin/services',

@@ -6,6 +6,8 @@ import { Video, CalendarDays, Clock, MapPin } from 'lucide-react'
 import type { PatientPortalAppointment } from '@/types'
 import AppointmentRescheduleNotice, { isDoctorRescheduled } from '@/components/patient/shared/AppointmentRescheduleNotice'
 import { format, parseISO } from 'date-fns'
+import { canJoinVideoCall } from '@/lib/appointmentCall'
+import { JOIN_CALL_MINUTES_BEFORE } from '@/config/constants'
 
 function formatApptDateTime(iso: string): { date: string; time: string } {
   try {
@@ -72,7 +74,13 @@ export default function UpcomingAppointmentCard({
   const doctor    = appointment.doctor
   const specialty = doctor.doctorProfile?.specialization ?? 'Consultation'
   const { date, time } = formatApptDateTime(appointment.dateTime)
-  const canJoin   = appointment.status === 'CONFIRMED' && appointment.type === 'ONLINE'
+  const canJoin = canJoinVideoCall({
+    dateTime: appointment.dateTime,
+    status: appointment.status,
+    type: appointment.type,
+  })
+  const showJoinHint =
+    appointment.status === 'CONFIRMED' && appointment.type === 'ONLINE' && !canJoin
 
   return (
     <article className="bg-white rounded-2xl border border-[#e6edf0] p-5 flex items-center gap-4 flex-wrap">
@@ -114,6 +122,11 @@ export default function UpcomingAppointmentCard({
         >
           <Video size={14} /> Join Call
         </button>
+      )}
+      {showJoinHint && (
+        <p className="text-[11px] text-[#6b8896] shrink-0 max-w-[140px] text-right">
+          Join opens {JOIN_CALL_MINUTES_BEFORE} min before the appointment
+        </p>
       )}
     </article>
   )

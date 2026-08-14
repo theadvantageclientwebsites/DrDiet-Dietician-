@@ -151,6 +151,21 @@ export default function PatientDetailPage() {
         )}
       </div>
 
+      {patient.packageSubscription && (
+        <div style={{
+          background: '#fff', borderRadius: 16, padding: 20, marginBottom: 16,
+          border: `1px solid ${COLORS.divider}`, boxShadow: SHADOW.card,
+        }}>
+          <p style={{ margin: 0, fontSize: 10, color: COLORS.muted, textTransform: 'uppercase' }}>Package</p>
+          <p style={{ margin: '4px 0 0', fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, fontSize: FONT_SIZE.md }}>
+            {patient.packageSubscription.package?.name ?? 'Care package'}
+          </p>
+          <p style={{ margin: '4px 0 0', fontSize: FONT_SIZE.sm, color: COLORS.body }}>
+            {patient.packageSubscription.status} · ends {fmtDateTime(patient.packageSubscription.endsAt)}
+          </p>
+        </div>
+      )}
+
       {/* Appointment history */}
       <div style={{
         background: '#fff', borderRadius: 16, padding: 20,

@@ -91,7 +91,7 @@ export default function PatientsPage() {
           My Patients
         </h1>
         <p style={{ fontSize: FONT_SIZE.sm, color: COLORS.muted, marginTop: 4 }}>
-          Patients who have booked appointments with you.
+          Patients assigned to you through packages and appointments.
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export default function PatientsPage() {
             <Users size={40} color={COLORS.brand} style={{ marginBottom: 12 }} />
             <p style={{ margin: 0, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy }}>No patients found</p>
             <p style={{ margin: '6px 0 0', fontSize: FONT_SIZE.sm, color: COLORS.muted }}>
-              Patients appear here after their first appointment with you.
+              Patients appear here after a package is assigned to you, or after their first appointment.
             </p>
           </div>
         ) : (
@@ -158,8 +158,23 @@ export default function PatientsPage() {
                 </div>
 
                 <div style={{ flex: 1, minWidth: 180 }}>
-                  <p style={{ margin: 0, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy }}>{p.fullName}</p>
+                  <p style={{ margin: 0, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    {p.fullName}
+                    {!p.lastAppointment && p.packageSubscription && (
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99,
+                        background: '#fef3c7', color: '#b45309',
+                      }}>
+                        New package patient
+                      </span>
+                    )}
+                  </p>
                   <p style={{ margin: '2px 0 0', fontSize: FONT_SIZE.xs, color: COLORS.muted }}>{p.email}</p>
+                  {p.packageSubscription?.package?.name && (
+                    <p style={{ margin: '4px 0 0', fontSize: FONT_SIZE.xs, color: COLORS.brand, fontWeight: FONT_WEIGHT.semibold }}>
+                      {p.packageSubscription.package.name}
+                    </p>
+                  )}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', marginTop: 4 }}>
                     {p.patientProfile?.age != null && (
                       <span style={{ fontSize: FONT_SIZE.xs, color: COLORS.muted }}>Age {p.patientProfile.age}</span>

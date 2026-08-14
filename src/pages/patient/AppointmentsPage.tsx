@@ -10,6 +10,7 @@ import { usePatientPortalAppointments, useCancelPatientAppointment } from '@/hoo
 import AppointmentRescheduleNotice, { isDoctorRescheduled } from '@/components/patient/shared/AppointmentRescheduleNotice'
 import type { PatientAppointmentStatus, PatientPortalAppointment } from '@/types'
 import { format, parseISO } from 'date-fns'
+import { canJoinVideoCall } from '@/lib/appointmentCall'
 
 type Filter = 'all' | PatientAppointmentStatus
 
@@ -140,7 +141,7 @@ export default function AppointmentsPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                  {appt.status === 'CONFIRMED' && appt.type === 'ONLINE' && (
+                  {canJoinVideoCall({ dateTime: appt.dateTime, status: appt.status, type: appt.type }) && (
                     <PrimaryButton size="sm" onClick={() => nav(`/patient/video-call/${appt.id}`)}>
                       <Video size={13} /> Join
                     </PrimaryButton>

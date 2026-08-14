@@ -13,6 +13,9 @@ export const APP_TAGLINE = 'Your Personalized Nutrition Partner'
 export const APPOINTMENT_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM']
 export const RESCHEDULE_CUTOFF_HOURS = 2   // minimum hours before slot
 export const NOTICE_HOURS = 24             // 24-hour notice rule
+/** Join Call is shown from 15 min before the slot until 45 min after it starts */
+export const JOIN_CALL_MINUTES_BEFORE = 15
+export const JOIN_CALL_MINUTES_AFTER = 45
 
 // ─── Blood Groups ─────────────────────────────────────────────────────────────
 export const BLOOD_GROUPS = ['A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG'] as const
@@ -35,10 +38,17 @@ export const GENDERS = [
 
 // ─── Packages ─────────────────────────────────────────────────────────────────
 export const PACKAGE_DURATIONS = [
-  { value: '1_month', label: '1 Month' },
-  { value: '3_months', label: '3 Months' },
-  { value: '6_months', label: '6 Months' },
-]
+  { value: 'THREE_MONTHS',  label: '3 Months' },
+  { value: 'SIX_MONTHS',    label: '6 Months' },
+  { value: 'TWELVE_MONTHS', label: '12 Months' },
+] as const
+
+export const PACKAGE_DURATION_LABELS: Record<string, string> = {
+  ONE_MONTH:      '1 Month',
+  THREE_MONTHS:   '3 Months',
+  SIX_MONTHS:     '6 Months',
+  TWELVE_MONTHS:  '12 Months',
+}
 
 export const PACKAGE_CATEGORIES = [
   { value: 'thyroid', label: 'Thyroid' },

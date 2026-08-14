@@ -49,6 +49,7 @@ const adminNav: NavItem[] = [
   { label: 'Interns',        path: ROUTES.ADMIN.INTERNS,           icon: 'GraduationCap' },
   { label: 'Appointments',   path: ROUTES.ADMIN.APPOINTMENTS,      icon: 'CalendarDays' },
   { label: 'Packages',       path: ROUTES.ADMIN.PACKAGES,          icon: 'Package' },
+  { label: 'Subscriptions',  path: ROUTES.ADMIN.SUBSCRIPTIONS,     icon: 'UserPlus' },
   { label: 'Digital Prods',  path: ROUTES.ADMIN.DIGITAL_PRODUCTS,  icon: 'FileText' },
   { label: 'Courses',        path: ROUTES.ADMIN.COURSES,           icon: 'BookOpen' },
   { label: 'Services',       path: ROUTES.ADMIN.SERVICES,          icon: 'Briefcase' },

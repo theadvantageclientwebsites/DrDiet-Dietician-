@@ -24,6 +24,11 @@ import type {
   PatientRazorpayOrderData,
   PatientPaymentVerifyPayload,
   PatientOrdersPaginatedData,
+  PatientDummyCheckoutPayload,
+  PatientDummyCheckoutData,
+  PatientPackageSubscription,
+  PatientSubscriptionsParams,
+  PatientSubscriptionsPaginatedData,
   UploadProfilePhotoResponse,
 } from '@/types'
 
@@ -124,6 +129,23 @@ export const patientPortalService = {
   createPaymentOrder: (payload: PatientCreateOrderPayload) =>
     APICall<ApiResponse<PatientRazorpayOrderData>>('post', payload, ENDPOINTS.PATIENT.PAYMENTS_CREATE_ORDER)
       .then((res) => res.data),
+
+  dummyCheckout: (payload: PatientDummyCheckoutPayload) =>
+    APICall<ApiResponse<PatientDummyCheckoutData>>('post', payload, ENDPOINTS.PATIENT.PAYMENTS_DUMMY_CHECKOUT)
+      .then((res) => res.data),
+
+  getActiveSubscription: () =>
+    APICall<ApiResponse<PatientPackageSubscription | null>>('get', null, ENDPOINTS.PATIENT.SUBSCRIPTION_ACTIVE)
+      .then((res) => res.data),
+
+  getSubscriptions: (params: PatientSubscriptionsParams = {}) => {
+    const clean = cleanParams(params as Record<string, unknown>)
+    return APICall<ApiResponse<PatientSubscriptionsPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.PATIENT.SUBSCRIPTIONS,
+    ).then((res) => res.data)
+  },
 
   verifyPayment: (payload: PatientPaymentVerifyPayload) =>
     APICall<ApiResponse<{ success: boolean; message: string }>>('post', payload, ENDPOINTS.PATIENT.PAYMENTS_VERIFY)

@@ -182,7 +182,7 @@ export interface BookAppointmentPayload {
 
 // ─── Package ──────────────────────────────────────────────────────────────────
 export type PackageCategory = 'thyroid' | 'diabetes' | 'weight_loss' | 'general' | 'other'
-export type PackageDuration = '1_month' | '3_months' | '6_months'
+export type PackageDuration = '3_months' | '6_months' | '12_months'
 
 export interface Package {
   id: string
@@ -794,9 +794,10 @@ export interface AdminPackage {
   name:          string
   category:      AdminPackageCategory
   description:   string | null
-  price1Month:   number
   price3Months:  number
   price6Months:  number
+  price12Months: number
+  price1Month?:  number
   features:      string[]
   isActive:      boolean
   createdAt:     string
@@ -834,29 +835,29 @@ export interface AdminPackageCreatePayload {
   name:          string
   category:      AdminPackageCategory
   description?:  string
-  price1Month:   number
   price3Months:  number
   price6Months:  number
+  price12Months: number
   features?:     string[]
   isActive?:     boolean
 }
 
 export interface AdminPackageUpdatePayload {
-  name?:         string
-  category?:     AdminPackageCategory
-  description?:  string
-  price1Month?:  number
-  price3Months?: number
-  price6Months?: number
-  features?:     string[]
-  isActive?:     boolean
+  name?:          string
+  category?:      AdminPackageCategory
+  description?:   string
+  price3Months?:  number
+  price6Months?:  number
+  price12Months?: number
+  features?:      string[]
+  isActive?:      boolean
 }
 
 // ─── Admin: Revenue ───────────────────────────────────────────────────────────
 
 export type OrderStatus   = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
 export type OrderItemType = 'PACKAGE' | 'DIGITAL_PRODUCT'
-export type OrderDuration = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS' | null
+export type OrderDuration = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS' | 'TWELVE_MONTHS' | null
 
 export interface RevenueOrderPatient {
   id:              string
@@ -1079,6 +1080,7 @@ export interface DoctorPatientListItem {
     status:   DoctorAppointmentStatus
     type:     DoctorAppointmentType
   } | null
+  packageSubscription?: DoctorPatientPackageSubscription | null
 }
 
 export interface DoctorPatientsPaginatedData {
@@ -1108,6 +1110,7 @@ export interface DoctorPatientDetail {
   createdAt:       string
   patientProfile:  DoctorAppointmentPatientProfile | null
   appointmentHistory: DoctorPatientAppointmentHistoryItem[]
+  packageSubscription?: DoctorPatientPackageSubscription | null
 }
 
 // Blood reports
@@ -1178,9 +1181,10 @@ export interface UploadProfilePhotoResponse {
 
 export type PatientAppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED'
 export type PatientAppointmentType   = 'ONLINE'  | 'IN_PERSON'
-export type PatientPackageDuration   = 'ONE_MONTH' | 'THREE_MONTHS' | 'SIX_MONTHS'
+export type PatientPackageDuration   = 'THREE_MONTHS' | 'SIX_MONTHS' | 'TWELVE_MONTHS'
 export type PatientOrderItemType     = 'PACKAGE' | 'DIGITAL_PRODUCT'
 export type PatientOrderStatus       = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED'
+export type PackageSubscriptionStatus = 'PENDING_ASSIGNMENT' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED'
 
 export interface PatientPortalDoctorProfile {
   specialization:    string | null
@@ -1284,6 +1288,7 @@ export interface PatientDashboardData {
   quickActions:         { availablePackages: number; availableDigitalProducts: number }
   dietPlan:             unknown | null
   recentActivity:       unknown[]
+  activePackage:        PatientPackageSubscription | null
 }
 
 export interface PatientPortalProfileData {
@@ -1331,9 +1336,10 @@ export interface PatientPortalPackage {
   name:          string
   category:      string
   description:   string | null
-  price1Month:   number
   price3Months:  number
   price6Months:  number
+  price12Months: number
+  price1Month?:  number
   features:      string[]
   isActive:      boolean
   createdAt:     string
@@ -1416,7 +1422,7 @@ export interface PatientOrder {
   itemName:          string
   amount:            number
   currency:          string
-  duration:          PatientPackageDuration | null
+  duration:          string | null
   status:            PatientOrderStatus
   razorpayOrderId:   string | null
   razorpayPaymentId: string | null
@@ -1426,5 +1432,96 @@ export interface PatientOrder {
 
 export interface PatientOrdersPaginatedData {
   items:      PatientOrder[]
+  pagination: PatientPortalPagination
+}
+
+export interface PatientPackageSummary {
+  id:       string
+  name:     string
+  category: string
+  features?: string[]
+}
+
+export interface PatientPackageSubscription {
+  id:                         string
+  status:                     PackageSubscriptionStatus
+  duration:                   PatientPackageDuration | string
+  meetingsPerMonth:           number
+  meetingsUsedThisMonth?:     number
+  meetingsRemainingThisMonth?: number
+  startsAt:                   string
+  endsAt:                     string
+  assignedAt?:                string | null
+  package:                    PatientPackageSummary | null
+  doctor:                     PatientPortalDoctor | null
+}
+
+export interface PatientDummyCheckoutPayload {
+  itemType:  PatientOrderItemType
+  itemId:    string
+  duration?: PatientPackageDuration
+}
+
+export interface PatientDummyCheckoutData {
+  dummy:        boolean
+  orderId:      string
+  itemType:     PatientOrderItemType
+  itemName:     string
+  amount:       number
+  currency:     string
+  paidAt:       string
+  subscription?: PatientPackageSubscription | null
+}
+
+export interface PatientSubscriptionsParams {
+  page?:   number
+  limit?:  number
+  status?: PackageSubscriptionStatus | ''
+}
+
+export interface PatientSubscriptionsPaginatedData {
+  items:      PatientPackageSubscription[]
+  pagination: PatientPortalPagination
+}
+
+export interface DoctorPatientPackageSubscription {
+  id:       string
+  status:   PackageSubscriptionStatus
+  duration: string
+  endsAt:   string
+  startsAt?: string
+  package:  PatientPackageSummary | null
+}
+
+export interface AdminSubscriptionPatient {
+  id:              string
+  fullName:        string
+  email:           string
+  profilePhotoUrl: string | null
+}
+
+export interface AdminSubscription {
+  id:               string
+  status:           PackageSubscriptionStatus
+  duration:         string
+  meetingsPerMonth: number
+  startsAt:         string
+  endsAt:           string
+  assignedAt?:      string | null
+  createdAt?:       string
+  patient:          AdminSubscriptionPatient | null
+  package:          PatientPackageSummary | null
+  doctor:           PatientPortalDoctor | null
+}
+
+export interface AdminSubscriptionsParams {
+  page?:   number
+  limit?:  number
+  status?: PackageSubscriptionStatus | ''
+  search?: string
+}
+
+export interface AdminSubscriptionsPaginatedData {
+  items:      AdminSubscription[]
   pagination: PatientPortalPagination
 }

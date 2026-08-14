@@ -21,6 +21,7 @@ import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { ROUTES } from '@/config/routes'
 import { useAuthStore } from '@/store/authStore'
 import { format, parseISO } from 'date-fns'
+import { canJoinVideoCall } from '@/lib/appointmentCall'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -311,7 +312,7 @@ function UpcomingAppointmentCard({ appt, onViewAll }: {
 
         {/* Actions */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {appt.type === 'ONLINE' && appt.status === 'CONFIRMED' && (
+          {canJoinVideoCall({ dateTime: appt.dateTime, status: appt.status, type: appt.type }) && (
             <button style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 10,

@@ -1,8 +1,11 @@
 import { Download, AlertCircle, RefreshCw } from 'lucide-react'
+import { useState } from 'react'
 import PageShell from '@/components/patient/shared/PageShell'
 import PrimaryButton from '@/components/patient/shared/PrimaryButton'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 import { API_BASE_URL } from '@/config/constants'
-import { usePatientDigitalProducts } from '@/hooks/usePatientPortal'
+import { usePatientDigitalProducts, usePatientDummyCheckout } from '@/hooks/usePatientPortal'
+import type { PatientPortalDigitalProduct } from '@/types'
 
 const SERVER_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '')
 
@@ -13,13 +16,15 @@ function resolveUrl(url: string | null) {
 
 export default function DigitalProductsPage() {
   const { products, isLoading, isError, refetch } = usePatientDigitalProducts({ limit: 24 })
+  const checkout = usePatientDummyCheckout()
+  const [pending, setPending] = useState<PatientPortalDigitalProduct | null>(null)
 
-  const handleBuy = (id: string, price: number, isFree: boolean) => {
-    if (isFree) {
+  const handleBuy = (product: PatientPortalDigitalProduct) => {
+    if (product.isFree) {
       alert('This product is free — download access coming soon.')
       return
     }
-    alert(`Payment integration: product ${id}, ₹${price}`)
+    setPending(product)
   }
 
   return (
@@ -61,8 +66,8 @@ export default function DigitalProductsPage() {
                     <p className="text-[16px] font-bold text-[#1a3c4d]">
                       {product.isFree ? 'Free' : `₹${product.price.toLocaleString('en-IN')}`}
                     </p>
-                    <PrimaryButton size="sm" onClick={() => handleBuy(product.id, product.price, product.isFree)}>
-                      {product.isFree ? <><Download size={13} /> Get</> : 'Buy Now'}
+                    <PrimaryButton size="sm" onClick={() => handleBuy(product)}>
+                      {product.isFree ? <><Download size={13} /> Get</> : 'Pay now (test mode)'}
                     </PrimaryButton>
                   </div>
                 </div>
@@ -70,6 +75,24 @@ export default function DigitalProductsPage() {
             )
           })}
         </div>
+      )}
+
+      {pending && (
+        <ConfirmModal
+          open
+          variant="info"
+          title="Confirm test payment?"
+          description={`Pay ₹${pending.price.toLocaleString('en-IN')} for ${pending.title}. Razorpay is not live — this marks the order as paid.`}
+          confirmLabel={checkout.isPending ? 'Processing…' : 'Pay now (test mode)'}
+          loading={checkout.isPending}
+          onConfirm={() => {
+            checkout.mutate(
+              { itemType: 'DIGITAL_PRODUCT', itemId: pending.id },
+              { onSuccess: () => setPending(null) },
+            )
+          }}
+          onClose={() => { if (!checkout.isPending) setPending(null) }}
+        />
       )}
     </PageShell>
   )

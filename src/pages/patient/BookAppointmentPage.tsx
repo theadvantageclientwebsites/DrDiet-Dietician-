@@ -2,7 +2,7 @@
  * BookAppointmentPage — Patient books via POST /patient/appointments
  * Flow: choose doctor → details → date/time → pending confirmation
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   CalendarDays, Clock, FileText,
@@ -11,7 +11,7 @@ import {
 import PageShell from '@/components/patient/shared/PageShell'
 import PrimaryButton from '@/components/patient/shared/PrimaryButton'
 import { ROUTES } from '@/config/routes'
-import { usePatientDoctors, useBookPatientAppointment } from '@/hooks/usePatientPortal'
+import { usePatientDoctors, useBookPatientAppointment, usePatientActiveSubscription } from '@/hooks/usePatientPortal'
 import type { PatientPortalDoctor, PatientAppointmentType, PatientPortalAppointment } from '@/types'
 import { format, parseISO } from 'date-fns'
 
@@ -82,6 +82,15 @@ function buildDateTimeIso(date: string, time: string): string {
   return new Date(`${date}T${time}`).toISOString()
 }
 
+function remainingMeetings(sub: { meetingsRemainingThisMonth?: number; meetingsUsedThisMonth?: number; meetingsPerMonth?: number } | null) {
+  if (!sub) return null
+  if (typeof sub.meetingsRemainingThisMonth === 'number') return sub.meetingsRemainingThisMonth
+  if (typeof sub.meetingsPerMonth === 'number') {
+    return Math.max(0, sub.meetingsPerMonth - (sub.meetingsUsedThisMonth ?? 0))
+  }
+  return null
+}
+
 export default function BookAppointmentPage() {
   const nav = useNavigate()
   const [step, setStep]               = useState<Step>('doctor')
@@ -96,8 +105,24 @@ export default function BookAppointmentPage() {
   const { doctors, isLoading: doctorsLoading, isError: doctorsError, refetch } = usePatientDoctors({
     search: search || undefined,
   })
+  const { subscription, isLoading: subLoading } = usePatientActiveSubscription()
 
   const book = useBookPatientAppointment()
+
+  const assignedDoctor = subscription?.status === 'ACTIVE' ? subscription.doctor : null
+  const canBook = subscription?.status === 'ACTIVE' && Boolean(assignedDoctor)
+  const waitingAssignment = subscription?.status === 'PENDING_ASSIGNMENT'
+  const noPackage = !subscription
+  const meetingsLeft = remainingMeetings(subscription)
+  const meetingsCap = subscription?.meetingsPerMonth ?? 4
+  const limitReached = canBook && meetingsLeft != null && meetingsLeft <= 0
+
+  useEffect(() => {
+    if (assignedDoctor) {
+      setDoctor(assignedDoctor)
+      if (step === 'doctor') setStep('details')
+    }
+  }, [assignedDoctor?.id])
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -120,7 +145,35 @@ export default function BookAppointmentPage() {
   }
 
   return (
-    <PageShell title="Book Appointment" subtitle="Choose a doctor and pick a time for your consultation.">
+    <PageShell title="Book Appointment" subtitle="Book with your assigned package doctor. Maximum 4 meetings per month.">
+      {subLoading ? null : noPackage && (
+        <div className="rounded-xl border border-[#fed7aa] bg-[#fff7ed] p-4 mb-4">
+          <p className="text-[14px] font-semibold text-[#c2410c] m-0">An active package is required to book</p>
+          <p className="text-[13px] text-[#9a3412] mt-1 mb-3">Buy a care package first. Admin will then assign your doctor.</p>
+          <PrimaryButton size="sm" onClick={() => nav(ROUTES.PATIENT.PACKAGES)}>Browse packages</PrimaryButton>
+        </div>
+      )}
+      {waitingAssignment && (
+        <div className="rounded-xl border border-[#fde68a] bg-[#fffbeb] p-4 mb-4">
+          <p className="text-[14px] font-semibold text-[#b45309] m-0">Waiting for doctor assignment</p>
+          <p className="text-[13px] text-[#92400e] mt-1 mb-0">Your package is paid. You can book once admin assigns a doctor.</p>
+        </div>
+      )}
+      {limitReached && (
+        <div className="rounded-xl border border-[#e6edf0] bg-[#f8fafc] p-4 mb-4">
+          <p className="text-[14px] font-semibold text-[#1a3c4d] m-0">Monthly appointment limit reached</p>
+          <p className="text-[13px] text-[#6b8896] mt-1 mb-0">You have used all 4 meetings this month. Try again next month.</p>
+        </div>
+      )}
+      {canBook && assignedDoctor && (
+        <p className="text-[13px] text-[#1a3c4d] mb-4">
+          Your doctor: <span className="font-semibold">{assignedDoctor.fullName}</span>
+          {meetingsLeft != null && (
+            <span className="text-[#6b8896]"> · {meetingsLeft} of {meetingsCap} meetings left this month</span>
+          )}
+        </p>
+      )}
+
       <StepBar current={step} />
 
       <div className="bg-white rounded-2xl border border-[#e6edf0] p-6 sm:p-8 max-w-lg mx-auto w-full">
@@ -147,7 +200,13 @@ export default function BookAppointmentPage() {
             {doctorsLoading ? (
               <p className="text-[13px] text-[#6b8896] py-4 text-center">Loading doctors…</p>
             ) : doctors.length === 0 ? (
-              <p className="text-[13px] text-[#6b8896] py-4 text-center">No doctors available right now.</p>
+              <p className="text-[13px] text-[#6b8896] py-4 text-center">
+                {waitingAssignment
+                  ? 'No doctor assigned yet.'
+                  : noPackage
+                    ? 'Browse doctors here. Booking requires an active package.'
+                    : 'No doctors available right now.'}
+              </p>
             ) : (
               <div className="flex flex-col gap-2 max-h-[320px] overflow-y-auto">
                 {doctors.map(doc => (
@@ -160,7 +219,11 @@ export default function BookAppointmentPage() {
                 ))}
               </div>
             )}
-            <PrimaryButton fullWidth disabled={!selectedDoctor} onClick={() => setStep('details')}>
+            <PrimaryButton
+              fullWidth
+              disabled={!selectedDoctor || !canBook || limitReached}
+              onClick={() => setStep('details')}
+            >
               Continue
             </PrimaryButton>
           </div>
@@ -168,9 +231,11 @@ export default function BookAppointmentPage() {
 
         {step === 'details' && selectedDoctor && (
           <div className="flex flex-col gap-4">
-            <button type="button" onClick={() => setStep('doctor')} className="flex items-center gap-1 text-[12px] text-[#1a6b7a] font-semibold">
-              <ChevronLeft size={14} /> Change doctor
-            </button>
+            {!assignedDoctor && (
+              <button type="button" onClick={() => setStep('doctor')} className="flex items-center gap-1 text-[12px] text-[#1a6b7a] font-semibold">
+                <ChevronLeft size={14} /> Change doctor
+              </button>
+            )}
             <div className="p-3 rounded-xl bg-[#f0f4f6] text-[13px]">
               <span className="text-[#6b8896]">Doctor: </span>
               <span className="font-semibold text-[#1a3c4d]">{selectedDoctor.fullName}</span>
@@ -205,7 +270,7 @@ export default function BookAppointmentPage() {
                 className="w-full rounded-xl border border-[#d0dde2] bg-[#f7fafb] px-3 py-2.5 text-[13px] outline-none resize-none focus:border-[#1a6b7a]"
               />
             </div>
-            <PrimaryButton fullWidth onClick={() => setStep('schedule')}>
+            <PrimaryButton fullWidth disabled={limitReached} onClick={() => setStep('schedule')}>
               Continue to Schedule
             </PrimaryButton>
           </div>
@@ -246,7 +311,7 @@ export default function BookAppointmentPage() {
             <PrimaryButton
               fullWidth
               loading={book.isPending}
-              disabled={!selectedDate || !selectedTime}
+              disabled={!selectedDate || !selectedTime || !canBook || limitReached}
               onClick={handleBook}
             >
               Request Appointment

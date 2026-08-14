@@ -1,6 +1,6 @@
 /**
  * PackagesManagementPage — Live API-integrated package management
- * Real API shape: flat price fields (price1Month, price3Months, price6Months),
+ * Real API shape: flat price fields (price3Months, price6Months, price12Months),
  * category as plain string ("Thyroid", "Diabetes", etc.), separate status
  * toggle endpoint (PATCH /status), update via PUT.
  * Follows the same patterns as AdminPatientsPage.
@@ -167,9 +167,9 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
   const [name,        setName]        = useState(pkg?.name         ?? '')
   const [category,    setCategory]    = useState(pkg?.category     ?? '')
   const [description, setDescription] = useState(pkg?.description  ?? '')
-  const [price1Month, setPrice1Month] = useState(String(pkg?.price1Month  ?? ''))
-  const [price3Months,setPrice3Months]= useState(String(pkg?.price3Months ?? ''))
-  const [price6Months,setPrice6Months]= useState(String(pkg?.price6Months ?? ''))
+  const [price3Months, setPrice3Months] = useState(String(pkg?.price3Months ?? ''))
+  const [price6Months, setPrice6Months] = useState(String(pkg?.price6Months ?? ''))
+  const [price12Months,setPrice12Months]= useState(String(pkg?.price12Months ?? ''))
   const [features,    setFeatures]    = useState<string[]>(pkg?.features ?? [])
   const [featureInput,setFeatureInput]= useState('')
   const [isActive,    setIsActive]    = useState(pkg?.isActive ?? true)
@@ -188,9 +188,9 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
       name:        name.trim(),
       category,
       description: description.trim() || undefined,
-      price1Month:  Number(price1Month)  || 0,
-      price3Months: Number(price3Months) || 0,
-      price6Months: Number(price6Months) || 0,
+      price3Months:  Number(price3Months)  || 0,
+      price6Months:  Number(price6Months)  || 0,
+      price12Months: Number(price12Months) || 0,
       features,
       isActive,
     })
@@ -230,9 +230,9 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
         </p>
         <div className="grid grid-cols-3 gap-3">
           {([
-            ['1 Month',  price1Month,  setPrice1Month ],
-            ['3 Months', price3Months, setPrice3Months],
-            ['6 Months', price6Months, setPrice6Months],
+            ['3 Months',  price3Months,  setPrice3Months ],
+            ['6 Months',  price6Months,  setPrice6Months],
+            ['12 Months', price12Months, setPrice12Months],
           ] as [string, string, (v: string) => void][]).map(([label, val, set]) => (
             <div key={label}>
               <label style={{ fontSize: '12px', fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, display: 'block', marginBottom: '5px' }}>{label}</label>
@@ -316,9 +316,9 @@ function PackageCard({ pkg, onEdit, onDelete, onToggle, isToggling }: {
 
         {/* Pricing chips */}
         <div className="pm-price-row">
-          <span className="pm-price-chip">1M: {priceStr(pkg.price1Month)}</span>
           <span className="pm-price-chip">3M: {priceStr(pkg.price3Months)}</span>
           <span className="pm-price-chip">6M: {priceStr(pkg.price6Months)}</span>
+          <span className="pm-price-chip">12M: {priceStr(pkg.price12Months)}</span>
         </div>
 
         {/* Feature tags */}

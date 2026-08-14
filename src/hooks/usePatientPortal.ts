@@ -14,6 +14,8 @@ import type {
   PatientCreateOrderPayload,
   PatientPaymentVerifyPayload,
   PatientPortalPagination,
+  PatientDummyCheckoutPayload,
+  PatientSubscriptionsParams,
 } from '@/types'
 
 export const PATIENT_PORTAL_KEYS = {
@@ -26,6 +28,8 @@ export const PATIENT_PORTAL_KEYS = {
   digitalProducts:(p: PatientDigitalProductsParams) => ['patient', 'digital-products', p] as const,
   bloodReports:  (p: object) => ['patient', 'blood-reports', p] as const,
   orders:        (p: object) => ['patient', 'orders', p] as const,
+  activeSub:     ['patient', 'subscription', 'active'] as const,
+  subscriptions: (p: object) => ['patient', 'subscriptions', p] as const,
 }
 
 const FALLBACK_PAGINATION: PatientPortalPagination = {
@@ -227,4 +231,59 @@ export function usePatientVerifyPayment() {
       toast({ variant: 'error', title: 'Verification failed', description: getErrorMessage(err, 'Payment verification failed.') })
     },
   })
+}
+
+export function usePatientDummyCheckout() {
+  const qc = useQueryClient()
+  const { toast } = useToast()
+  return useMutation({
+    mutationFn: (payload: PatientDummyCheckoutPayload) =>
+      patientPortalService.dummyCheckout(payload),
+    onSuccess: (res) => {
+      toast({
+        variant: 'success',
+        title: 'Payment successful',
+        description: res.message ?? 'Package activated. A doctor will be assigned shortly.',
+      })
+      qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.dashboard })
+      qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.activeSub })
+      qc.invalidateQueries({ queryKey: ['patient', 'subscriptions'] })
+      qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.orders({}) })
+    },
+    onError: (err) => {
+      toast({ variant: 'error', title: 'Payment failed', description: getErrorMessage(err, 'Could not complete checkout.') })
+    },
+  })
+}
+
+export function usePatientActiveSubscription() {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: PATIENT_PORTAL_KEYS.activeSub,
+    queryFn:  () => patientPortalService.getActiveSubscription(),
+    retry:    1,
+    staleTime: 30_000,
+  })
+  return {
+    subscription: data?.data ?? null,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  }
+}
+
+export function usePatientSubscriptions(params: PatientSubscriptionsParams = {}) {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: PATIENT_PORTAL_KEYS.subscriptions(params),
+    queryFn:  () => patientPortalService.getSubscriptions(params),
+    retry:    1,
+  })
+  return {
+    subscriptions: data?.data?.items ?? [],
+    pagination:    data?.data?.pagination ?? FALLBACK_PAGINATION,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  }
 }

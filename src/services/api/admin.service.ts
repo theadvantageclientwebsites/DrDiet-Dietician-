@@ -44,6 +44,9 @@ import type {
   RevenueSummaryData,
   RevenueOrdersPaginatedData,
   RevenueOrdersParams,
+  AdminSubscriptionsParams,
+  AdminSubscriptionsPaginatedData,
+  AdminSubscription,
 } from '@/types'
 
 interface RevenueStats {
@@ -367,4 +370,27 @@ export const adminService = {
       ENDPOINTS.ADMIN.REVENUE_ORDERS,
     ).then((res) => res.data)
   },
+
+  getSubscriptions: (params: AdminSubscriptionsParams = {}) => {
+    const clean: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== '' && v !== undefined && v !== null) clean[k] = v
+    }
+    return APICall<ApiResponse<AdminSubscriptionsPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.ADMIN.SUBSCRIPTIONS,
+    ).then((res) => res.data)
+  },
+
+  getSubscriptionById: (id: string) =>
+    APICall<ApiResponse<AdminSubscription>>('get', null, ENDPOINTS.ADMIN.SUBSCRIPTION_BY_ID(id))
+      .then((res) => res.data),
+
+  assignSubscriptionDoctor: (id: string, doctorId: string) =>
+    APICall<ApiResponse<AdminSubscription>>(
+      'patch',
+      { doctorId },
+      ENDPOINTS.ADMIN.SUBSCRIPTION_ASSIGN(id),
+    ).then((res) => res.data),
 }
