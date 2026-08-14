@@ -202,9 +202,10 @@ function ErrorBanner({ onRetry }: { onRetry: () => void }) {
 }
 
 // ─── Upcoming appointment card ────────────────────────────────────────────────
-function UpcomingAppointmentCard({ appt, onViewAll }: {
+function UpcomingAppointmentCard({ appt, onViewAll, onStartCall }: {
   appt: NonNullable<ReturnType<typeof useDoctorDashboard>['upcomingAppointment']>
   onViewAll: () => void
+  onStartCall: (id: string) => void
 }) {
   const patient = appt.patient
   const profile = patient?.patientProfile
@@ -313,7 +314,9 @@ function UpcomingAppointmentCard({ appt, onViewAll }: {
         {/* Actions */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {canJoinVideoCall({ dateTime: appt.dateTime, status: appt.status, type: appt.type }) && (
-            <button style={{
+            <button
+              onClick={() => onStartCall(appt.id)}
+              style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 10,
               background: COLORS.brand, color: '#fff',
@@ -631,8 +634,14 @@ export default function DoctorDashboard() {
 
                 {/* CTA buttons */}
                 <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
-                  {upcomingAppointment.type === 'ONLINE' && upcomingAppointment.status === 'CONFIRMED' && (
-                    <button style={{
+                  {canJoinVideoCall({
+                    dateTime: upcomingAppointment.dateTime,
+                    status: upcomingAppointment.status,
+                    type: upcomingAppointment.type,
+                  }) && (
+                    <button
+                      onClick={() => nav(ROUTES.DOCTOR.VIDEO_CALL.replace(':roomId', upcomingAppointment.id))}
+                      style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       padding: '10px 0', borderRadius: 10, background: COLORS.brand, color: '#fff',
                       border: 'none', cursor: 'pointer', fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold,

@@ -3,6 +3,7 @@
  * Data: GET /doctor/appointments, PATCH /doctor/appointments/:id/status, PATCH /doctor/appointments/:id
  */
 import { useState, useCallback, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   CalendarDays, Search, AlertTriangle, RefreshCw,
   ChevronLeft, ChevronRight, Video, MapPin, X, CalendarClock,
@@ -10,6 +11,7 @@ import {
 import StatusBadge from '@/components/admin/StatusBadge'
 import ConfirmModal from '@/components/ui/ConfirmModal'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
+import { ROUTES } from '@/config/routes'
 import {
   useDoctorAppointments,
   useDoctorAppointmentDetail,
@@ -18,6 +20,7 @@ import {
 import { useUpdateDoctorAppointmentStatus, useUpdateDoctorAppointment } from '@/hooks/useDoctorAppointmentMutations'
 import type { DoctorAppointment, DoctorAppointmentStatus, DoctorAppointmentType } from '@/types'
 import { format, parseISO } from 'date-fns'
+import { canJoinVideoCall } from '@/lib/appointmentCall'
 
 const STATUS_TABS = [
   { value: '',          label: 'All'       },
@@ -95,6 +98,7 @@ function DetailModal({ id, startRescheduling = false, onClose }: {
   startRescheduling?: boolean
   onClose: () => void
 }) {
+  const nav = useNavigate()
   const { appointment, isLoading } = useDoctorAppointmentDetail(id)
   const updateStatus = useUpdateDoctorAppointmentStatus(onClose)
   const updateAppointment = useUpdateDoctorAppointment(() => setRescheduling(false))
@@ -308,6 +312,24 @@ function DetailModal({ id, startRescheduling = false, onClose }: {
                 </div>
               )}
 
+              {!rescheduling && canJoinVideoCall({
+                dateTime: appointment.dateTime,
+                status: appointment.status,
+                type: appointment.type,
+              }) && (
+                <button
+                  onClick={() => nav(ROUTES.DOCTOR.VIDEO_CALL.replace(':roomId', appointment.id))}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '8px 14px', borderRadius: 8, marginBottom: 12,
+                    border: 'none', background: COLORS.brand, cursor: 'pointer',
+                    fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: '#fff',
+                  }}
+                >
+                  <Video size={15} /> Start Call
+                </button>
+              )}
+
               {!rescheduling && canReschedule(appointment.status) && (
                 <button
                   onClick={openReschedule}
@@ -365,6 +387,7 @@ function DetailModal({ id, startRescheduling = false, onClose }: {
 }
 
 export default function AppointmentsPage() {
+  const nav = useNavigate()
   const [status, setStatus]       = useState('')
   const [type, setType]           = useState('')
   const [upcoming, setUpcoming]   = useState(false)
@@ -542,6 +565,19 @@ export default function AppointmentsPage() {
                   <StatusBadge status={appt.status} />
 
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {canJoinVideoCall({ dateTime: appt.dateTime, status: appt.status, type: appt.type }) && (
+                      <button
+                        onClick={() => nav(ROUTES.DOCTOR.VIDEO_CALL.replace(':roomId', appt.id))}
+                        style={{
+                          padding: '5px 10px', borderRadius: 7, border: 'none', cursor: 'pointer',
+                          background: COLORS.brand, color: '#fff',
+                          fontSize: 11, fontWeight: FONT_WEIGHT.semibold,
+                          display: 'flex', alignItems: 'center', gap: 4,
+                        }}
+                      >
+                        <Video size={12} /> Start Call
+                      </button>
+                    )}
                     {next.slice(0, 1).map(s => (
                       <button
                         key={s}
