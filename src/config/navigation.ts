@@ -17,6 +17,7 @@ const patientNav: NavItem[] = [
   { label: 'Home',          path: ROUTES.PATIENT.DASHBOARD,        icon: 'LayoutDashboard' },
   { label: 'Services',      path: ROUTES.PATIENT.SERVICES,         icon: 'Briefcase' },
   { label: 'Diet Plans',    path: ROUTES.PATIENT.DIET_PLANS,       icon: 'UtensilsCrossed' },
+  { label: 'Ebooks',        path: ROUTES.PATIENT.DIGITAL_PRODUCTS, icon: 'BookOpen' },
   { label: 'Activity',      path: ROUTES.PATIENT.APPOINTMENTS,     icon: 'Activity' },
   { label: 'Profile',       path: ROUTES.PATIENT.PROFILE,          icon: 'UserCircle' },
 ]
@@ -68,7 +69,13 @@ export const NAV_ITEMS: Record<UserRole, NavItem[]> = {
 
 /** Items shown in the mobile bottom tab bar (max 5) */
 export const BOTTOM_TAB_ITEMS: Record<UserRole, NavItem[]> = {
-  PATIENT: patientNav.slice(0, 5),
+  PATIENT: [
+    patientNav[0], // Home
+    patientNav[1], // Services
+    patientNav[2], // Diet Plans
+    patientNav[4], // Activity
+    patientNav[5], // Profile
+  ],
   DOCTOR:  doctorNav.slice(0, 5),
   INTERN:  internNav.slice(0, 5),
   ADMIN:   adminNav.slice(0, 5),

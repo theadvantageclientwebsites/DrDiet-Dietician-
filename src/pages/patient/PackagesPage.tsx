@@ -112,6 +112,11 @@ export default function PackagesPage() {
                     </li>
                   ))}
                 </ul>
+                {duration === 'TWELVE_MONTHS' && (pkg.freebies?.length ?? 0) > 0 && (
+                  <p className="text-[12px] text-[#1a6b7a] font-medium mb-3 m-0">
+                    Includes: {pkg.freebies!.map(f => f.title).join(', ')}
+                  </p>
+                )}
                 <PrimaryButton fullWidth onClick={() => setPendingBuy({ pkg, price })}>
                   Pay now (test mode)
                 </PrimaryButton>

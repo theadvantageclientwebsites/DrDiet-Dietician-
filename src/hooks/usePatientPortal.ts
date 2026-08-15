@@ -16,6 +16,7 @@ import type {
   PatientPortalPagination,
   PatientDummyCheckoutPayload,
   PatientSubscriptionsParams,
+  PatientLibraryParams,
 } from '@/types'
 
 export const PATIENT_PORTAL_KEYS = {
@@ -26,6 +27,7 @@ export const PATIENT_PORTAL_KEYS = {
   appointment:   (id: string) => ['patient', 'appointment', id] as const,
   packages:      (p: object) => ['patient', 'packages', p] as const,
   digitalProducts:(p: PatientDigitalProductsParams) => ['patient', 'digital-products', p] as const,
+  library:       (p: PatientLibraryParams) => ['patient', 'library', p] as const,
   bloodReports:  (p: object) => ['patient', 'blood-reports', p] as const,
   orders:        (p: object) => ['patient', 'orders', p] as const,
   activeSub:     ['patient', 'subscription', 'active'] as const,
@@ -191,6 +193,24 @@ export function usePatientDigitalProducts(params: PatientDigitalProductsParams =
   }
 }
 
+export function usePatientLibrary(params: PatientLibraryParams = {}) {
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+    queryKey: PATIENT_PORTAL_KEYS.library(params),
+    queryFn:  () => patientPortalService.getLibrary(params),
+    placeholderData: keepPreviousData,
+    retry:    1,
+  })
+  return {
+    items:      data?.data?.items ?? [],
+    pagination: data?.data?.pagination ?? FALLBACK_PAGINATION,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  }
+}
+
 export function usePatientPortalBloodReports(params?: { page?: number; limit?: number }) {
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: PATIENT_PORTAL_KEYS.bloodReports(params ?? {}),
@@ -240,15 +260,20 @@ export function usePatientDummyCheckout() {
   return useMutation({
     mutationFn: (payload: PatientDummyCheckoutPayload) =>
       patientPortalService.dummyCheckout(payload),
-    onSuccess: (res) => {
+    onSuccess: (res, payload) => {
+      const isProduct = payload.itemType === 'DIGITAL_PRODUCT'
       toast({
         variant: 'success',
         title: 'Payment successful',
-        description: res.message ?? 'Package activated. A doctor will be assigned shortly.',
+        description: res.message ?? (isProduct
+          ? 'This product is now in your library.'
+          : 'Package activated. A doctor will be assigned shortly.'),
       })
       qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.dashboard })
       qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.activeSub })
       qc.invalidateQueries({ queryKey: ['patient', 'subscriptions'] })
+      qc.invalidateQueries({ queryKey: ['patient', 'digital-products'] })
+      qc.invalidateQueries({ queryKey: ['patient', 'library'] })
       qc.invalidateQueries({ queryKey: PATIENT_PORTAL_KEYS.orders({}) })
     },
     onError: (err) => {

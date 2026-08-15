@@ -12,12 +12,12 @@ function getErrorMessage(err: unknown, fallback: string): string {
 
 // ─── Upload helpers ────────────────────────────────────────────────────────────
 
-/** Uploads PDF file, returns the fileUrl string. Throws on failure. */
-async function uploadFile(file: File): Promise<string> {
+/** Uploads PDF file, returns fileUrl and optional 2-page previewUrl. */
+async function uploadFile(file: File): Promise<{ fileUrl: string; previewUrl?: string }> {
   const res = await adminService.uploadDigitalProductFile(file)
   const url = res?.data?.fileUrl
   if (!url) throw new Error('File upload succeeded but returned no URL.')
-  return url
+  return { fileUrl: url, previewUrl: res.data.previewUrl ?? undefined }
 }
 
 /** Uploads thumbnail image, returns the thumbnailUrl string. Throws on failure. */
@@ -57,15 +57,17 @@ export function useCreateDigitalProduct(onSuccess?: () => void) {
       // ── Step 1 & 2: parallel uploads ──────────────────────────────────────
       setIsUploading(true)
       let fileUrl: string | undefined
+      let previewUrl: string | undefined
       let thumbnailUrl: string | undefined
 
       try {
-        const uploads = await Promise.all([
-          file      ? uploadFile(file)           : Promise.resolve(undefined),
-          thumbnail ? uploadThumbnail(thumbnail) : Promise.resolve(undefined),
+        const [fileUpload, thumbUpload] = await Promise.all([
+          file      ? uploadFile(file)           : Promise.resolve(undefined as { fileUrl: string; previewUrl?: string } | undefined),
+          thumbnail ? uploadThumbnail(thumbnail) : Promise.resolve(undefined as string | undefined),
         ])
-        fileUrl      = uploads[0]
-        thumbnailUrl = uploads[1]
+        fileUrl      = fileUpload?.fileUrl
+        previewUrl   = fileUpload?.previewUrl
+        thumbnailUrl = thumbUpload
       } finally {
         setIsUploading(false)
       }
@@ -74,6 +76,7 @@ export function useCreateDigitalProduct(onSuccess?: () => void) {
       const payload: DigitalProductCreatePayload = {
         ...fields,
         ...(fileUrl      ? { fileUrl }      : {}),
+        ...(previewUrl   ? { previewUrl }   : {}),
         ...(thumbnailUrl ? { thumbnailUrl } : {}),
       }
       return adminService.createDigitalProduct(payload)
@@ -120,17 +123,21 @@ export function useUpdateDigitalProduct(onSuccess?: () => void) {
   const mutation = useMutation({
     mutationFn: async ({ id, payload, file, thumbnail }: UpdateDigitalProductInput) => {
       let fileUrl      = payload.fileUrl
+      let previewUrl   = payload.previewUrl
       let thumbnailUrl = payload.thumbnailUrl
 
       if (file || thumbnail) {
         setIsUploading(true)
         try {
-          const uploads = await Promise.all([
-            file      ? uploadFile(file)           : Promise.resolve(undefined),
-            thumbnail ? uploadThumbnail(thumbnail) : Promise.resolve(undefined),
+          const [fileUpload, thumbUpload] = await Promise.all([
+            file      ? uploadFile(file)           : Promise.resolve(undefined as { fileUrl: string; previewUrl?: string } | undefined),
+            thumbnail ? uploadThumbnail(thumbnail) : Promise.resolve(undefined as string | undefined),
           ])
-          if (uploads[0]) fileUrl      = uploads[0]
-          if (uploads[1]) thumbnailUrl = uploads[1]
+          if (fileUpload) {
+            fileUrl    = fileUpload.fileUrl
+            previewUrl = fileUpload.previewUrl ?? previewUrl
+          }
+          if (thumbUpload) thumbnailUrl = thumbUpload
         } finally {
           setIsUploading(false)
         }
@@ -139,6 +146,7 @@ export function useUpdateDigitalProduct(onSuccess?: () => void) {
       return adminService.updateDigitalProduct(id, {
         ...payload,
         ...(fileUrl      ? { fileUrl }      : {}),
+        ...(previewUrl   ? { previewUrl }   : {}),
         ...(thumbnailUrl ? { thumbnailUrl } : {}),
       })
     },

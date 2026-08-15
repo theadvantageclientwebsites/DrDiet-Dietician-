@@ -15,6 +15,7 @@ import AdminEmptyState  from '@/components/admin/AdminEmptyState'
 import ConfirmModal     from '@/components/ui/ConfirmModal'
 import FormField        from '@/components/shared/FormField'
 import SelectField      from '@/components/shared/SelectField'
+import MediaImg         from '@/components/shared/MediaImg'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { API_BASE_URL } from '@/config/constants'
 import { useAdminDigitalProducts, DEFAULT_DIGITAL_PRODUCTS_LIMIT } from '@/hooks/useAdminDigitalProducts'
@@ -521,8 +522,7 @@ function ProductDetailModal({ product, onClose, onEdit }: {
               flexShrink: 0, minHeight: '200px',
             }}>
               {thumbFullUrl
-                ? <img src={thumbFullUrl} alt={p.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}/>
+                ? <MediaImg src={p.thumbnailUrl} alt={p.title} style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
                 : <FileText size={48} color={COLORS.muted} strokeWidth={1.2}/>
               }
             </div>
@@ -574,12 +574,30 @@ function ProductDetailModal({ product, onClose, onEdit }: {
               <p style={{ margin: '0 0 10px', fontSize: FONT_SIZE.xs, fontWeight: FONT_WEIGHT.semibold, color: COLORS.muted, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 PDF Preview
               </p>
-              <div style={{ border: `1px solid ${COLORS.divider}`, borderRadius: '12px', overflow: 'hidden', height: '420px', background: '#f7fafb', display: 'flex', flexDirection: 'column' }}>
-                <iframe
-                  src={fileFullUrl}
-                  title={`Preview: ${p.title}`}
-                  style={{ flex: 1, width: '100%', border: 'none' }}
-                />
+              <div style={{
+                border: `1px solid ${COLORS.divider}`,
+                borderRadius: '12px',
+                height: '220px',
+                background: '#f7fafb',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+              }}>
+                <div style={{
+                  width: 64, height: 64, borderRadius: 16,
+                  background: '#fee2e2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <FileText size={32} color="#dc2626" strokeWidth={1.8} />
+                </div>
+                <p style={{ margin: 0, fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy }}>
+                  PDF document
+                </p>
+                <p style={{ margin: 0, fontSize: 12, color: COLORS.muted }}>
+                  Open or download to view the full file
+                </p>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <a
@@ -600,10 +618,18 @@ function ProductDetailModal({ product, onClose, onEdit }: {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '14px 20px', borderTop: `1px solid ${COLORS.divider}`, display: 'flex', justifyContent: 'flex-end', gap: '10px', flexShrink: 0 }}>
+        <div style={{
+          padding: '14px 20px',
+          borderTop: `1px solid ${COLORS.divider}`,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          gap: '10px',
+          flexShrink: 0,
+        }}>
           <AdminBtn variant="secondary" onClick={onClose}>Close</AdminBtn>
-          <AdminBtn onClick={() => { onClose(); onEdit(p) }}>
-            <Pencil size={14}/> Edit Product
+          <AdminBtn icon={<Pencil size={14} />} onClick={() => { onClose(); onEdit(p) }}>
+            Edit Product
           </AdminBtn>
         </div>
       </div>
@@ -623,8 +649,7 @@ function ProductCard({
     <div className="dp-card">
       <div className="dp-thumb">
         {p.thumbnailUrl
-          ? <img src={p.thumbnailUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}/>
+          ? <MediaImg src={p.thumbnailUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : <FileText size={36} color={COLORS.muted} strokeWidth={1.5}/>
         }
       </div>

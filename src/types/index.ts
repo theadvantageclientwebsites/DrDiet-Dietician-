@@ -262,6 +262,7 @@ export interface DigitalProduct {
   description: string
   price: number
   fileUrl?: string
+  previewUrl?: string | null
   thumbnailUrl?: string
   /** Free-form category string: 'Thyroid', 'Diabetes', 'Weight Loss', 'General', etc. */
   category: string
@@ -282,6 +283,7 @@ export interface DigitalProductCreatePayload {
   price?: number
   description?: string
   fileUrl?: string
+  previewUrl?: string
   thumbnailUrl?: string
   author?: string
   pageCount?: number
@@ -296,6 +298,7 @@ export interface DigitalProductUpdatePayload {
   price?: number
   description?: string
   fileUrl?: string
+  previewUrl?: string
   thumbnailUrl?: string
   author?: string
   pageCount?: number
@@ -324,6 +327,7 @@ export interface DigitalProductsPaginatedData {
 
 export interface DigitalProductUploadFileResponse {
   fileUrl: string
+  previewUrl?: string | null
   originalName: string
   size: number
 }
@@ -786,6 +790,18 @@ export interface AdminAppointmentsParams {
 
 // ─── Admin: Packages ──────────────────────────────────────────────────────────
 
+/** Digital products bundled free with a 12-month package (no full fileUrl). */
+export interface PackageFreebiePreview {
+  id:            string
+  title:         string
+  category:      string
+  thumbnailUrl:  string | null
+  previewUrl:    string | null
+  author:        string | null
+  price:         number
+  isFree?:       boolean
+}
+
 /** Category values used in the API (sent/received as plain strings) */
 export type AdminPackageCategory = 'Thyroid' | 'Diabetes' | 'Weight Loss' | 'General' | string
 
@@ -802,6 +818,7 @@ export interface AdminPackage {
   isActive:      boolean
   createdAt:     string
   updatedAt:     string
+  freebies?:     PackageFreebiePreview[]
 }
 
 export interface AdminPackagesPagination {
@@ -838,19 +855,21 @@ export interface AdminPackageCreatePayload {
   price3Months:  number
   price6Months:  number
   price12Months: number
-  features?:     string[]
-  isActive?:     boolean
+  features?:          string[]
+  isActive?:          boolean
+  freebieProductIds?: string[]
 }
 
 export interface AdminPackageUpdatePayload {
-  name?:          string
-  category?:      AdminPackageCategory
-  description?:   string
-  price3Months?:  number
-  price6Months?:  number
-  price12Months?: number
-  features?:      string[]
-  isActive?:      boolean
+  name?:              string
+  category?:          AdminPackageCategory
+  description?:       string
+  price3Months?:      number
+  price6Months?:      number
+  price12Months?:     number
+  features?:          string[]
+  isActive?:          boolean
+  freebieProductIds?: string[]
 }
 
 // ─── Admin: Revenue ───────────────────────────────────────────────────────────
@@ -1291,6 +1310,7 @@ export interface PatientDashboardData {
   dietPlan:             PatientDietPlanView | null
   recentActivity:       unknown[]
   activePackage:        PatientPackageSubscription | null
+  library?:             PatientLibraryPaginatedData
 }
 
 export interface PatientPortalProfileData {
@@ -1345,7 +1365,10 @@ export interface PatientPortalPackage {
   features:      string[]
   isActive:      boolean
   createdAt:     string
+  freebies?:     PackageFreebiePreview[]
 }
+
+export type DigitalProductAccessType = 'PURCHASED' | 'PACKAGE_FREEBIE' | 'FREE' | null
 
 export interface PatientPortalDigitalProduct {
   id:           string
@@ -1354,7 +1377,10 @@ export interface PatientPortalDigitalProduct {
   price:        number
   description:  string | null
   thumbnailUrl: string | null
-  fileUrl?:     string
+  previewUrl:   string | null
+  fileUrl:      string | null
+  hasAccess:    boolean
+  accessType:   DigitalProductAccessType
   author:       string | null
   pageCount:    number | null
   language:     string | null
@@ -1375,6 +1401,16 @@ export interface PatientDigitalProductsParams {
 }
 
 export interface PatientDigitalProductsPaginatedData {
+  items:      PatientPortalDigitalProduct[]
+  pagination: PatientPortalPagination
+}
+
+export interface PatientLibraryParams {
+  page?:  number
+  limit?: number
+}
+
+export interface PatientLibraryPaginatedData {
   items:      PatientPortalDigitalProduct[]
   pagination: PatientPortalPagination
 }

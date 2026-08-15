@@ -43,6 +43,7 @@ const PatientServicesPage = lazy(() => import('@/pages/patient/ServicesPage'))
 const DietPlansPage = lazy(() => import('@/pages/patient/DietPlansPage'))
 const PatientBloodReportsPage = lazy(() => import('@/pages/patient/BloodReportsPage'))
 const DigitalProductsPage = lazy(() => import('@/pages/patient/DigitalProductsPage'))
+const PatientLibraryPage = lazy(() => import('@/pages/patient/LibraryPage'))
 const PatientChatPage = lazy(() => import('@/pages/patient/ChatPage'))
 const PatientVideoCallPage = lazy(() => import('@/pages/patient/VideoCallPage'))
 const PatientNotificationsPage = lazy(() => import('@/pages/patient/NotificationsPage'))
@@ -146,6 +147,7 @@ export const router = createBrowserRouter([
               { path: ROUTES.PATIENT.DIET_PLANS,       element: S(DietPlansPage) },
               { path: ROUTES.PATIENT.BLOOD_REPORTS,    element: S(PatientBloodReportsPage) },
               { path: ROUTES.PATIENT.DIGITAL_PRODUCTS, element: S(DigitalProductsPage) },
+              { path: ROUTES.PATIENT.LIBRARY,          element: S(PatientLibraryPage) },
               { path: ROUTES.PATIENT.CHAT,             element: S(PatientChatPage) },
               { path: ROUTES.PATIENT.VIDEO_CALL,       element: S(PatientVideoCallPage) },
               { path: ROUTES.PATIENT.NOTIFICATIONS,    element: S(PatientNotificationsPage) },

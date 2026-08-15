@@ -19,6 +19,7 @@ import FormField       from '@/components/shared/FormField'
 import SelectField     from '@/components/shared/SelectField'
 import { COLORS, FONT_SIZE, FONT_WEIGHT, SHADOW } from '@/config/theme'
 import { useAdminPackages, DEFAULT_PACKAGES_LIMIT } from '@/hooks/useAdminPackages'
+import { useAdminDigitalProducts } from '@/hooks/useAdminDigitalProducts'
 import {
   useCreateAdminPackage,
   useUpdateAdminPackage,
@@ -173,6 +174,8 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
   const [features,    setFeatures]    = useState<string[]>(pkg?.features ?? [])
   const [featureInput,setFeatureInput]= useState('')
   const [isActive,    setIsActive]    = useState(pkg?.isActive ?? true)
+  const [freebieIds,  setFreebieIds]  = useState<string[]>(pkg?.freebies?.map(f => f.id) ?? [])
+  const { products: digitalProducts } = useAdminDigitalProducts({ limit: 100 })
 
   const addFeature = () => {
     const val = featureInput.trim()
@@ -193,6 +196,7 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
       price12Months: Number(price12Months) || 0,
       features,
       isActive,
+      freebieProductIds: freebieIds,
     })
   }
 
@@ -271,6 +275,35 @@ function PackageForm({ formId, pkg, onSubmit }: PackageFormProps) {
         </div>
       </div>
 
+      {/* 12-month freebies */}
+      <div>
+        <p style={{ fontSize: FONT_SIZE.sm, fontWeight: FONT_WEIGHT.semibold, color: COLORS.navy, marginBottom: '6px' }}>
+          12-month freebies
+        </p>
+        <p style={{ fontSize: '12px', color: COLORS.muted, margin: '0 0 10px' }}>
+          These digital products appear in the patient’s library after they buy the 12-month plan.
+        </p>
+        {digitalProducts.length === 0 ? (
+          <p style={{ fontSize: '12px', color: COLORS.muted, margin: 0 }}>No digital products yet. Create some first.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 180, overflowY: 'auto', border: `1px solid ${COLORS.divider}`, borderRadius: 10, padding: 10 }}>
+            {digitalProducts.map(p => {
+              const checked = freebieIds.includes(p.id)
+              return (
+                <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: COLORS.navy }}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => setFreebieIds(ids => checked ? ids.filter(id => id !== p.id) : [...ids, p.id])}
+                  />
+                  {p.title}
+                </label>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
       {/* Active toggle */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <button type="button" onClick={() => setIsActive(v => !v)} aria-pressed={isActive}
@@ -320,6 +353,12 @@ function PackageCard({ pkg, onEdit, onDelete, onToggle, isToggling }: {
           <span className="pm-price-chip">6M: {priceStr(pkg.price6Months)}</span>
           <span className="pm-price-chip">12M: {priceStr(pkg.price12Months)}</span>
         </div>
+
+        {(pkg.freebies?.length ?? 0) > 0 && (
+          <p style={{ fontSize: '12px', color: COLORS.brand, margin: '0 0 8px', fontWeight: 600 }}>
+            Includes: {pkg.freebies!.map(f => f.title).join(', ')}
+          </p>
+        )}
 
         {/* Feature tags */}
         {(pkg.features?.length ?? 0) > 0 && (

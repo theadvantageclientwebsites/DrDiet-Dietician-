@@ -33,8 +33,11 @@ export default function AdminBtn({
       style={{
         display:        'inline-flex',
         alignItems:     'center',
+        justifyContent: 'center',
         gap:            '6px',
         padding:        pad,
+        height:         size === 'sm' ? '34px' : '40px',
+        boxSizing:      'border-box',
         borderRadius:   '10px',
         border:         s.border,
         background:     s.bg,

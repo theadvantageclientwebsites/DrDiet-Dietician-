@@ -36,6 +36,7 @@ export const ROUTES = {
     DIET_PLANS: '/patient/diet-plans',
     BLOOD_REPORTS: '/patient/blood-reports',
     DIGITAL_PRODUCTS: '/patient/digital-products',
+    LIBRARY:          '/patient/library',
     CHAT: '/patient/chat',
     VIDEO_CALL: '/patient/video-call/:roomId',
     NOTIFICATIONS: '/patient/notifications',

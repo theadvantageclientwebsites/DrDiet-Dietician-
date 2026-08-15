@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { User, Phone, Mail, MapPin, Droplets, Scale, Ruler, Camera, AlertCircle, RefreshCw } from 'lucide-react'
+import { User, Phone, Mail, MapPin, Droplets, Scale, Ruler, Camera, AlertCircle, RefreshCw, Library } from 'lucide-react'
 import PageShell from '@/components/patient/shared/PageShell'
 import PrimaryButton from '@/components/patient/shared/PrimaryButton'
 import { BLOOD_GROUP_LABELS } from '@/config/constants'
@@ -11,6 +11,8 @@ import {
 } from '@/hooks/usePatientPortal'
 import type { PatientPortalProfileData } from '@/types'
 import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
+import { Link } from 'react-router-dom'
+import { ROUTES } from '@/config/routes'
 
 interface FormState {
   fullName: string
@@ -111,6 +113,19 @@ export default function ProfilePage() {
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={handlePhoto} />
 
       <ActivePackageCard subscription={subscription} />
+
+      <Link
+        to={ROUTES.PATIENT.LIBRARY}
+        className="flex items-center gap-3 bg-white rounded-2xl border border-[#e6edf0] p-4 hover:border-[#a8d8e2] transition-colors"
+      >
+        <div className="w-10 h-10 rounded-xl bg-[#d0ecf2] flex items-center justify-center shrink-0">
+          <Library size={18} className="text-[#1a6b7a]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[14px] font-semibold text-[#1a3c4d] m-0">My library</p>
+          <p className="text-[12px] text-[#6b8896] m-0">Purchased guides and 12-month package freebies</p>
+        </div>
+      </Link>
 
       <div className="flex flex-col gap-5">
         <div className="bg-white rounded-2xl border border-[#e6edf0] p-6">

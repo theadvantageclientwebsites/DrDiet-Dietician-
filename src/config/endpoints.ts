@@ -179,6 +179,7 @@ const ENDPOINTS = {
     PACKAGE_BY_ID:          (id: string) => `/patient/packages/${id}`,
     DIGITAL_PRODUCTS:       '/patient/digital-products',
     DIGITAL_PRODUCT_BY_ID:  (id: string) => `/patient/digital-products/${id}`,
+    LIBRARY:                '/patient/library',
     PAYMENTS_CREATE_ORDER:  '/patient/payments/create-order',
     PAYMENTS_VERIFY:        '/patient/payments/verify',
     PAYMENTS_DUMMY_CHECKOUT:'/patient/payments/dummy-checkout',

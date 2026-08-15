@@ -28,6 +28,7 @@ const QUICK_ACTIONS: QuickAction[] = [
   { id: 'support-chat', icon: 'MessageSquare', label: 'Support Chat', description: 'Instant specialist', route: ROUTES.PATIENT.CHAT, variant: 'icon' },
   { id: 'ebook-store', icon: 'BookOpen', label: 'Ebook Store', description: 'Clinical guides', route: ROUTES.PATIENT.DIGITAL_PRODUCTS, variant: 'icon' },
   { id: 'blood-reports', icon: 'FileText', label: 'Blood Reports', description: 'Lab diagnostics', route: ROUTES.PATIENT.BLOOD_REPORTS, variant: 'row' },
+  { id: 'library', icon: 'Library', label: 'My Library', description: 'Purchased & package PDFs', route: ROUTES.PATIENT.LIBRARY, variant: 'row' },
 ]
 
 export function usePatientDashboard() {
@@ -47,6 +48,7 @@ export function usePatientDashboard() {
     handleActionClick:         (route: string) => navigate(route),
     handleJoinCall:            (id: string) => navigate(`/patient/video-call/${id}`),
     handleViewAllActivity:     () => navigate(ROUTES.PATIENT.NOTIFICATIONS),
+    handleViewLibrary:         () => navigate(ROUTES.PATIENT.LIBRARY),
     refetch,
   }
 }

@@ -19,6 +19,8 @@ import type {
   PatientPortalDigitalProduct,
   PatientDigitalProductsParams,
   PatientDigitalProductsPaginatedData,
+  PatientLibraryParams,
+  PatientLibraryPaginatedData,
   PatientBloodReportsPaginatedData,
   PatientCreateOrderPayload,
   PatientRazorpayOrderData,
@@ -117,6 +119,15 @@ export const patientPortalService = {
   getDigitalProductById: (id: string) =>
     APICall<ApiResponse<PatientPortalDigitalProduct>>('get', null, ENDPOINTS.PATIENT.DIGITAL_PRODUCT_BY_ID(id))
       .then((res) => res.data),
+
+  getLibrary: (params: PatientLibraryParams = {}) => {
+    const clean = cleanParams(params as Record<string, unknown>)
+    return APICall<ApiResponse<PatientLibraryPaginatedData>>(
+      'get',
+      Object.keys(clean).length ? clean : null,
+      ENDPOINTS.PATIENT.LIBRARY,
+    ).then((res) => res.data)
+  },
 
   getBloodReports: (params?: { page?: number; limit?: number }) => {
     const clean = cleanParams((params ?? {}) as Record<string, unknown>)

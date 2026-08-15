@@ -3,6 +3,7 @@ import UpcomingAppointmentCard from '@/components/patient/dashboard/UpcomingAppo
 import QuickActionsGrid from '@/components/patient/dashboard/QuickActionsGrid'
 import RecentActivityList from '@/components/patient/dashboard/RecentActivityList'
 import ActivePackageCard from '@/components/patient/shared/ActivePackageCard'
+import DigitalProductCard from '@/components/patient/library/DigitalProductCard'
 import { usePatientDashboard } from '@/hooks/usePatientDashboard'
 import { ROUTES } from '@/config/routes'
 
@@ -35,6 +36,7 @@ export default function PatientDashboard() {
     handleActionClick,
     handleJoinCall,
     handleViewAllActivity,
+    handleViewLibrary,
   } = usePatientDashboard()
 
   const heroHeadline = patient?.fullName
@@ -83,6 +85,21 @@ export default function PatientDashboard() {
             onBookNow={() => handleActionClick('/patient/book-appointment')}
           />
         </section>
+
+        {!!dashboard?.library?.items?.length && (
+          <section>
+            <SectionHeading
+              title="My library"
+              actionLabel="View all"
+              onAction={handleViewLibrary}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {dashboard.library.items.slice(0, 4).map(item => (
+                <DigitalProductCard key={item.id} product={item} compact />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section>
           <SectionHeading title="Quick Actions" />
